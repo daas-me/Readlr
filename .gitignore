@@ -32,3 +32,8 @@ lerna-debug.log*
 
 # Misc
 .cache/
+
+# MD
+!README.md
+*.md
+
