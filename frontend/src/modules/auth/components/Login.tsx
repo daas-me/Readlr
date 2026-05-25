@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
+import { useAuth } from '../auth.context.js';
+
+interface LoginProps {
+  onSuccess?: () => void;
+  onSwitchToRegister?: () => void;
+}
+
+export const Login: React.FC<LoginProps> = ({ onSuccess, onSwitchToRegister }) => {
+  const { login, isLoading, error } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalError(null);
+
+    if (!email || !password) {
+      setLocalError('Email and password are required');
+      return;
+    }
+
+    try {
+      await login(email, password);
+      setEmail('');
+      setPassword('');
+      onSuccess?.();
+    } catch (err) {
+      // Error is already handled by the auth context
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative background shapes */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#EEF2FF] opacity-70" />
+      <div className="absolute -bottom-32 -right-20 w-[28rem] h-[28rem] rounded-full bg-[#FEF3C7] opacity-60" />
+      <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-[#FB7185]" />
+      <div className="absolute bottom-1/4 left-1/4 w-2 h-2 rounded-full bg-[#10B981]" />
+
+      <motion.div
+        initial={{ y: 12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-md relative z-10"
+      >
+        <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(31,36,48,0.04),0_8px_24px_-12px_rgba(31,36,48,0.10)] p-8 border border-[#1F243014]">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <div className="w-16 h-16 bg-[#EEF2FF] rounded-xl mx-auto mb-4 flex items-center justify-center shadow-[0_4px_12px_-4px_rgba(79,70,229,0.2)]">
+              <span className="text-3xl font-semibold text-[#4F46E5]">R</span>
+            </div>
+            <h1 className="text-2xl font-semibold text-[#1F2430] mb-2">Welcome Back</h1>
+            <p className="text-[#4B5266] text-sm">Sign in to continue learning with Readlr</p>
+          </div>
+
+          {/* Error Message */}
+          {(error || localError) && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] px-4 py-3 rounded-xl mb-6 text-sm"
+            >
+              {error || localError}
+            </motion.div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[#1F2430] font-medium text-sm mb-2">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors bg-white text-[#1F2430] placeholder-[#9CA3AF]"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <label className="block text-[#1F2430] font-medium text-sm mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 border-2 border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors bg-white text-[#1F2430] placeholder-[#9CA3AF]"
+                disabled={isLoading}
+              />
+            </div>
+
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white font-semibold py-3 rounded-lg hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(79,70,229,0.35)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
+          </form>
+
+          {/* Divider */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="flex-1 h-px bg-[#E5E7EB]" />
+            <span className="text-xs text-[#9CA3AF]">New to Readlr?</span>
+            <div className="flex-1 h-px bg-[#E5E7EB]" />
+          </div>
+
+          {/* Switch to Register */}
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onSwitchToRegister}
+            className="w-full bg-white border-2 border-[#4F46E5] text-[#4F46E5] font-semibold py-3 rounded-lg hover:bg-[#EEF2FF] transition-colors"
+          >
+            Create an Account
+          </motion.button>
+
+          {/* Footer */}
+          <p className="text-xs text-[#9CA3AF] text-center mt-6">
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+

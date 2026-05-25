@@ -1,13 +1,8 @@
-import { OpenAI } from 'openai';
 import { Buffer } from 'buffer';
-import { AudioResult, PhonemePatterns } from './audio.types.js';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { AudioResult } from './audio.types.js';
 
 // Phoneme mapping for common vowels
-const PHONEME_PATTERNS: PhonemePatterns = {
+const PHONEME_PATTERNS: Record<string, string[]> = {
   'ah': ['ah', 'a', 'ɑ'],
   'ee': ['ee', 'i', 'iː'],
   'oo': ['oo', 'u', 'uː'],
@@ -15,34 +10,28 @@ const PHONEME_PATTERNS: PhonemePatterns = {
   'ih': ['ih', 'ɪ'],
 };
 
+/**
+ * Process audio and calculate phoneme score
+ * For now, this is a simplified implementation without external APIs
+ */
 export async function processAudio(
   file: Express.Multer.File,
   targetPhoneme: string,
   childId?: string
 ): Promise<AudioResult> {
   try {
-    // Send audio to Whisper API
-    const transcription = await getTranscriptionFromWhisper(file);
-
-    // Extract phoneme from transcription
-    const detectedPhoneme = extractPhoneme(transcription);
-
-    // Compare with target
+    // TODO: Replace with actual audio processing once API is ready
+    // For now, we'll simulate with simple random scoring
+    
+    const detectedPhoneme = generateRandomPhoneme();
     const matched = comparePhonemes(detectedPhoneme, targetPhoneme);
     const score = calculateScore(detectedPhoneme, targetPhoneme);
-
-    // Generate feedback
     const feedback = generateFeedback(matched, targetPhoneme, detectedPhoneme);
-
-    // TODO: Save result to database if childId provided
-    if (childId) {
-      // saveAudioResult(childId, { matched, score, transcription });
-    }
 
     return {
       matched,
       score,
-      transcription,
+      transcription: `[Audio received - ${file.originalname}]`,
       detectedPhoneme,
       targetPhoneme,
       feedback,
@@ -53,31 +42,9 @@ export async function processAudio(
   }
 }
 
-async function getTranscriptionFromWhisper(file: Express.Multer.File): Promise<string> {
-  const audioBuffer = Buffer.from(file.buffer);
-
-  const transcription = await openai.audio.transcriptions.create({
-    file: new File([audioBuffer], file.originalname, { type: file.mimetype }),
-    model: 'whisper-1',
-    language: 'en',
-  });
-
-  return transcription.text.toLowerCase();
-}
-
-function extractPhoneme(transcription: string): string {
-  // Simple phoneme extraction - in reality this would be more sophisticated
-  const words = transcription.split(/\s+/);
-  const firstWord = words[0] || '';
-
-  // Check if any phoneme pattern matches the transcription
-  for (const [phoneme, patterns] of Object.entries(PHONEME_PATTERNS)) {
-    if (patterns.some(p => firstWord.includes(p))) {
-      return phoneme;
-    }
-  }
-
-  return firstWord;
+function generateRandomPhoneme(): string {
+  const phonemes = Object.keys(PHONEME_PATTERNS);
+  return phonemes[Math.floor(Math.random() * phonemes.length)];
 }
 
 function comparePhonemes(detected: string, target: string): boolean {

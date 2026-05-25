@@ -1,7 +1,9 @@
 /**
  * Auth Module
- * Handles role selection, welcome screen, and learner profile setup
+ * Handles authentication (login/register) and role selection
  */
 
-export { WelcomeScreen } from './components/WelcomeScreen.js';
-export { LearnerProfile } from './components/LearnerProfile.js';
+export { AuthProvider, useAuth } from './auth.context';
+export type { User } from './auth.context';
+export { Login, Register, AuthScreen } from './components/index';
+
