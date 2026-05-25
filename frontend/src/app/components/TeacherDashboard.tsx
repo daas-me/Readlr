@@ -51,13 +51,15 @@ export function TeacherDashboard({ onBack }: TeacherDashboardProps) {
         <div className="max-w-7xl mx-auto">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-8">
-            <button
-              onClick={onBack}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onBack}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] hover:bg-[#FCA5A5] transition-colors text-sm font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Log Out
+              </button>
+            </div>
             <span className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-[#8A91A3]">
               <Users className="w-3.5 h-3.5" />
               Teacher Dashboard

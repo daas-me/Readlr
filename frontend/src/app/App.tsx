@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { User, GraduationCap } from "lucide-react";
 import { AuthProvider, useAuth, AuthScreen } from "../modules/auth/index";
 import { NavigationHeader } from "./components/NavigationHeader";
+import { TeacherNavigationHeader } from "./components/TeacherNavigationHeader";
+import { Landing } from "./components/Landing";
 import { LearnerProfile } from "./components/LearnerProfile";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import { StageSelection } from "./components/StageSelection";
@@ -21,8 +22,9 @@ import { Help } from "./components/Help";
 import { Diagrams } from "./components/Diagrams";
 
 type Screen =
-  | "role-select"
+  | "landing"
   | "auth"
+  | "role-select"
   | "learner-profile"
   | "welcome"
   | "stage-selection"
@@ -35,24 +37,35 @@ type Screen =
   | "progress"
   | "phoneme-bank"
   | "teacher-dashboard"
+  | "teacher-students"
+  | "teacher-analytics"
+  | "teacher-reports"
+  | "teacher-settings"
   | "settings"
   | "achievements"
   | "help"
   | "diagrams";
 
 function AppContent() {
-  const { isAuthenticated, user, token } = useAuth();
-  const [currentScreen, setCurrentScreen] = useState<Screen>("role-select");
+  const { isAuthenticated, user, token, logout } = useAuth();
+  const [currentScreen, setCurrentScreen] = useState<Screen>("landing");
   const [selectedStage, setSelectedStage] = useState<number>(1);
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
   const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0 });
-  const [levelScore, setLevelScore] = useState(300);
+  const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
-  const [userRole, setUserRole] = useState<"learner" | "teacher" | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
 
-  // Check if learner profile exists when user is authenticated
+  // Auto-navigate authenticated users
+  useEffect(() => {
+    if (isAuthenticated && user && currentScreen === "landing") {
+      // User just logged in, go to role-select
+      setCurrentScreen("role-select");
+    }
+  }, [isAuthenticated, user, currentScreen]);
+
+  // Check if learner profile exists when showing learner-profile screen
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
       setIsCheckingProfile(true);
@@ -85,13 +98,17 @@ function AppContent() {
     }
   }, [isAuthenticated, user, token, currentScreen]);
 
-  const handleRoleSelect = (role: "learner" | "teacher") => {
-    setUserRole(role);
+  const handleGetStarted = () => {
     setCurrentScreen("auth");
   };
 
   const handleAuthSuccess = () => {
-    if (userRole === "teacher") {
+    // After auth, go to role selection
+    setCurrentScreen("role-select");
+  };
+
+  const handleRoleSelect = (role: "learner" | "teacher") => {
+    if (role === "teacher") {
       setCurrentScreen("teacher-dashboard");
     } else {
       setCurrentScreen("learner-profile");
@@ -163,8 +180,8 @@ function AppContent() {
   };
 
   const handleBackToRoleSelect = () => {
-    setCurrentScreen("role-select");
-    setUserRole(null);
+    logout();
+    setCurrentScreen("landing");
     setLearnerName("");
     setLearnerAvatar("🦊");
   };
@@ -172,24 +189,29 @@ function AppContent() {
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
   // Screens that shouldn't show navigation header
-  const noHeaderScreens = ["role-select", "auth", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete", "teacher-dashboard"];
-  const showHeader = userRole === "learner" && !noHeaderScreens.includes(currentScreen);
+  const noHeaderScreens = ["landing", "auth", "role-select", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete"];
+  const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
+  const showTeacherHeader = user?.role === "teacher" && currentScreen.startsWith("teacher-");
+
+  // Landing Screen
+  if (currentScreen === "landing") {
+    return <Landing onGetStarted={handleGetStarted} />;
+  }
 
   // Auth Screen
-  if (currentScreen === "auth" && userRole) {
+  if (currentScreen === "auth") {
     return (
       <AuthScreen
-        selectedRole={userRole}
+        selectedRole={null}
         onAuthSuccess={handleAuthSuccess}
       />
     );
   }
 
-  // Role Selection Screen
-  if (currentScreen === "role-select") {
+  // Role Selection Screen (locked to authenticated user's role)
+  if (currentScreen === "role-select" && user) {
     return (
       <div className="size-full bg-[#FAF7F2] flex items-center justify-center p-8 relative overflow-hidden">
-        {/* Subtle editorial accents — soft shapes, no rainbow */}
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#EEF2FF] opacity-70" />
         <div className="absolute -bottom-32 -right-20 w-[28rem] h-[28rem] rounded-full bg-[#FEF3C7] opacity-60" />
         <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-[#FB7185]" />
@@ -199,67 +221,34 @@ function AppContent() {
           initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center relative z-10 max-w-5xl w-full"
+          className="text-center relative z-10 max-w-5xl w-full flex-1 flex flex-col items-center justify-center"
         >
           <div className="mb-14">
-            <div className="w-20 h-20 bg-[#4F46E5] rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-[0_18px_40px_-18px_rgba(79,70,229,0.6)]">
-              <span className="text-4xl font-semibold text-white">R</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl text-[#1F2430] mb-3 tracking-tight">Readlr</h1>
+            <h1 className="text-4xl md:text-5xl text-[#1F2430] mb-3 tracking-tight">Welcome!</h1>
             <p className="text-lg text-[#4B5266] max-w-xl mx-auto">
-              A gamified phonetics companion that helps Grade 1 learners read English with confidence.
+              You're registered as a {user.role === "learner" ? "Student" : "Teacher"}. Let's get you set up.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-            <motion.button
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleRoleSelect("learner")}
-              className="group bg-white rounded-2xl p-8 border border-[#1F243014] hover:border-[#4F46E5] shadow-[0_1px_2px_rgba(31,36,48,0.04),0_8px_24px_-12px_rgba(31,36,48,0.10)] hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(79,70,229,0.35)] transition-all text-left"
-            >
-              <div className="flex items-start justify-between mb-6">
-                <div className="w-14 h-14 bg-[#EEF2FF] rounded-xl flex items-center justify-center">
-                  <User className="w-7 h-7 text-[#4F46E5]" />
-                </div>
-                <span className="text-xs uppercase tracking-wider text-[#8A91A3]">Learner</span>
-              </div>
-              <h2 className="text-2xl text-[#1F2430] mb-2">I'm a Student</h2>
-              <p className="text-[#4B5266] text-sm mb-5">
-                Meet Sinta, your reading buddy. Listen, repeat, and earn stickers.
-              </p>
-              <span className="inline-flex items-center gap-1 text-[#4F46E5] text-sm group-hover:gap-2 transition-all">
-                Start learning <span aria-hidden>→</span>
-              </span>
-            </motion.button>
+          <motion.button
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleRoleSelect(user.role === "learner" ? "learner" : "teacher")}
+            className={`px-8 py-3 rounded-2xl text-lg font-semibold inline-flex items-center gap-2 transition-all ${
+              user.role === "learner"
+                ? "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-[0_8px_24px_-12px_rgba(79,70,229,0.6)]"
+                : "bg-[#1F2430] hover:bg-[#0F1419] text-white shadow-[0_8px_24px_-12px_rgba(31,36,48,0.6)]"
+            }`}
+          >
+            {user.role === "learner" ? "Start Learning" : "Open Dashboard"}
+          </motion.button>
 
-            <motion.button
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleRoleSelect("teacher")}
-              className="group bg-white rounded-2xl p-8 border border-[#1F243014] hover:border-[#1F2430] shadow-[0_1px_2px_rgba(31,36,48,0.04),0_8px_24px_-12px_rgba(31,36,48,0.10)] hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(31,36,48,0.25)] transition-all text-left"
-            >
-              <div className="flex items-start justify-between mb-6">
-                <div className="w-14 h-14 bg-[#F2EEE6] rounded-xl flex items-center justify-center">
-                  <GraduationCap className="w-7 h-7 text-[#1F2430]" />
-                </div>
-                <span className="text-xs uppercase tracking-wider text-[#8A91A3]">Educator</span>
-              </div>
-              <h2 className="text-2xl text-[#1F2430] mb-2">I'm a Teacher</h2>
-              <p className="text-[#4B5266] text-sm mb-5">
-                See the fluency heatmap, spot trouble words, and pull-aside readers.
-              </p>
-              <span className="inline-flex items-center gap-1 text-[#1F2430] text-sm group-hover:gap-2 transition-all">
-                Open dashboard <span aria-hidden>→</span>
-              </span>
-            </motion.button>
-          </div>
-
-          <div className="mt-14 inline-flex items-center gap-3 text-xs text-[#8A91A3]">
-            <span>© 2026 Readlr</span>
-            <span className="w-1 h-1 rounded-full bg-[#8A91A3]" />
-            <span>All Rights Reserved</span>
-          </div>
+          <button
+            onClick={handleBackToRoleSelect}
+            className="mt-auto pt-6 text-sm text-[#4B5266] hover:text-[#1F2430] transition-colors"
+          >
+            Not {user.role === "learner" ? "a student" : "a teacher"}? <span className="text-[#4F46E5]">Log out</span>
+          </button>
         </motion.div>
       </div>
     );
@@ -267,10 +256,19 @@ function AppContent() {
 
   return (
     <div className="size-full flex flex-col">
-      {showHeader && (
+      {showLearnerHeader && (
         <NavigationHeader
           userName={learnerName}
           userAvatar={learnerAvatar}
+          currentScreen={currentScreen}
+          onNavigate={handleNavigate}
+          onLogout={handleBackToRoleSelect}
+        />
+      )}
+
+      {showTeacherHeader && (
+        <TeacherNavigationHeader
+          teacherName={user?.name}
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
           onLogout={handleBackToRoleSelect}
@@ -371,6 +369,42 @@ function AppContent() {
 
         {currentScreen === "teacher-dashboard" && (
           <TeacherDashboard onBack={handleBackToRoleSelect} />
+        )}
+
+        {currentScreen === "teacher-students" && (
+          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl text-[#1F2430] mb-4">Students</h1>
+              <p className="text-[#4B5266]">Student management interface coming soon</p>
+            </div>
+          </div>
+        )}
+
+        {currentScreen === "teacher-analytics" && (
+          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl text-[#1F2430] mb-4">Analytics</h1>
+              <p className="text-[#4B5266]">Advanced analytics coming soon</p>
+            </div>
+          </div>
+        )}
+
+        {currentScreen === "teacher-reports" && (
+          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl text-[#1F2430] mb-4">Reports</h1>
+              <p className="text-[#4B5266]">Report generation coming soon</p>
+            </div>
+          </div>
+        )}
+
+        {currentScreen === "teacher-settings" && (
+          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl text-[#1F2430] mb-4">Teacher Settings</h1>
+              <p className="text-[#4B5266]">Teacher settings coming soon</p>
+            </div>
+          </div>
         )}
       </div>
     </div>
