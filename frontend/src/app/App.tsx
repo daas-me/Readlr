@@ -151,10 +151,6 @@ export default function App() {
           className="text-center relative z-10 max-w-5xl w-full"
         >
           <div className="mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#1F243014] mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
-              <span className="text-xs tracking-wide text-[#4B5266] uppercase">Capstone Prototype · 2026</span>
-            </div>
             <div className="w-20 h-20 bg-[#4F46E5] rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-[0_18px_40px_-18px_rgba(79,70,229,0.6)]">
               <span className="text-4xl font-semibold text-white">R</span>
             </div>
@@ -209,9 +205,9 @@ export default function App() {
           </div>
 
           <div className="mt-14 inline-flex items-center gap-3 text-xs text-[#8A91A3]">
-            <span>Team 2526-sem2-it332-27</span>
+            <span>© 2023 Readlr</span>
             <span className="w-1 h-1 rounded-full bg-[#8A91A3]" />
-            <span>Cebu Institute of Technology – University</span>
+            <span>All Rights Reserved</span>
           </div>
         </motion.div>
       </div>
