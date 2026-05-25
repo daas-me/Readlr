@@ -33,7 +33,6 @@ lerna-debug.log*
 # Misc
 .cache/
 
-# MD
+# MD Files (except README)
 !README.md
 *.md
-
