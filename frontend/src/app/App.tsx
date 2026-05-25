@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { User, GraduationCap } from "lucide-react";
+import { AuthProvider, useAuth, AuthScreen } from "../modules/auth/index";
 import { NavigationHeader } from "./components/NavigationHeader";
 import { LearnerProfile } from "./components/LearnerProfile";
 import { WelcomeScreen } from "./components/WelcomeScreen";
@@ -21,6 +22,7 @@ import { Diagrams } from "./components/Diagrams";
 
 type Screen =
   | "role-select"
+  | "auth"
   | "learner-profile"
   | "welcome"
   | "stage-selection"
@@ -38,7 +40,8 @@ type Screen =
   | "help"
   | "diagrams";
 
-export default function App() {
+function AppContent() {
+  const { isAuthenticated, user, token } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>("role-select");
   const [selectedStage, setSelectedStage] = useState<number>(1);
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
@@ -47,10 +50,48 @@ export default function App() {
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [userRole, setUserRole] = useState<"learner" | "teacher" | null>(null);
+  const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+
+  // Check if learner profile exists when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
+      setIsCheckingProfile(true);
+      
+      const checkProfile = async () => {
+        try {
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+          const response = await fetch(`${API_URL}/learner/user/${user.id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Profile exists, skip to welcome
+            setLearnerName(data.name);
+            setLearnerAvatar(data.avatar);
+            setCurrentScreen("welcome");
+          }
+        } catch (error) {
+          // Profile doesn't exist, show profile setup
+          console.log('No existing profile found, showing setup screen');
+        } finally {
+          setIsCheckingProfile(false);
+        }
+      };
+
+      checkProfile();
+    }
+  }, [isAuthenticated, user, token, currentScreen]);
 
   const handleRoleSelect = (role: "learner" | "teacher") => {
     setUserRole(role);
-    if (role === "teacher") {
+    setCurrentScreen("auth");
+  };
+
+  const handleAuthSuccess = () => {
+    if (userRole === "teacher") {
       setCurrentScreen("teacher-dashboard");
     } else {
       setCurrentScreen("learner-profile");
@@ -131,8 +172,18 @@ export default function App() {
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
   // Screens that shouldn't show navigation header
-  const noHeaderScreens = ["role-select", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete", "teacher-dashboard"];
+  const noHeaderScreens = ["role-select", "auth", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete", "teacher-dashboard"];
   const showHeader = userRole === "learner" && !noHeaderScreens.includes(currentScreen);
+
+  // Auth Screen
+  if (currentScreen === "auth" && userRole) {
+    return (
+      <AuthScreen
+        selectedRole={userRole}
+        onAuthSuccess={handleAuthSuccess}
+      />
+    );
+  }
 
   // Role Selection Screen
   if (currentScreen === "role-select") {
@@ -205,7 +256,7 @@ export default function App() {
           </div>
 
           <div className="mt-14 inline-flex items-center gap-3 text-xs text-[#8A91A3]">
-            <span>© 2023 Readlr</span>
+            <span>© 2026 Readlr</span>
             <span className="w-1 h-1 rounded-full bg-[#8A91A3]" />
             <span>All Rights Reserved</span>
           </div>
@@ -323,5 +374,13 @@ export default function App() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

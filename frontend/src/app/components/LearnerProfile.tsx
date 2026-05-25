@@ -1,24 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { User, ArrowRight, Check } from "lucide-react";
+import { useAuth } from "../../modules/auth/index";
 
 interface LearnerProfileProps {
   onComplete: (name: string, avatar: string) => void;
 }
 
 export function LearnerProfile({ onComplete }: LearnerProfileProps) {
-  const [name, setName] = useState("");
+  const { user, token } = useAuth();
   const [selectedAvatar, setSelectedAvatar] = useState("🦊");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const avatars = ["🦊", "🐱", "🐶", "🐰", "🐻", "🐼", "🐨", "🦁"];
+  const name = user?.name || "";
 
-  const handleSubmit = () => {
-    if (name.trim()) {
+  const handleSubmit = async () => {
+    if (!name.trim() || !token) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const response = await fetch(`${API_URL}/learner/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name,
+          avatar: selectedAvatar,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to save profile');
+      }
+
       onComplete(name, selectedAvatar);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save profile';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const ready = name.trim().length > 0;
 
   return (
     <div className="size-full bg-[#FAF7F2] flex items-center justify-center p-4 md:p-6 relative overflow-hidden">
@@ -48,17 +78,12 @@ export function LearnerProfile({ onComplete }: LearnerProfileProps) {
           </p>
         </div>
 
-        {/* Name */}
+        {/* Name Display */}
         <div className="mb-5">
           <label className="block text-sm text-[#1F2430] mb-2">Your name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            maxLength={30}
-            className="w-full px-4 py-2.5 text-base bg-[#FAF7F2] border border-[#1F243014] rounded-xl text-[#1F2430] placeholder:text-[#8A91A3] focus:border-[#4F46E5] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#EEF2FF] transition-all"
-          />
+          <div className="w-full px-4 py-2.5 text-base bg-[#FAF7F2] border border-[#1F243014] rounded-xl text-[#1F2430] flex items-center">
+            {name}
+          </div>
         </div>
 
         {/* Avatars */}
@@ -112,20 +137,36 @@ export function LearnerProfile({ onComplete }: LearnerProfileProps) {
           </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-lg">
+            <p className="text-sm text-[#DC2626]">{error}</p>
+          </div>
+        )}
+
         {/* Submit */}
         <motion.button
-          whileHover={ready ? { y: -2 } : {}}
-          whileTap={ready ? { scale: 0.98 } : {}}
+          whileHover={!isLoading ? { y: -2 } : {}}
+          whileTap={!isLoading ? { scale: 0.98 } : {}}
           onClick={handleSubmit}
-          disabled={!ready}
+          disabled={isLoading}
           className={`w-full px-8 py-3 rounded-2xl text-base inline-flex items-center justify-center gap-2 transition-colors ${
-            ready
+            !isLoading
               ? "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-[0_8px_24px_-12px_rgba(79,70,229,0.6)]"
               : "bg-[#F2EEE6] text-[#8A91A3] cursor-not-allowed"
           }`}
         >
-          Start Learning
-          <ArrowRight className="w-4 h-4" />
+          {isLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-transparent border-t-current rounded-full animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              Start Learning
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </motion.button>
 
         <p className="text-center text-xs text-[#8A91A3] mt-3">
