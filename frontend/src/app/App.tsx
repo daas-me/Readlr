@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { AuthProvider, useAuth, AuthScreen } from "../modules/auth/index";
 import { NavigationHeader } from "./components/NavigationHeader";
-import { TeacherNavigationHeader } from "./components/TeacherNavigationHeader";
 import { Landing } from "./components/Landing";
 import { LearnerProfile } from "./components/LearnerProfile";
 import { WelcomeScreen } from "./components/WelcomeScreen";
@@ -11,20 +10,17 @@ import { GameLevel } from "./components/GameLevel";
 import { StoryScene } from "./components/StoryScene";
 import { LevelMap } from "./components/LevelMap";
 import { StickerBook } from "./components/StickerBook";
-import { ProgressDashboard } from "./components/ProgressDashboard";
+import { UnifiedDashboard } from "./components/UnifiedDashboard";
 import { LevelComplete } from "./components/LevelComplete";
 import { SessionSummary } from "./components/SessionSummary";
 import { PhonemeBank } from "./components/PhonemeBank";
-import { TeacherDashboard } from "./components/TeacherDashboard";
 import { Settings } from "./components/Settings";
 import { Achievements } from "./components/Achievements";
 import { Help } from "./components/Help";
-import { Diagrams } from "./components/Diagrams";
 
 type Screen =
   | "landing"
   | "auth"
-  | "role-select"
   | "learner-profile"
   | "welcome"
   | "stage-selection"
@@ -34,21 +30,16 @@ type Screen =
   | "level-complete"
   | "session-summary"
   | "sticker-book"
-  | "progress"
+  | "dashboard"
   | "phoneme-bank"
-  | "teacher-dashboard"
-  | "teacher-students"
-  | "teacher-analytics"
-  | "teacher-reports"
-  | "teacher-settings"
   | "settings"
   | "achievements"
-  | "help"
-  | "diagrams";
+  | "help";
 
 function AppContent() {
   const { isAuthenticated, user, token, logout } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>("landing");
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
   const [selectedStage, setSelectedStage] = useState<number>(1);
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
   const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0 });
@@ -59,9 +50,9 @@ function AppContent() {
 
   // Auto-navigate authenticated users
   useEffect(() => {
-    if (isAuthenticated && user && currentScreen === "landing") {
-      // User just logged in, go to role-select
-      setCurrentScreen("role-select");
+    if (isAuthenticated && user && (currentScreen === "landing" || currentScreen === "auth")) {
+      // User just logged in, go to learner profile setup
+      setCurrentScreen("learner-profile");
     }
   }, [isAuthenticated, user, currentScreen]);
 
@@ -99,20 +90,17 @@ function AppContent() {
   }, [isAuthenticated, user, token, currentScreen]);
 
   const handleGetStarted = () => {
+    setAuthMode('register');
+    setCurrentScreen("auth");
+  };
+
+  const handleSignIn = () => {
+    setAuthMode('login');
     setCurrentScreen("auth");
   };
 
   const handleAuthSuccess = () => {
-    // After auth, go to role selection
-    setCurrentScreen("role-select");
-  };
-
-  const handleRoleSelect = (role: "learner" | "teacher") => {
-    if (role === "teacher") {
-      setCurrentScreen("teacher-dashboard");
-    } else {
-      setCurrentScreen("learner-profile");
-    }
+    // After auth, learner-profile will be shown (auto-navigate via useEffect)
   };
 
   const handleProfileComplete = (name: string, avatar: string) => {
@@ -156,7 +144,7 @@ function AppContent() {
   };
 
   const handleViewProgress = () => {
-    setCurrentScreen("progress");
+    setCurrentScreen("dashboard");
   };
 
   const handleViewStickers = () => {
@@ -181,7 +169,8 @@ function AppContent() {
 
   const handleBackToRoleSelect = () => {
     logout();
-    setCurrentScreen("landing");
+    setCurrentScreen("auth");
+    setAuthMode('login');
     setLearnerName("");
     setLearnerAvatar("🦊");
   };
@@ -189,68 +178,21 @@ function AppContent() {
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
   // Screens that shouldn't show navigation header
-  const noHeaderScreens = ["landing", "auth", "role-select", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete"];
+  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete"];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
-  const showTeacherHeader = user?.role === "teacher" && currentScreen.startsWith("teacher-");
 
   // Landing Screen
   if (currentScreen === "landing") {
-    return <Landing onGetStarted={handleGetStarted} />;
+    return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
 
   // Auth Screen
   if (currentScreen === "auth") {
     return (
       <AuthScreen
-        selectedRole={null}
         onAuthSuccess={handleAuthSuccess}
+        initialMode={authMode}
       />
-    );
-  }
-
-  // Role Selection Screen (locked to authenticated user's role)
-  if (currentScreen === "role-select" && user) {
-    return (
-      <div className="size-full bg-[#FAF7F2] flex items-center justify-center p-8 relative overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#EEF2FF] opacity-70" />
-        <div className="absolute -bottom-32 -right-20 w-[28rem] h-[28rem] rounded-full bg-[#FEF3C7] opacity-60" />
-        <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-[#FB7185]" />
-        <div className="absolute bottom-1/4 left-1/4 w-2 h-2 rounded-full bg-[#10B981]" />
-
-        <motion.div
-          initial={{ y: 12, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center relative z-10 max-w-5xl w-full flex-1 flex flex-col items-center justify-center"
-        >
-          <div className="mb-14">
-            <h1 className="text-4xl md:text-5xl text-[#1F2430] mb-3 tracking-tight">Welcome!</h1>
-            <p className="text-lg text-[#4B5266] max-w-xl mx-auto">
-              You're registered as a {user.role === "learner" ? "Student" : "Teacher"}. Let's get you set up.
-            </p>
-          </div>
-
-          <motion.button
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleRoleSelect(user.role === "learner" ? "learner" : "teacher")}
-            className={`px-8 py-3 rounded-2xl text-lg font-semibold inline-flex items-center gap-2 transition-all ${
-              user.role === "learner"
-                ? "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-[0_8px_24px_-12px_rgba(79,70,229,0.6)]"
-                : "bg-[#1F2430] hover:bg-[#0F1419] text-white shadow-[0_8px_24px_-12px_rgba(31,36,48,0.6)]"
-            }`}
-          >
-            {user.role === "learner" ? "Start Learning" : "Open Dashboard"}
-          </motion.button>
-
-          <button
-            onClick={handleBackToRoleSelect}
-            className="mt-auto pt-6 text-sm text-[#4B5266] hover:text-[#1F2430] transition-colors"
-          >
-            Not {user.role === "learner" ? "a student" : "a teacher"}? <span className="text-[#4F46E5]">Log out</span>
-          </button>
-        </motion.div>
-      </div>
     );
   }
 
@@ -266,22 +208,13 @@ function AppContent() {
         />
       )}
 
-      {showTeacherHeader && (
-        <TeacherNavigationHeader
-          teacherName={user?.name}
-          currentScreen={currentScreen}
-          onNavigate={handleNavigate}
-          onLogout={handleBackToRoleSelect}
-        />
-      )}
-
       <div className="flex-1 overflow-hidden">
         {currentScreen === "learner-profile" && (
           <LearnerProfile onComplete={handleProfileComplete} />
         )}
 
         {currentScreen === "welcome" && (
-          <WelcomeScreen onStart={handleStartAdventure} />
+          <WelcomeScreen onStart={handleStartAdventure} userName={learnerName} />
         )}
 
         {currentScreen === "stage-selection" && (
@@ -343,8 +276,10 @@ function AppContent() {
           <StickerBook onBack={handleBackToStages} />
         )}
 
-        {currentScreen === "progress" && (
-          <ProgressDashboard onBack={handleBackToStages} />
+        {currentScreen === "dashboard" && (
+          <UnifiedDashboard
+            userName={learnerName || user?.name}
+          />
         )}
 
         {currentScreen === "phoneme-bank" && (
@@ -356,55 +291,11 @@ function AppContent() {
         )}
 
         {currentScreen === "settings" && (
-          <Settings onBack={handleBackToStages} />
+          <Settings />
         )}
 
         {currentScreen === "help" && (
-          <Help onBack={handleBackToStages} />
-        )}
-
-        {currentScreen === "diagrams" && (
-          <Diagrams onBack={handleBackToStages} />
-        )}
-
-        {currentScreen === "teacher-dashboard" && (
-          <TeacherDashboard onBack={handleBackToRoleSelect} />
-        )}
-
-        {currentScreen === "teacher-students" && (
-          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl text-[#1F2430] mb-4">Students</h1>
-              <p className="text-[#4B5266]">Student management interface coming soon</p>
-            </div>
-          </div>
-        )}
-
-        {currentScreen === "teacher-analytics" && (
-          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl text-[#1F2430] mb-4">Analytics</h1>
-              <p className="text-[#4B5266]">Advanced analytics coming soon</p>
-            </div>
-          </div>
-        )}
-
-        {currentScreen === "teacher-reports" && (
-          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl text-[#1F2430] mb-4">Reports</h1>
-              <p className="text-[#4B5266]">Report generation coming soon</p>
-            </div>
-          </div>
-        )}
-
-        {currentScreen === "teacher-settings" && (
-          <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl text-[#1F2430] mb-4">Teacher Settings</h1>
-              <p className="text-[#4B5266]">Teacher settings coming soon</p>
-            </div>
-          </div>
+          <Help />
         )}
       </div>
     </div>

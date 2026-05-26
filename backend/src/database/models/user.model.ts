@@ -40,7 +40,7 @@ export async function createUser(db: Database, email: string, password: string, 
     [email, password, role, name]
   );
   
-  const user = await findUserById(db, result.lastID as number);
+  const user = await findUserById(db, result.id as number);
   if (!user) throw new Error('Failed to create user');
   return user;
 }

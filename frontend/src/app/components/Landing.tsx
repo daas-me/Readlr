@@ -3,9 +3,10 @@ import { ArrowRight } from "lucide-react";
 
 interface LandingProps {
   onGetStarted: () => void;
+  onSignIn: () => void;
 }
 
-export function Landing({ onGetStarted }: LandingProps) {
+export function Landing({ onGetStarted, onSignIn }: LandingProps) {
   return (
     <div className="size-full bg-[#FAF7F2] flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden">
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#EEF2FF] opacity-70" />
@@ -29,15 +30,26 @@ export function Landing({ onGetStarted }: LandingProps) {
           </p>
         </div>
 
-        <motion.button
-          whileHover={{ y: -3 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onGetStarted}
-          className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white font-semibold py-3 px-8 rounded-2xl inline-flex items-center gap-2 shadow-[0_8px_24px_-12px_rgba(79,70,229,0.6)] hover:shadow-[0_12px_32px_-10px_rgba(79,70,229,0.8)] transition-all"
-        >
-          Get Started
-          <ArrowRight className="w-5 h-5" />
-        </motion.button>
+        <div className="flex flex-col gap-3 w-full max-w-sm">
+          <motion.button
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onGetStarted}
+            className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white font-semibold py-3 px-8 rounded-2xl inline-flex items-center justify-center gap-2 shadow-[0_8px_24px_-12px_rgba(79,70,229,0.6)] hover:shadow-[0_12px_32px_-10px_rgba(79,70,229,0.8)] transition-all"
+          >
+            Get Started
+            <ArrowRight className="w-5 h-5" />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onSignIn}
+            className="border-2 border-[#4F46E5] text-[#4F46E5] font-semibold py-3 px-8 rounded-2xl hover:bg-[#EEF2FF] transition-all"
+          >
+            Already have an account? Sign In
+          </motion.button>
+        </div>
       </motion.div>
 
       <div className="mt-auto flex items-center gap-3 text-xs text-[#8A91A3]">

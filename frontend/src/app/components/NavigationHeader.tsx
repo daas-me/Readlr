@@ -21,10 +21,9 @@ export function NavigationHeader({
 
   const menuItems = [
     { id: "stage-selection", label: "Home", icon: Home },
-    { id: "progress", label: "Progress", icon: User },
+    { id: "dashboard", label: "Progress", icon: User },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "help", label: "Help", icon: HelpCircle },
-    { id: "diagrams", label: "Diagrams", icon: FileText },
   ];
 
   return (

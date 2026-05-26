@@ -1,12 +1,10 @@
 import { motion, AnimatePresence } from "motion/react";
-import { BookOpen, Mic, Star, Trophy, HelpCircle, PlayCircle, ArrowLeft, ChevronDown } from "lucide-react";
+import { BookOpen, Mic, Star, Trophy, HelpCircle, PlayCircle, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-interface HelpProps {
-  onBack: () => void;
-}
+interface HelpProps {}
 
-export function Help({ onBack }: HelpProps) {
+export function Help({}: HelpProps) {
   const [openTopic, setOpenTopic] = useState<number | null>(1);
   const [openQ, setOpenQ] = useState<string | null>(null);
 
@@ -73,14 +71,7 @@ export function Help({ onBack }: HelpProps) {
       <div className="min-h-full px-6 md:px-10 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-8">
-            <button
-              onClick={onBack}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
+          <div className="flex items-center justify-center mb-8">
             <span className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-[#8A91A3]">
               <HelpCircle className="w-3.5 h-3.5" />
               Help Center

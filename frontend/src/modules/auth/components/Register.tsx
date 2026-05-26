@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { User, GraduationCap, ArrowRight, Check } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useAuth } from '../auth.context.js';
 
 interface RegisterProps {
   onSuccess?: () => void;
   onSwitchToLogin?: () => void;
-  selectedRole?: 'learner' | 'teacher';
 }
 
-export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin, selectedRole }) => {
+export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }) => {
   const { register, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'learner' | 'teacher'>('learner');
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +36,7 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin, 
     }
 
     try {
-      await register(email, password, confirmPassword, role, name);
+      await register(email, password, confirmPassword, 'learner', name);
       setEmail('');
       setName('');
       setPassword('');
@@ -48,8 +46,6 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin, 
       // Error is already handled by the auth context
     }
   };
-
-  const roleTitle = role === 'learner' ? 'Student' : 'Teacher';
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 relative overflow-hidden">
@@ -85,41 +81,6 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin, 
               {error || localError}
             </motion.div>
           )}
-
-          {/* Role Selection */}
-          <div className="mb-6">
-            <label className="block text-[#1F2430] font-medium text-sm mb-3">I am a:</label>
-            <div className="flex gap-3">
-              <motion.button
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={() => setRole('learner')}
-                className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 text-sm font-medium ${
-                  role === 'learner'
-                    ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]'
-                    : 'border-[#E5E7EB] bg-white text-[#4B5266] hover:border-[#4F46E5]'
-                }`}
-              >
-                <User className="w-4 h-4" />
-                Student
-              </motion.button>
-              <motion.button
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={() => setRole('teacher')}
-                className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 text-sm font-medium ${
-                  role === 'teacher'
-                    ? 'border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]'
-                    : 'border-[#E5E7EB] bg-white text-[#4B5266] hover:border-[#4F46E5]'
-                }`}
-              >
-                <GraduationCap className="w-4 h-4" />
-                Teacher
-              </motion.button>
-            </div>
-          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
