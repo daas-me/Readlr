@@ -1,10 +1,8 @@
 import { motion } from "motion/react";
-import { Volume2, Bell, Moon, Globe, User, Shield, ArrowLeft, ChevronRight } from "lucide-react";
+import { Volume2, Bell, Moon, Globe, User, Shield, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
-interface SettingsProps {
-  onBack: () => void;
-}
+interface SettingsProps {}
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -25,7 +23,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-export function Settings({ onBack }: SettingsProps) {
+export function Settings({}: SettingsProps) {
   const [volume, setVolume] = useState(80);
   const [voiceFeedback, setVoiceFeedback] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -88,14 +86,7 @@ export function Settings({ onBack }: SettingsProps) {
       <div className="min-h-full px-6 md:px-10 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-8">
-            <button
-              onClick={onBack}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
+          <div className="flex items-center justify-center mb-8">
             <span className="text-xs uppercase tracking-wider text-[#8A91A3]">Settings</span>
           </div>
 

@@ -169,6 +169,61 @@ export class Database {
         FOREIGN KEY (learner_id) REFERENCES learner_profiles(id) ON DELETE CASCADE
       );
 
+      -- Characters
+      CREATE TABLE IF NOT EXISTS characters (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        template TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+      -- Character appearance
+      CREATE TABLE IF NOT EXISTS character_appearance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        character_id INTEGER NOT NULL UNIQUE,
+        head_color TEXT NOT NULL,
+        head_shape TEXT NOT NULL,
+        eye_color TEXT NOT NULL,
+        eye_shape TEXT NOT NULL,
+        mouth_color TEXT NOT NULL,
+        accessories TEXT NOT NULL,
+        body_color TEXT NOT NULL,
+        FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE CASCADE
+      );
+
+      -- Character personality
+      CREATE TABLE IF NOT EXISTS character_personality (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        character_id INTEGER NOT NULL UNIQUE,
+        personality_type TEXT NOT NULL,
+        animation_speed REAL NOT NULL,
+        expression_style TEXT NOT NULL,
+        FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE CASCADE
+      );
+
+      -- Character voice
+      CREATE TABLE IF NOT EXISTS character_voice (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        character_id INTEGER NOT NULL UNIQUE,
+        voice_id TEXT NOT NULL,
+        pitch REAL NOT NULL,
+        speed REAL NOT NULL,
+        tone TEXT NOT NULL,
+        language TEXT NOT NULL,
+        FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE CASCADE
+      );
+
+      -- Character behaviors
+      CREATE TABLE IF NOT EXISTS character_behaviors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        character_id INTEGER NOT NULL,
+        state TEXT NOT NULL,
+        animation_config TEXT NOT NULL,
+        sound_effect TEXT,
+        FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE CASCADE
+      );
+
       -- Indexes for performance
       CREATE INDEX IF NOT EXISTS idx_user_role ON users(role);
       CREATE INDEX IF NOT EXISTS idx_learner_user ON learner_profiles(user_id);
@@ -178,6 +233,8 @@ export class Database {
       CREATE INDEX IF NOT EXISTS idx_result_session ON session_results(session_id);
       CREATE INDEX IF NOT EXISTS idx_progress_learner ON progress(learner_id);
       CREATE INDEX IF NOT EXISTS idx_achievement_learner ON achievements(learner_id);
+      CREATE INDEX IF NOT EXISTS idx_character_name ON characters(name);
+      CREATE INDEX IF NOT EXISTS idx_character_behavior ON character_behaviors(character_id, state);
     `;
 
     const statements = schema.split(';').filter(s => s.trim());

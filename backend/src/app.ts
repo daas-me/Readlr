@@ -6,6 +6,7 @@ import { healthRoutes } from './modules/health/index.js';
 import { learnerRoutes } from './modules/learner/index.js';
 import { contentRoutes } from './modules/content/index.js';
 import { progressRoutes } from './modules/progress/index.js';
+import { characterRouter, characterService } from './modules/character/index.js';
 import { AuthService, AuthController, createAuthRouter } from './modules/auth/index.js';
 
 const app: Express = express();
@@ -29,5 +30,9 @@ app.use('/health', healthRoutes);
 app.use('/api/learner', learnerRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/characters', characterRouter);
+
+// Initialize default characters
+await characterService.initializeDefaultCharacters();
 
 export default app;

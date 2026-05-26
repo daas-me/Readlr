@@ -1,354 +1,305 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Sparkles, AlertTriangle, TrendingUp, Volume2, Star } from "lucide-react";
+import { Sparkles, TrendingUp, Volume2, Star, AlertCircle, CheckCircle2, Zap } from "lucide-react";
 
-type Tier = "fluent" | "halting" | "syllabic" | "untested";
+type FluencyTier = "fluent" | "halting" | "syllabic" | "untested";
 
-interface CellData {
-  tier: Tier;
-  attempts: number;
-  lastGapMs: number;
-  selfCorrected: boolean;
+interface FluencyStat {
+  tier: FluencyTier;
+  count: number;
+  percentage: number;
 }
 
-interface StudentRow {
-  id: number;
-  name: string;
-  avatar: string;
-  cells: CellData[];
+interface StageFluency {
+  stageId: number;
+  stageName: string;
+  fluencyRate: number;
+  totalWords: number;
+  fluentWords: number;
+  practiceWords: string[];
+}
+
+interface StudentFluencyData {
+  studentId: number;
+  studentName: string;
+  studentAvatar: string;
+  overallFluency: number;
+  totalAttempts: number;
   selfCorrections: number;
-  isStar: boolean;
+  streak: number;
+  stages: StageFluency[];
+  recentProgress: number[];
 }
 
-const STAGES = [
-  { id: 1, label: "Valley of Vowels", words: ["A", "E", "I", "O", "U", "AA", "EE", "II", "OO", "UU"] },
-  { id: 2, label: "Blending Bridges", words: ["MA", "BA", "TA", "SA", "PA", "NA", "LA", "DA", "KA", "GA", "HA", "FA"] },
-  { id: 3, label: "CVC Kingdom", words: ["CAT", "MAN", "HAT", "PIG", "DOG", "SUN", "BED", "CUP", "BUS", "TOP"] },
-];
+// Generate mock data for a single student
+function generateStudentFluencyData(studentId: number, studentName: string, avatar: string): StudentFluencyData {
+  const stages: StageFluency[] = [
+    {
+      stageId: 1,
+      stageName: "Valley of Vowels",
+      fluencyRate: 85,
+      totalWords: 10,
+      fluentWords: 8,
+      practiceWords: ["AA", "EE"],
+    },
+    {
+      stageId: 2,
+      stageName: "Blending Bridges",
+      fluencyRate: 68,
+      totalWords: 12,
+      fluentWords: 8,
+      practiceWords: ["MA", "BA", "TA", "SA"],
+    },
+    {
+      stageId: 3,
+      stageName: "CVC Kingdom",
+      fluencyRate: 45,
+      totalWords: 10,
+      fluentWords: 4,
+      practiceWords: ["CAT", "MAN", "HAT", "PIG", "DOG", "SUN"],
+    },
+  ];
 
-function makeMockRow(name: string, avatar: string, seed: number, wordCount: number): StudentRow {
-  const cells: CellData[] = Array.from({ length: wordCount }, (_, i) => {
-    const r = (seed * 7 + i * 13) % 10;
-    let tier: Tier = "fluent";
-    if (r < 2) tier = "syllabic";
-    else if (r < 5) tier = "halting";
-    else if (r === 9 && i > wordCount - 3) tier = "untested";
-    return {
-      tier,
-      attempts: ((seed + i) % 4) + 1,
-      lastGapMs: tier === "fluent" ? 120 + r * 10 : tier === "halting" ? 250 + r * 20 : 450 + r * 30,
-      selfCorrected: (seed * 3 + i) % 7 === 0,
-    };
-  });
-  const selfCorrections = cells.filter((c) => c.selfCorrected).length;
+  const recentProgress = [65, 68, 70, 72, 75, 78, 82, 85];
+  const overallFluency = Math.round(
+    stages.reduce((sum, s) => sum + s.fluencyRate, 0) / stages.length
+  );
+
   return {
-    id: seed,
-    name,
-    avatar,
-    cells,
-    selfCorrections,
-    isStar: selfCorrections >= 3,
+    studentId,
+    studentName,
+    studentAvatar: avatar,
+    overallFluency,
+    totalAttempts: 127,
+    selfCorrections: 18,
+    streak: 7,
+    stages,
+    recentProgress,
   };
 }
 
-const STUDENT_SEEDS: Array<{ name: string; avatar: string; seed: number }> = [
-  { name: "Juan Cruz", avatar: "🦊", seed: 1 },
-  { name: "Maria Santos", avatar: "🐰", seed: 2 },
-  { name: "Pedro Garcia", avatar: "🐻", seed: 3 },
-  { name: "Ana Reyes", avatar: "🦁", seed: 4 },
-  { name: "Liza Domingo", avatar: "🐯", seed: 5 },
-  { name: "Mark Aquino", avatar: "🐼", seed: 6 },
-  { name: "Jenny Lim", avatar: "🦄", seed: 7 },
-  { name: "Carlo Mendoza", avatar: "🐧", seed: 8 },
-];
+interface FluencyHeatmapProps {
+  studentId?: number;
+  studentName?: string;
+  studentAvatar?: string;
+}
 
-const TIER_CLASS: Record<Tier, string> = {
-  fluent: "bg-emerald-400 hover:bg-emerald-500 text-emerald-950",
-  halting: "bg-amber-300 hover:bg-amber-400 text-amber-950",
-  syllabic: "bg-rose-400 hover:bg-rose-500 text-rose-950",
-  untested: "bg-gray-200 hover:bg-gray-300 text-gray-400",
-};
+export function FluencyHeatmap({
+  studentId = 1,
+  studentName = "You",
+  studentAvatar = "🦊",
+}: FluencyHeatmapProps) {
+  const [selectedStage, setSelectedStage] = useState(1);
+  const data = generateStudentFluencyData(studentId, studentName, studentAvatar);
+  const currentStage = data.stages.find((s) => s.stageId === selectedStage) || data.stages[0];
 
-const TIER_LABEL: Record<Tier, string> = {
-  fluent: "Fluent",
-  halting: "Halting",
-  syllabic: "Syllabic",
-  untested: "Not yet tried",
-};
+  const getFluencyColor = (rate: number) => {
+    if (rate >= 80) return "from-emerald-500 to-teal-500";
+    if (rate >= 60) return "from-amber-500 to-orange-500";
+    return "from-rose-500 to-red-500";
+  };
 
-export function FluencyHeatmap() {
-  const [activeStage, setActiveStage] = useState(2);
-  const [hoveredCell, setHoveredCell] = useState<{ s: number; w: number } | null>(null);
+  const getFluencyBgColor = (rate: number) => {
+    if (rate >= 80) return "bg-emerald-50 border-emerald-200";
+    if (rate >= 60) return "bg-amber-50 border-amber-200";
+    return "bg-rose-50 border-rose-200";
+  };
 
-  const stage = STAGES.find((s) => s.id === activeStage)!;
-  const rows = STUDENT_SEEDS.map((s) => makeMockRow(s.name, s.avatar, s.seed, stage.words.length));
-
-  // Class trouble spots
-  const troubleSpots = stage.words
-    .map((word, idx) => {
-      const struggling = rows.filter(
-        (r) => r.cells[idx].tier === "syllabic" || r.cells[idx].tier === "halting"
-      ).length;
-      return { word, struggling, pct: Math.round((struggling / rows.length) * 100) };
-    })
-    .filter((t) => t.pct >= 40)
-    .sort((a, b) => b.pct - a.pct);
-
-  const totalCells = rows.length * stage.words.length;
-  const fluentCells = rows.reduce(
-    (sum, r) => sum + r.cells.filter((c) => c.tier === "fluent").length,
-    0
-  );
-  const fluentPct = Math.round((fluentCells / totalCells) * 100);
-  const totalSelfCorr = rows.reduce((sum, r) => sum + r.selfCorrections, 0);
-  const needsPullAside = rows.filter(
-    (r) => r.cells.filter((c) => c.tier === "syllabic").length >= 3
-  ).length;
+  const getFluencyTextColor = (rate: number) => {
+    if (rate >= 80) return "text-emerald-700";
+    if (rate >= 60) return "text-amber-700";
+    return "text-rose-700";
+  };
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-xl">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-indigo-600" />
-            Fluency Heatmap
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            How fast each student reads each word — green means fluent, red means still syllabic.
-          </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <Sparkles className="w-6 h-6 text-indigo-600" />
+          <h2 className="text-2xl font-bold text-gray-800">Your Fluency Progress</h2>
         </div>
-
-        {/* Stage tabs */}
-        <div className="flex gap-2 bg-gray-100 p-1 rounded-full">
-          {STAGES.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActiveStage(s.id)}
-              className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                activeStage === s.id
-                  ? "bg-indigo-600 text-white shadow-md"
-                  : "text-gray-600 hover:text-indigo-600"
-              }`}
-            >
-              Stage {s.id}
-            </button>
-          ))}
-        </div>
+        <p className="text-sm text-gray-500">
+          Track how smoothly you're reading across different stages
+        </p>
       </div>
 
-      {/* Top metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
-            <p className="text-xs text-emerald-700 font-bold uppercase tracking-wide">Class Fluent</p>
+      {/* Overall Fluency Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6"
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Overall fluency */}
+          <div>
+            <p className="text-xs text-indigo-700 font-bold uppercase tracking-wide mb-1">
+              Overall Fluency
+            </p>
+            <p className="text-3xl font-bold text-indigo-700 mb-1">{data.overallFluency}%</p>
+            <p className="text-xs text-indigo-600">across all stages</p>
           </div>
-          <p className="text-3xl font-bold text-emerald-700">{fluentPct}%</p>
-          <p className="text-xs text-gray-600 mt-1">of word attempts this stage</p>
-        </div>
 
-        <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Star className="w-4 h-4 text-indigo-600 fill-indigo-600" />
-            <p className="text-xs text-indigo-700 font-bold uppercase tracking-wide">Self-Corrections</p>
+          {/* Total attempts */}
+          <div>
+            <p className="text-xs text-purple-700 font-bold uppercase tracking-wide mb-1">
+              Total Attempts
+            </p>
+            <p className="text-3xl font-bold text-purple-700 mb-1">{data.totalAttempts}</p>
+            <p className="text-xs text-purple-600">words practiced</p>
           </div>
-          <p className="text-3xl font-bold text-indigo-700">{totalSelfCorr}</p>
-          <p className="text-xs text-gray-600 mt-1">this week (class total)</p>
-        </div>
 
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
-            <p className="text-xs text-rose-700 font-bold uppercase tracking-wide">Pull-Aside</p>
-          </div>
-          <p className="text-3xl font-bold text-rose-700">{needsPullAside}</p>
-          <p className="text-xs text-gray-600 mt-1">students ≥3 syllabic words</p>
-        </div>
-
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <p className="text-xs text-amber-700 font-bold uppercase tracking-wide">Trouble Words</p>
-          </div>
-          <p className="text-3xl font-bold text-amber-700">{troubleSpots.length}</p>
-          <p className="text-xs text-gray-600 mt-1">where ≥40% struggle</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Heatmap grid */}
-        <div className="flex-1 overflow-x-auto">
-          <div className="inline-block min-w-full">
-            <div className="text-xs font-bold text-gray-500 uppercase mb-2">
-              {stage.label}
+          {/* Self-corrections */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <Star className="w-4 h-4 text-amber-600 fill-amber-600" />
+              <p className="text-xs text-amber-700 font-bold uppercase tracking-wide">Self-Corrections</p>
             </div>
+            <p className="text-3xl font-bold text-amber-700 mb-1">{data.selfCorrections}</p>
+            <p className="text-xs text-amber-600">great recovery!</p>
+          </div>
 
-            {/* Column headers */}
-            <div
-              className="grid gap-1 mb-2"
-              style={{
-                gridTemplateColumns: `180px repeat(${stage.words.length}, minmax(44px, 1fr)) 60px`,
-              }}
-            >
-              <div></div>
-              {stage.words.map((w) => (
-                <div
-                  key={w}
-                  className="text-center text-xs font-bold text-gray-600 py-1"
-                >
-                  {w}
+          {/* Streak */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <Zap className="w-4 h-4 text-orange-600 fill-orange-600" />
+              <p className="text-xs text-orange-700 font-bold uppercase tracking-wide">Day Streak</p>
+            </div>
+            <p className="text-3xl font-bold text-orange-700 mb-1">{data.streak}</p>
+            <p className="text-xs text-orange-600">keep it going!</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Progress Chart */}
+      <div className="mb-8">
+        <h3 className="text-sm font-bold text-gray-700 mb-3">Your Improvement Over Time</h3>
+        <div className="flex items-end justify-between gap-2 h-24 bg-gray-50 rounded-xl p-4">
+          {data.recentProgress.map((rate, idx) => {
+            const height = `${(rate / 100) * 80}%`;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ height: "0%" }}
+                animate={{ height }}
+                transition={{ delay: idx * 0.05, duration: 0.4 }}
+                className="flex-1 rounded-t-lg bg-gradient-to-t from-indigo-500 to-indigo-400 hover:from-indigo-600 hover:to-indigo-500 transition-colors group relative"
+              >
+                <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap transition-opacity">
+                  {rate}%
                 </div>
-              ))}
-              <div className="text-center text-xs font-bold text-indigo-600 py-1">★</div>
-            </div>
+              </motion.div>
+            );
+          })}
+        </div>
+        <p className="text-xs text-gray-500 mt-2">Last 8 sessions</p>
+      </div>
 
-            {/* Rows */}
-            <div className="space-y-1">
-              {rows.map((row, sIdx) => (
+      {/* Stage Selection */}
+      <div className="mb-8">
+        <h3 className="text-sm font-bold text-gray-700 mb-3">Fluency by Stage</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+          {data.stages.map((stage) => {
+            const isSelected = stage.stageId === selectedStage;
+            return (
+              <motion.button
+                key={stage.stageId}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedStage(stage.stageId)}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  isSelected
+                    ? `border-indigo-500 bg-indigo-50`
+                    : `border-gray-200 bg-white hover:border-indigo-300`
+                }`}
+              >
+                <p className="text-sm font-bold text-gray-800 mb-2">{stage.stageName}</p>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <motion.div
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${stage.fluencyRate}%` }}
+                      transition={{ delay: 0.1, duration: 0.6 }}
+                      className={`h-full bg-gradient-to-r ${getFluencyColor(stage.fluencyRate)}`}
+                    />
+                  </div>
+                  <span className={`text-sm font-bold ${getFluencyTextColor(stage.fluencyRate)}`}>
+                    {stage.fluencyRate}%
+                  </span>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Current Stage Details */}
+      <motion.div
+        key={selectedStage}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`border rounded-2xl p-6 ${getFluencyBgColor(currentStage.fluencyRate)}`}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          {currentStage.fluencyRate >= 80 ? (
+            <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+          ) : (
+            <AlertCircle className="w-6 h-6 text-amber-600" />
+          )}
+          <div>
+            <h4 className={`font-bold ${getFluencyTextColor(currentStage.fluencyRate)}`}>
+              {currentStage.stageName}
+            </h4>
+            <p className="text-xs text-gray-600">
+              {currentStage.fluentWords} of {currentStage.totalWords} words fluent
+            </p>
+          </div>
+        </div>
+
+        {currentStage.practiceWords.length > 0 && (
+          <div>
+            <p className="text-xs font-bold text-gray-700 mb-2">Words to Practice:</p>
+            <div className="flex flex-wrap gap-2">
+              {currentStage.practiceWords.map((word) => (
                 <motion.div
-                  key={row.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: sIdx * 0.04 }}
-                  className="grid gap-1 items-center"
-                  style={{
-                    gridTemplateColumns: `180px repeat(${stage.words.length}, minmax(44px, 1fr)) 60px`,
-                  }}
+                  key={word}
+                  whileHover={{ scale: 1.05 }}
+                  className="px-3 py-1.5 bg-white/60 backdrop-blur border border-current/20 rounded-lg text-sm font-semibold text-gray-700 flex items-center gap-1.5 cursor-pointer hover:bg-white/80 transition-colors"
                 >
-                  <div className="flex items-center gap-2 pr-2">
-                    <span className="text-2xl">{row.avatar}</span>
-                    <span className="text-sm font-bold text-gray-800 truncate">
-                      {row.name}
-                    </span>
-                  </div>
-
-                  {row.cells.map((cell, wIdx) => {
-                    const isHover =
-                      hoveredCell?.s === sIdx && hoveredCell?.w === wIdx;
-                    return (
-                      <div key={wIdx} className="relative">
-                        <button
-                          onMouseEnter={() => setHoveredCell({ s: sIdx, w: wIdx })}
-                          onMouseLeave={() => setHoveredCell(null)}
-                          className={`w-full h-11 rounded-md transition-all ${TIER_CLASS[cell.tier]} ${
-                            cell.selfCorrected ? "ring-2 ring-indigo-500 ring-offset-1" : ""
-                          }`}
-                          aria-label={`${row.name} on ${stage.words[wIdx]}: ${TIER_LABEL[cell.tier]}`}
-                        >
-                          {cell.selfCorrected && (
-                            <Star className="w-3 h-3 text-indigo-700 fill-indigo-700 mx-auto" />
-                          )}
-                        </button>
-
-                        {isHover && cell.tier !== "untested" && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-44 bg-gray-900 text-white rounded-xl p-3 shadow-2xl text-xs pointer-events-none"
-                          >
-                            <p className="font-bold mb-1">
-                              {row.name} · {stage.words[wIdx]}
-                            </p>
-                            <p className="text-gray-300">
-                              Tier: <span className="font-bold text-white">{TIER_LABEL[cell.tier]}</span>
-                            </p>
-                            <p className="text-gray-300">
-                              Last gap: <span className="font-bold text-white">{cell.lastGapMs}ms</span>
-                            </p>
-                            <p className="text-gray-300">
-                              Attempts: <span className="font-bold text-white">{cell.attempts}</span>
-                            </p>
-                            {cell.selfCorrected && (
-                              <p className="text-indigo-300 mt-1 flex items-center gap-1">
-                                <Star className="w-3 h-3 fill-indigo-300" />
-                                Self-corrected!
-                              </p>
-                            )}
-                            <button className="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 rounded-md py-1 flex items-center justify-center gap-1 pointer-events-auto">
-                              <Volume2 className="w-3 h-3" />
-                              Play attempt
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  <div className="text-center">
-                    <span
-                      className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold ${
-                        row.isStar
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {row.selfCorrections}
-                    </span>
-                  </div>
+                  <Volume2 className="w-3.5 h-3.5" />
+                  {word}
                 </motion.div>
               ))}
             </div>
-
-            {/* Legend */}
-            <div className="flex flex-wrap items-center gap-4 mt-6 pt-4 border-t border-gray-200">
-              <span className="text-xs font-bold text-gray-500 uppercase">Legend:</span>
-              {(["fluent", "halting", "syllabic", "untested"] as Tier[]).map((t) => (
-                <div key={t} className="flex items-center gap-2">
-                  <span className={`w-5 h-5 rounded ${TIER_CLASS[t].split(" ")[0]}`} />
-                  <span className="text-xs text-gray-700">{TIER_LABEL[t]}</span>
-                </div>
-              ))}
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded bg-white ring-2 ring-indigo-500 flex items-center justify-center">
-                  <Star className="w-3 h-3 text-indigo-700 fill-indigo-700" />
-                </span>
-                <span className="text-xs text-gray-700">Self-corrected</span>
-              </div>
-            </div>
           </div>
-        </div>
+        )}
 
-        {/* Right rail: trouble spots */}
-        <div className="lg:w-72 flex-shrink-0">
-          <div className="bg-gradient-to-br from-rose-50 to-amber-50 border border-rose-200 rounded-2xl p-5 sticky top-4">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-5 h-5 text-rose-600" />
-              <h3 className="font-bold text-rose-900">Class Trouble Spots</h3>
-            </div>
-            <p className="text-xs text-rose-700/80 mb-4">
-              Words where 40% or more of the class is struggling. Consider a whole-class review.
+        {currentStage.fluencyRate >= 80 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 p-3 bg-emerald-100/60 border border-emerald-300 rounded-lg"
+          >
+            <p className="text-sm font-semibold text-emerald-800 flex items-center gap-2">
+              <Star className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+              Amazing progress! You're ready for the next stage!
             </p>
+          </motion.div>
+        )}
+      </motion.div>
 
-            {troubleSpots.length === 0 ? (
-              <div className="bg-white/70 rounded-xl p-4 text-center">
-                <p className="text-sm text-gray-600">No major trouble spots — great work! 🌟</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {troubleSpots.slice(0, 6).map((t) => (
-                  <div
-                    key={t.word}
-                    className="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm"
-                  >
-                    <div>
-                      <p className="font-bold text-gray-800">{t.word}</p>
-                      <p className="text-xs text-gray-500">
-                        {t.struggling} of {rows.length} students
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-rose-600">{t.pct}%</p>
-                      <p className="text-[10px] text-gray-500 uppercase">struggling</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button className="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-2 text-sm font-bold transition-colors">
-              Generate Practice Set
-            </button>
+      {/* Tips */}
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <h4 className="text-sm font-bold text-gray-700 mb-3">Tips to Improve Your Fluency</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs font-semibold text-blue-900">Practice Daily</p>
+            <p className="text-xs text-blue-800 mt-1">Even 10 minutes a day helps build muscle memory.</p>
+          </div>
+          <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+            <p className="text-xs font-semibold text-purple-900">Speak Clearly</p>
+            <p className="text-xs text-purple-800 mt-1">Enunciate each sound distinctly for better recognition.</p>
           </div>
         </div>
       </div>

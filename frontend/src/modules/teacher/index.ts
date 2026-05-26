@@ -1,6 +1,4 @@
 /**
  * Teacher Module
- * Handles teacher dashboard and student management
+ * Currently not in use - teacher role has been removed from the application
  */
-
-export { TeacherDashboard } from './components/TeacherDashboard.js';

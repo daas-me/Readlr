@@ -3,9 +3,10 @@ import { Mic, Sticker, ArrowRight } from "lucide-react";
 
 interface WelcomeScreenProps {
   onStart: () => void;
+  userName?: string;
 }
 
-export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
+export function WelcomeScreen({ onStart, userName }: WelcomeScreenProps) {
   return (
     <div className="size-full bg-[#FAF7F2] flex items-center justify-center p-8 relative overflow-hidden">
       <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#FEF3C7] opacity-70" />
@@ -24,10 +25,10 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           </div>
 
           <h1 className="text-4xl md:text-5xl text-[#1F2430] tracking-tight mb-3">
-            Welcome to Readlr
+            Welcome{userName ? `, ${userName}` : ""}!
           </h1>
           <p className="text-[#4B5266] text-lg mb-8">
-            Let's read together. Sinta will help you sound out every word.
+            Are you ready to learn and have fun reading today? Let's get started with your adventure.
           </p>
 
           <div className="space-y-3 mb-8">
