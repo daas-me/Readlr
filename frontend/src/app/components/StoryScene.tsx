@@ -55,11 +55,12 @@ const SCENES: Record<number, StoryScene> = {
 export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
   const scene = SCENES[stageId] ?? SCENES[1];
 
+  //1:31 AM 05/27/2026
   const handleListen = () => {
-    const u = new SpeechSynthesisUtterance(scene.narration);
-    u.rate = 0.85;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    // Notice the backticks (`) instead of normal quotes!
+    // If stageId is 2, this automatically becomes "/audio/stage2/SintaSaysChapter2.wav"
+    const audio = new Audio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
+    audio.play();
   };
 
   return (
