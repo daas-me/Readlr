@@ -29,6 +29,7 @@ interface StageSelectionProps {
   onViewStickers: () => void;
   onViewPhonemeBank?: () => void;
   onViewAchievements?: () => void;
+  completedByStage?: Record<number, number>;
 }
 
 export function StageSelection({
@@ -37,42 +38,25 @@ export function StageSelection({
   onViewStickers,
   onViewPhonemeBank,
   onViewAchievements,
+  completedByStage = { 1: 0, 2: 0, 3: 0 },
 }: StageSelectionProps) {
-  const stages: Stage[] = [
-    {
-      id: 1,
-      title: "Valley of Vowels",
-      subtitle: "The five vowel sounds — a, e, i, o, u.",
-      icon: <Star className="w-6 h-6" />,
-      accent: "#F59E0B",
-      accentSoft: "#FEF3C7",
-      completed: 3,
-      total: 5,
-      locked: false,
-    },
-    {
-      id: 2,
-      title: "Blending Bridges",
-      subtitle: "Blend a consonant with a vowel.",
-      icon: <Zap className="w-6 h-6" />,
-      accent: "#4F46E5",
-      accentSoft: "#EEF2FF",
-      completed: 0,
-      total: 8,
-      locked: false,
-    },
-    {
-      id: 3,
-      title: "CVC Kingdom",
-      subtitle: "Read your first whole words.",
-      icon: <Crown className="w-6 h-6" />,
-      accent: "#10B981",
-      accentSoft: "#D1FAE5",
-      completed: 0,
-      total: 10,
-      locked: true,
-    },
+  const stageDefs = [
+    { id: 1, total: 5, title: "Valley of Vowels", subtitle: "The five vowel sounds — a, e, i, o, u.", accent: "#F59E0B", accentSoft: "#FEF3C7", icon: <Star className="w-6 h-6" /> },
+    { id: 2, total: 8, title: "Blending Bridges", subtitle: "Blend a consonant with a vowel.", accent: "#4F46E5", accentSoft: "#EEF2FF", icon: <Zap className="w-6 h-6" /> },
+    { id: 3, total: 10, title: "CVC Kingdom", subtitle: "Read your first whole words.", accent: "#10B981", accentSoft: "#D1FAE5", icon: <Crown className="w-6 h-6" /> },
   ];
+
+  const stages: Stage[] = stageDefs.map((def, idx) => ({
+    id: def.id,
+    title: def.title,
+    subtitle: def.subtitle,
+    icon: def.icon,
+    accent: def.accent,
+    accentSoft: def.accentSoft,
+    completed: completedByStage[def.id] ?? 0,
+    total: def.total,
+    locked: idx > 0 && (completedByStage[idx] ?? 0) < stageDefs[idx - 1].total,
+  }));
 
   const quickActions = [
     { label: "My Progress", icon: Trophy, onClick: onViewProgress, tint: "#EEF2FF", color: "#4F46E5" },

@@ -4,3 +4,4 @@
  */
 
 export { useMediaQuery } from './useMediaQuery.js';
+export { useAudioManager } from './useAudioManager';

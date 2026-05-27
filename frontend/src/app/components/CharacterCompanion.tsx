@@ -159,9 +159,9 @@ export function CharacterCompanion({
                 cy: state === "thinking" ? 138 : 150,
                 cx: state === "listening" ? 115 : 110,
               }}
-              cx="110"
-              cy="150"
-              r="11"
+              cx={110}
+              cy={150}
+              r={11}
               fill="#1e1b4b"
             />
             <circle cx="114" cy="146" r="4" fill="white" />
@@ -173,9 +173,9 @@ export function CharacterCompanion({
                 cy: state === "thinking" ? 138 : 150,
                 cx: state === "listening" ? 195 : 190,
               }}
-              cx="190"
-              cy="150"
-              r="11"
+              cx={190}
+              cy={150}
+              r={11}
               fill="#1e1b4b"
             />
             <circle cx="194" cy="146" r="4" fill="white" />
@@ -192,9 +192,10 @@ export function CharacterCompanion({
           {/* Mouth */}
           <motion.ellipse
             animate={{ rx: mouth.rx, ry: mouth.ry }}
+            initial={{ rx: mouth.rx, ry: mouth.ry }}
             transition={{ duration: 0.25 }}
-            cx="150"
-            cy="215"
+            cx={150}
+            cy={215}
             rx={mouth.rx}
             ry={mouth.ry}
             fill="#1e1b4b"

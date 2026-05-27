@@ -8,16 +8,34 @@ import { WelcomeScreen } from "./components/WelcomeScreen";
 import { StageSelection } from "./components/StageSelection";
 import { GameLevel } from "./components/GameLevel";
 import { StoryScene } from "./components/StoryScene";
+import { ChapterBridge } from "./components/ChapterBridge";
 import { LevelMap } from "./components/LevelMap";
 import { StickerBook } from "./components/StickerBook";
 import { UnifiedDashboard } from "./components/UnifiedDashboard";
 import { LevelComplete } from "./components/LevelComplete";
+import { ChapterCelebration } from "./components/ChapterCelebration";
 import { SessionSummary } from "./components/SessionSummary";
 import { PhonemeBank } from "./components/PhonemeBank";
 import { Settings } from "./components/Settings";
 import { Achievements } from "./components/Achievements";
 import { Help } from "./components/Help";
 import { ProfilePage } from "./components/ProfilePage";
+
+// Stage configuration for determining progress
+const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextStageId?: number }> = {
+  1: { title: "Valley of Vowels", totalLevels: 5, nextStageId: 2 },
+  2: { title: "Blending Bridges", totalLevels: 8, nextStageId: 3 },
+  3: { title: "CVC Kingdom", totalLevels: 10 },
+};
+
+// Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
+const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
+  1: { vowel: "A", name: "Apple" },
+  2: { vowel: "E", name: "Elephant" },
+  3: { vowel: "I", name: "Ice Cream" },
+  4: { vowel: "O", name: "Orange" },
+  5: { vowel: "U", name: "Umbrella" },
+};
 
 type Screen =
   | "landing"
@@ -26,8 +44,10 @@ type Screen =
   | "welcome"
   | "stage-selection"
   | "story-scene"
+  | "chapter-bridge"
   | "level-map"
   | "game"
+  | "chapter-celebration"
   | "level-complete"
   | "session-summary"
   | "sticker-book"
@@ -44,11 +64,28 @@ function AppContent() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
   const [selectedStage, setSelectedStage] = useState<number>(1);
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
-  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0 });
+  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>(() => {
+    // Load from localStorage or use default
+    try {
+      const saved = localStorage.getItem('readlr_progress');
+      return saved ? JSON.parse(saved) : { 1: 0, 2: 0, 3: 0 };
+    } catch {
+      return { 1: 0, 2: 0, 3: 0 };
+    }
+  });
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+
+  // Persist progress to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('readlr_progress', JSON.stringify(completedByStage));
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
+  }, [completedByStage]);
 
   // Auto-navigate authenticated users
   useEffect(() => {
@@ -134,7 +171,36 @@ function AppContent() {
       ...prev,
       [selectedStage]: Math.max(prev[selectedStage] ?? 0, selectedLevel),
     }));
-    setCurrentScreen("level-complete");
+    setCurrentScreen("chapter-celebration");
+  };
+
+  const handleContinueToNextStory = () => {
+    // Move to next level
+    const nextLevel = selectedLevel + 1;
+    const stageConfig = STAGE_CONFIG[selectedStage];
+    
+    if (stageConfig && nextLevel <= stageConfig.totalLevels) {
+      // More levels in this stage - show chapter bridge and then start next level
+      setSelectedLevel(nextLevel);
+      setCurrentScreen("chapter-bridge");
+    } else if (stageConfig?.nextStageId) {
+      // All levels complete, move to next stage - show full story scene
+      setSelectedStage(stageConfig.nextStageId);
+      setSelectedLevel(1);
+      setCurrentScreen("story-scene");
+    } else {
+      // All stages complete, go back to stage selection
+      setCurrentScreen("stage-selection");
+    }
+  };
+
+  const handleBeginChapterFromBridge = () => {
+    // Transition from chapter bridge to level map
+    setCurrentScreen("level-map");
+  };
+
+  const handleBackFromCelebration = () => {
+    setCurrentScreen("level-map");
   };
 
   const handleContinueAfterLevel = () => {
@@ -169,6 +235,10 @@ function AppContent() {
     setCurrentScreen("stage-selection");
   };
 
+  const handleBackToLevelMap = () => {
+    setCurrentScreen("level-map");
+  };
+
   const handleBackToRoleSelect = () => {
     logout();
     setCurrentScreen("auth");
@@ -180,7 +250,7 @@ function AppContent() {
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
   // Screens that shouldn't show navigation header
-  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "level-map", "game", "level-complete"];
+  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "level-complete"];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
 
   // Landing Screen
@@ -226,6 +296,7 @@ function AppContent() {
             onViewStickers={handleViewStickers}
             onViewPhonemeBank={handleViewPhonemeBank}
             onViewAchievements={handleViewAchievements}
+            completedByStage={completedByStage}
           />
         )}
 
@@ -234,6 +305,17 @@ function AppContent() {
             stageId={selectedStage}
             onBack={handleBackToStages}
             onBegin={handleBeginChapter}
+          />
+        )}
+
+        {currentScreen === "chapter-bridge" && (
+          <ChapterBridge
+            stageName={STAGE_CONFIG[selectedStage]?.title ?? "Chapter"}
+            currentLevel={selectedLevel}
+            vowel={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" : ""}
+            vowelName={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.name ?? "Apple" : ""}
+            stageId={selectedStage}
+            onBeginChapter={handleBeginChapterFromBridge}
           />
         )}
 
@@ -249,8 +331,21 @@ function AppContent() {
         {currentScreen === "game" && (
           <GameLevel
             stageId={selectedStage}
-            onBack={handleBackToStages}
+            levelId={selectedLevel}
+            onBack={handleBackToLevelMap}
             onComplete={handleLevelComplete}
+          />
+        )}
+
+        {currentScreen === "chapter-celebration" && (
+          <ChapterCelebration
+            sticker={stickers[Math.floor(Math.random() * stickers.length)]}
+            score={levelScore}
+            currentLevel={selectedLevel}
+            totalLevels={STAGE_CONFIG[selectedStage]?.totalLevels ?? 5}
+            stageName={STAGE_CONFIG[selectedStage]?.title ?? "Chapter"}
+            onContinueStory={handleContinueToNextStory}
+            onBackToMap={handleBackFromCelebration}
           />
         )}
 
