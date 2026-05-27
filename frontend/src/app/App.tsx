@@ -76,16 +76,9 @@ function AppContent() {
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
+  const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
-
-  // Persist progress to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('readlr_progress', JSON.stringify(completedByStage));
-    } catch (error) {
-      console.error('Failed to save progress:', error);
-    }
-  }, [completedByStage]);
+  const [isSyncingProgress, setIsSyncingProgress] = useState(false);
 
   // Auto-navigate authenticated users
   useEffect(() => {
@@ -95,7 +88,7 @@ function AppContent() {
     }
   }, [isAuthenticated, user, currentScreen]);
 
-  // Check if learner profile exists when showing learner-profile screen
+  // Check if learner profile exists and fetch progress when showing learner-profile screen
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
       setIsCheckingProfile(true);
@@ -114,6 +107,7 @@ function AppContent() {
             // Profile exists, skip to welcome
             setLearnerName(data.name);
             setLearnerAvatar(data.avatar);
+            setLearnerId(data.id);
             setCurrentScreen("welcome");
           }
         } catch (error) {
@@ -127,6 +121,45 @@ function AppContent() {
       checkProfile();
     }
   }, [isAuthenticated, user, token, currentScreen]);
+
+  // Fetch progress from backend when user authenticates
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "learner" && token && learnerId) {
+      setIsSyncingProgress(true);
+      
+      const fetchProgress = async () => {
+        try {
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+          const response = await fetch(`${API_URL}/progress/me`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const progressData = await response.json();
+            // progressData should be an array of progress objects per stage
+            const newCompletedByStage: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
+            
+            if (Array.isArray(progressData)) {
+              progressData.forEach((progress: any) => {
+                newCompletedByStage[progress.stage_id] = progress.completed_levels;
+              });
+            }
+            
+            setCompletedByStage(newCompletedByStage);
+          }
+        } catch (error) {
+          console.error('Failed to fetch progress from backend:', error);
+          // Fallback to initialized state
+        } finally {
+          setIsSyncingProgress(false);
+        }
+      };
+
+      fetchProgress();
+    }
+  }, [isAuthenticated, user, token, learnerId]);
 
   const handleGetStarted = () => {
     setAuthMode('register');
@@ -166,11 +199,38 @@ function AppContent() {
     setCurrentScreen("game");
   };
 
-  const handleLevelComplete = () => {
+  const handleLevelComplete = async () => {
+    const newProgress = Math.max(completedByStage[selectedStage] ?? 0, selectedLevel);
+    
+    // Update local state
     setCompletedByStage((prev) => ({
       ...prev,
-      [selectedStage]: Math.max(prev[selectedStage] ?? 0, selectedLevel),
+      [selectedStage]: newProgress,
     }));
+
+    // Save to backend
+    if (learnerId && token) {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        const stageConfig = STAGE_CONFIG[selectedStage];
+        
+        await fetch(`${API_URL}/progress/learners/${learnerId}/stages/${selectedStage}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            completed_levels: newProgress,
+            total_levels: stageConfig.totalLevels,
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to save progress to backend:', error);
+        // Progress is still saved locally, so app continues to work
+      }
+    }
+
     setCurrentScreen("chapter-celebration");
   };
 
@@ -245,6 +305,8 @@ function AppContent() {
     setAuthMode('login');
     setLearnerName("");
     setLearnerAvatar("🦊");
+    setLearnerId(null);
+    setCompletedByStage({ 1: 0, 2: 0, 3: 0 });
   };
 
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
