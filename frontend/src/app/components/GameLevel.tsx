@@ -45,8 +45,7 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       id: 1, 
       phoneme: "A", 
       audioPath: "/audio/stage1/A.wav", 
-      // What Chrome hears when you say "Ahhh" or short "a"
-      acceptedTranscripts: ["a", "ah", "uh", "aw", "up", "of", "add", "at", "i", "tang", "tang in"], 
+      acceptedTranscripts: ["a", "ah", "uh", "aw", "ah", "aaa", "ahhhhh", "ahhhh", "ahhh", "ah", "apple"], 
       prompt: "Say the sound: Ahhh", 
       storyContext: "Help Sinta open the first magic door!" 
     },
@@ -54,7 +53,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       id: 2, 
       phoneme: "E", 
       audioPath: "/audio/stage1/E.wav", 
-      // What Chrome hears when you say "Ehhh" or short "e"
       acceptedTranscripts: ["e", "eh", "a", "hey", "ed", "end", "any", "egg", "it"], 
       prompt: "Say the sound: Ehhh", 
       storyContext: "A little bird flies through when you say 'E'!" 
@@ -63,7 +61,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       id: 3, 
       phoneme: "I", 
       audioPath: "/audio/stage1/I.wav", 
-      // What Chrome hears when you say "Iii" or short "i"
       acceptedTranscripts: ["i", "ee", "ih", "it", "is", "in", "eat", "eye", "e", "if"], 
       prompt: "Say the sound: Iii", 
       storyContext: "The hidden treasure chest unlocks!" 
@@ -72,7 +69,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       id: 4, 
       phoneme: "O", 
       audioPath: "/audio/stage1/O.wav", 
-      // What Chrome hears when you say "Ohhh" or short "o"
       acceptedTranscripts: ["o", "oh", "aw", "off", "on", "or", "owe", "ohh", "out"], 
       prompt: "Say the sound: Ohhh", 
       storyContext: "A friendly owl wakes up to greet you!" 
@@ -81,7 +77,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       id: 5, 
       phoneme: "U", 
       audioPath: "/audio/stage1/U.wav", 
-      // What Chrome hears when you say "Uhhh" or short "u"
       acceptedTranscripts: ["u", "uh", "oo", "you", "up", "of", "oh", "ooh", "us"], 
       prompt: "Say the sound: Uhhh", 
       storyContext: "The final door opens to the valley!" 
@@ -93,8 +88,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
   useEffect(() => {
     return () => {
       if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
-      // Clean up any speaking when we leave the page
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     };
   }, []);
 
@@ -110,14 +103,10 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
     };
   };
 
-  // --- NEW: A free helper function to actually SPEAK instructions out loud! ---
-  const speakInstruction = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel(); // Stop any currently playing speech
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9; // Slightly slower for kids
-      window.speechSynthesis.speak(utterance);
-    }
+  // --- NEW: Play your custom recorded audio ---
+  const playTryAgainSound = () => {
+    const audio = new Audio("/audio/common/TryAgain.wav");
+    audio.play();
   };
 
   const handleSpeechResult = (outcome: Outcome) => {
@@ -150,21 +139,20 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
           : "Hmm, not quite. Want to try again?"
       );
       
-      // Tell them to try again out loud!
-      speakInstruction("Let's try again!");
+      // Play your custom TryAgain.wav file
+      playTryAgainSound();
       
       setTimeout(() => {
         setCharacterState("speaking");
         setTimeout(() => setCharacterState("idle"), 1500);
       }, 1200);
     } else {
-      // --- UPDATED: This handles the Timeout / Too long outcome ---
       setLastOutcome("silent");
       setCharacterState("encouraging");
       setBubbleMessage("You took too long! Tap the mic to try again.");
       
-      // Physically say "Try again" out loud!
-      speakInstruction("Try again!"); 
+      // Play your custom TryAgain.wav file
+      playTryAgainSound(); 
       
       setTimeout(() => setCharacterState("idle"), 1500);
     }
@@ -191,7 +179,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
 
     if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
 
-    // --- The Timeout Clock: If they don't answer in 8 seconds, trigger the silent/timeout result ---
     silenceTimer.current = window.setTimeout(() => {
       recognition.stop();
       if (!hasMatched) handleSpeechResult("silent");
