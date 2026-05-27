@@ -13,6 +13,8 @@ interface GameLevelProps {
 interface Challenge {
   id: number;
   phoneme: string;
+  audioPath: string;
+  acceptedTranscripts: string[];
   prompt: string;
   storyContext: string;
 }
@@ -39,9 +41,46 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
   const silenceTimer = useRef<number | null>(null);
 
   const challenges: Challenge[] = [
-    { id: 1, phoneme: "A", prompt: "Say the sound: Ahhh", storyContext: "Help Sinta open the magic door!" },
-    { id: 2, phoneme: "E", prompt: "Say the sound: Ehhh", storyContext: "The bird flies when you say 'E'!" },
-    { id: 3, phoneme: "I", prompt: "Say the sound: Iii", storyContext: "The treasure chest will open!" },
+    { 
+      id: 1, 
+      phoneme: "A", 
+      audioPath: "/audio/stage1/A.wav", 
+      acceptedTranscripts: ["a", "ah", "uh", "aw", "ah", "aaa", "ahhhhh", "ahhhh", "ahhh", "ah", "apple"], 
+      prompt: "Say the sound: Ahhh", 
+      storyContext: "Help Sinta open the first magic door!" 
+    },
+    { 
+      id: 2, 
+      phoneme: "E", 
+      audioPath: "/audio/stage1/E.wav", 
+      acceptedTranscripts: ["e", "eh", "a", "hey", "ed", "end", "any", "egg", "it"], 
+      prompt: "Say the sound: Ehhh", 
+      storyContext: "A little bird flies through when you say 'E'!" 
+    },
+    { 
+      id: 3, 
+      phoneme: "I", 
+      audioPath: "/audio/stage1/I.wav", 
+      acceptedTranscripts: ["i", "ee", "ih", "it", "is", "in", "eat", "eye", "e", "if"], 
+      prompt: "Say the sound: Iii", 
+      storyContext: "The hidden treasure chest unlocks!" 
+    },
+    { 
+      id: 4, 
+      phoneme: "O", 
+      audioPath: "/audio/stage1/O.wav", 
+      acceptedTranscripts: ["o", "oh", "aw", "off", "on", "or", "owe", "ohh", "out"], 
+      prompt: "Say the sound: Ohhh", 
+      storyContext: "A friendly owl wakes up to greet you!" 
+    },
+    { 
+      id: 5, 
+      phoneme: "U", 
+      audioPath: "/audio/stage1/U.wav", 
+      acceptedTranscripts: ["u", "uh", "oo", "you", "up", "of", "oh", "ooh", "us"], 
+      prompt: "Say the sound: Uhhh", 
+      storyContext: "The final door opens to the valley!" 
+    },
   ];
 
   const challenge = challenges[currentChallenge];
@@ -55,65 +94,141 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
   const speakPhoneme = () => {
     setCharacterState("speaking");
     setBubbleMessage(`Listen: "${challenge.phoneme}"`);
-    const utterance = new SpeechSynthesisUtterance(challenge.phoneme);
-    utterance.rate = 0.6;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-    setTimeout(() => setCharacterState("idle"), 1500);
+    
+    const audio = new Audio(challenge.audioPath);
+    audio.play();
+    
+    audio.onended = () => {
+      setCharacterState("idle");
+    };
+  };
+
+  // --- NEW: Play your custom recorded audio ---
+  const playTryAgainSound = () => {
+    const audio = new Audio("/audio/common/TryAgain.wav");
+    audio.play();
+  };
+
+  const handleSpeechResult = (outcome: Outcome) => {
+    setAttempts((a) => a + 1);
+
+    if (outcome === "success") {
+      setLastOutcome("success");
+      setCharacterState("celebrating");
+      setBubbleMessage("Great job! You did it!");
+      setScore((s) => s + 100);
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+      setTimeout(() => {
+        if (currentChallenge < challenges.length - 1) {
+          setCurrentChallenge((c) => c + 1);
+          setAttempts(0);
+          setLastOutcome(null);
+          setCharacterState("idle");
+          setBubbleMessage("Next one! Ready?");
+        } else {
+          onComplete();
+        }
+      }, 2000);
+    } else if (outcome === "lowConfidence") {
+      setLastOutcome("lowConfidence");
+      setCharacterState("encouraging");
+      setBubbleMessage(
+        attempts >= 1
+          ? "Almost! Watch my mouth, then tap Retry."
+          : "Hmm, not quite. Want to try again?"
+      );
+      
+      // Play your custom TryAgain.wav file
+      playTryAgainSound();
+      
+      setTimeout(() => {
+        setCharacterState("speaking");
+        setTimeout(() => setCharacterState("idle"), 1500);
+      }, 1200);
+    } else {
+      setLastOutcome("silent");
+      setCharacterState("encouraging");
+      setBubbleMessage("You took too long! Tap the mic to try again.");
+      
+      // Play your custom TryAgain.wav file
+      playTryAgainSound(); 
+      
+      setTimeout(() => setCharacterState("idle"), 1500);
+    }
   };
 
   const handleListen = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Microphone not supported in this browser. Please use Chrome!");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;   
+    recognition.interimResults = true; 
+    recognition.lang = 'en-US';
+
     setCharacterState("listening");
     setBubbleMessage("I'm listening...");
     setLastOutcome(null);
 
-    // Simulate ASR roll: success / low-confidence / silent
-    const roll = Math.random();
-    const outcome: Outcome = roll < 0.6 ? "success" : roll < 0.85 ? "lowConfidence" : "silent";
+    let hasMatched = false; 
 
-    // Silent-input detection: longer wait, then silent prompt
-    const delay = outcome === "silent" ? 3500 : 1800;
+    if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
 
     silenceTimer.current = window.setTimeout(() => {
-      setAttempts((a) => a + 1);
+      recognition.stop();
+      if (!hasMatched) handleSpeechResult("silent");
+    }, 8000); 
 
-      if (outcome === "success") {
-        setLastOutcome("success");
-        setCharacterState("celebrating");
-        setBubbleMessage("Great job! You did it!");
-        setScore((s) => s + 100);
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    recognition.onaudiostart = () => console.log("🎤 Mic is hot!");
 
-        setTimeout(() => {
-          if (currentChallenge < challenges.length - 1) {
-            setCurrentChallenge((c) => c + 1);
-            setAttempts(0);
-            setLastOutcome(null);
-            setCharacterState("idle");
-            setBubbleMessage("Next one! Ready?");
-          } else {
-            onComplete();
-          }
-        }, 2000);
-      } else if (outcome === "lowConfidence") {
-        setLastOutcome("lowConfidence");
-        setCharacterState("encouraging");
-        setBubbleMessage(
-          attempts >= 1
-            ? "Almost! Watch my mouth, then tap Retry."
-            : "Hmm, not quite. Want to try again?"
-        );
-        setTimeout(() => {
-          setCharacterState("speaking");
-          setTimeout(() => setCharacterState("idle"), 1500);
-        }, 1200);
-      } else {
-        setLastOutcome("silent");
-        setCharacterState("encouraging");
-        setBubbleMessage("I didn't hear you — tap the mic and try again.");
-        setCharacterState("idle");
+    recognition.onresult = (event: any) => {
+      if (hasMatched) return; 
+      if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript.toLowerCase().trim();
+        console.log("🎤 Chrome's rough draft:", transcript); 
+
+        const isMatch = challenge.acceptedTranscripts.some((acceptedWord) => {
+          const spokenWords = transcript.split(/\s+/); 
+          return spokenWords.includes(acceptedWord);
+        });
+
+        if (isMatch) {
+          hasMatched = true; 
+          recognition.stop(); 
+          handleSpeechResult("success");
+          return; 
+        }
       }
-    }, delay);
+    };
+
+    recognition.onend = () => {
+      if (!hasMatched && lastOutcome !== "silent") {
+        handleSpeechResult("lowConfidence");
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      if (hasMatched) return;
+      if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
+      console.error("🎤 Mic error:", event.error);
+      
+      if (event.error === 'no-speech') {
+        handleSpeechResult("silent");
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error("Microphone is already listening", e);
+    }
   };
 
   const handleRetry = () => {
@@ -131,7 +246,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
       <div className="absolute -bottom-32 -left-20 w-[28rem] h-[28rem] rounded-full bg-[#EEF2FF] opacity-50" />
 
       <div className="relative z-10 min-h-full flex flex-col px-6 md:px-10 py-6">
-        {/* Top bar */}
         <div className="flex items-center justify-between max-w-5xl w-full mx-auto mb-6">
           <button
             onClick={onBack}
@@ -141,7 +255,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
             Map
           </button>
 
-          {/* Progress dots */}
           <div className="flex items-center gap-2">
             {challenges.map((_, i) => (
               <motion.span
@@ -169,9 +282,7 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
           </div>
         </div>
 
-        {/* Stage */}
         <div className="flex-1 flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto w-full">
-          {/* Speech bubble */}
           <AnimatePresence mode="wait">
             <motion.div
               key={bubbleMessage}
@@ -187,7 +298,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
 
           <CharacterCompanion state={characterState} phoneme={challenge.phoneme} size={260} />
 
-          {/* Phoneme card */}
           <motion.div
             key={challenge.phoneme}
             initial={{ y: 8, opacity: 0 }}
@@ -200,7 +310,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
             </span>
           </motion.div>
 
-          {/* Silent-input / low-confidence panel */}
           <AnimatePresence>
             {(lastOutcome === "silent" || lastOutcome === "lowConfidence") && (
               <motion.div
@@ -222,12 +331,12 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-[#1F2430]">
                     {lastOutcome === "silent"
-                      ? "No sound detected"
+                      ? "Too quiet!"
                       : "We didn't quite catch that"}
                   </p>
                   <p className="text-xs text-[#8A91A3] mt-0.5">
                     {lastOutcome === "silent"
-                      ? "Move closer to the mic and try again."
+                      ? "You took too long. Tap the mic and try again."
                       : "Listen to Sinta once more, then retry."}
                   </p>
                 </div>
@@ -252,7 +361,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
             )}
           </AnimatePresence>
 
-          {/* Action buttons */}
           <div className="flex gap-3 w-full max-w-md">
             <motion.button
               whileHover={{ y: -2 }}
@@ -284,7 +392,6 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
             </motion.button>
           </div>
 
-          {/* Story hint */}
           <AnimatePresence>
             {characterState === "idle" && attempts === 0 && !lastOutcome && (
               <motion.p
