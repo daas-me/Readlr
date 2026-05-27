@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
+import { useEffect } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Volume2 } from "lucide-react";
 import { CharacterCompanion } from "./CharacterCompanion";
+import { useAudioManager } from "../../hooks/useAudioManager";
 
 interface StoryScene {
   chapter: string;
@@ -54,13 +56,17 @@ const SCENES: Record<number, StoryScene> = {
 
 export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
   const scene = SCENES[stageId] ?? SCENES[1];
+  const { playAudio } = useAudioManager();
 
-  //1:31 AM 05/27/2026
+  // Auto-play the chapter introduction audio when the component mounts
+  useEffect(() => {
+    playAudio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
+  }, [stageId, playAudio]);
+
   const handleListen = () => {
     // Notice the backticks (`) instead of normal quotes!
     // If stageId is 2, this automatically becomes "/audio/stage2/SintaSaysChapter2.wav"
-    const audio = new Audio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
-    audio.play();
+    playAudio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
   };
 
   return (

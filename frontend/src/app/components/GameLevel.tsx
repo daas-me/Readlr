@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { Volume2, Mic, ArrowLeft, RotateCcw, MicOff } from "lucide-react";
 import confetti from "canvas-confetti";
 import { CharacterCompanion, CharacterState } from "./CharacterCompanion";
+import { useAudioManager } from "../../hooks/useAudioManager";
 
 interface GameLevelProps {
   stageId: number;
+  levelId: number;
   onBack: () => void;
   onComplete: () => void;
 }
@@ -27,8 +29,20 @@ const STAGE_ACCENTS: Record<number, { accent: string; tint: string }> = {
   3: { accent: "#10B981", tint: "#D1FAE5" },
 };
 
-export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
+// All challenges mapped by stage and level
+const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
+  1: {
+    1: { id: 1, phoneme: "A", audioPath: "/audio/stage1/A.wav", acceptedTranscripts: ["a", "ah", "uh", "aw", "aaa", "ahhhhh", "ahhhh", "ahhh", "apple"], prompt: "Say the sound: Ahhh", storyContext: "Help Sinta open the first magic door!" },
+    2: { id: 2, phoneme: "E", audioPath: "/audio/stage1/E.wav", acceptedTranscripts: ["e", "eh", "a", "hey", "ed", "end", "any", "egg", "it"], prompt: "Say the sound: Ehhh", storyContext: "A little bird flies through when you say 'E'!" },
+    3: { id: 3, phoneme: "I", audioPath: "/audio/stage1/I.wav", acceptedTranscripts: ["i", "ee", "ih", "it", "is", "in", "eat", "eye", "e", "if"], prompt: "Say the sound: Iii", storyContext: "The hidden treasure chest unlocks!" },
+    4: { id: 4, phoneme: "O", audioPath: "/audio/stage1/O.wav", acceptedTranscripts: ["o", "oh", "aw", "off", "on", "or", "owe", "ohh", "out"], prompt: "Say the sound: Ohhh", storyContext: "A friendly owl wakes up to greet you!" },
+    5: { id: 5, phoneme: "U", audioPath: "/audio/stage1/U.wav", acceptedTranscripts: ["u", "uh", "oo", "you", "up", "of", "oh", "ooh", "us"], prompt: "Say the sound: Uhhh", storyContext: "The final door opens to the valley!" },
+  },
+};
+
+export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
+  const { playAudio, stopAudio } = useAudioManager();
 
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
@@ -40,73 +54,45 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
   const [lastOutcome, setLastOutcome] = useState<Outcome | null>(null);
   const silenceTimer = useRef<number | null>(null);
 
-  const challenges: Challenge[] = [
-    { 
-      id: 1, 
-      phoneme: "A", 
-      audioPath: "/audio/stage1/A.wav", 
-      acceptedTranscripts: ["a", "ah", "uh", "aw", "ah", "aaa", "ahhhhh", "ahhhh", "ahhh", "ah", "apple"], 
-      prompt: "Say the sound: Ahhh", 
-      storyContext: "Help Sinta open the first magic door!" 
-    },
-    { 
-      id: 2, 
-      phoneme: "E", 
-      audioPath: "/audio/stage1/E.wav", 
-      acceptedTranscripts: ["e", "eh", "a", "hey", "ed", "end", "any", "egg", "it"], 
-      prompt: "Say the sound: Ehhh", 
-      storyContext: "A little bird flies through when you say 'E'!" 
-    },
-    { 
-      id: 3, 
-      phoneme: "I", 
-      audioPath: "/audio/stage1/I.wav", 
-      acceptedTranscripts: ["i", "ee", "ih", "it", "is", "in", "eat", "eye", "e", "if"], 
-      prompt: "Say the sound: Iii", 
-      storyContext: "The hidden treasure chest unlocks!" 
-    },
-    { 
-      id: 4, 
-      phoneme: "O", 
-      audioPath: "/audio/stage1/O.wav", 
-      acceptedTranscripts: ["o", "oh", "aw", "off", "on", "or", "owe", "ohh", "out"], 
-      prompt: "Say the sound: Ohhh", 
-      storyContext: "A friendly owl wakes up to greet you!" 
-    },
-    { 
-      id: 5, 
-      phoneme: "U", 
-      audioPath: "/audio/stage1/U.wav", 
-      acceptedTranscripts: ["u", "uh", "oo", "you", "up", "of", "oh", "ooh", "us"], 
-      prompt: "Say the sound: Uhhh", 
-      storyContext: "The final door opens to the valley!" 
-    },
-  ];
+  // Get only the challenge for this level
+  const selectedChallenge = ALL_CHALLENGES[stageId]?.[levelId];
+  const challenges: Challenge[] = selectedChallenge ? [selectedChallenge] : [];
 
   const challenge = challenges[currentChallenge];
 
   useEffect(() => {
     return () => {
       if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
+      stopAudio();
     };
-  }, []);
+  }, [stopAudio]);
+
+  // Auto-play the phoneme audio when the challenge loads
+  useEffect(() => {
+    if (challenge && challenge.audioPath) {
+      // Add a small delay so the UI renders first
+      const timer = setTimeout(() => {
+        playAudio(challenge.audioPath);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [challenge, currentChallenge, playAudio]);
 
   const speakPhoneme = () => {
     setCharacterState("speaking");
     setBubbleMessage(`Listen: "${challenge.phoneme}"`);
     
-    const audio = new Audio(challenge.audioPath);
-    audio.play();
+    playAudio(challenge.audioPath);
     
-    audio.onended = () => {
+    // Reset character state after a reasonable time
+    setTimeout(() => {
       setCharacterState("idle");
-    };
+    }, 2000);
   };
 
-  // --- NEW: Play your custom recorded audio ---
+  // Play try again feedback sound
   const playTryAgainSound = () => {
-    const audio = new Audio("/audio/common/TryAgain.wav");
-    audio.play();
+    playAudio("/audio/common/TryAgain.wav");
   };
 
   const handleSpeechResult = (outcome: Outcome) => {
@@ -252,28 +238,35 @@ export function GameLevel({ stageId, onBack, onComplete }: GameLevelProps) {
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
-            Map
+            Back
           </button>
 
-          <div className="flex items-center gap-2">
-            {challenges.map((_, i) => (
-              <motion.span
-                key={i}
-                animate={{ scale: i === currentChallenge ? 1.2 : 1 }}
-                className={`h-1.5 rounded-full transition-all ${
-                  i < currentChallenge ? "w-2" : i === currentChallenge ? "w-8" : "w-2 bg-[#1F243014]"
-                }`}
-                style={{
-                  background:
-                    i < currentChallenge
-                      ? accent
-                      : i === currentChallenge
-                      ? accent
-                      : undefined,
-                }}
-              />
-            ))}
-          </div>
+          {challenges.length > 1 && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2">
+                {challenges.map((_, i) => (
+                  <motion.span
+                    key={i}
+                    animate={{ scale: i === currentChallenge ? 1.2 : 1 }}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i < currentChallenge ? "w-2" : i === currentChallenge ? "w-8" : "w-2 bg-[#1F243014]"
+                    }`}
+                    style={{
+                      background:
+                        i < currentChallenge
+                          ? accent
+                          : i === currentChallenge
+                          ? accent
+                          : undefined,
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-[#8A91A3] uppercase tracking-wider">
+                {currentChallenge + 1} / {challenges.length}
+              </span>
+            </div>
+          )}
 
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[#1F243014]">
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: accent }} />
