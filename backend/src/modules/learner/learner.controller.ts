@@ -107,3 +107,40 @@ export async function handleUpdateLearner(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to update learner' });
   }
 }
+
+/**
+ * GET /api/learner/me
+ * Get the authenticated learner's own profile
+ */
+export async function handleGetMyProfile(req: Request, res: Response) {
+  try {
+    const userId = (req as any).userId;
+    const learner = await getLearnerByUserId(userId);
+    return res.json({ success: true, learner });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(404).json({ error: 'Learner profile not found' });
+  }
+}
+
+/**
+ * PUT /api/learner/me
+ * Update the authenticated learner's own profile (name and avatar only)
+ */
+export async function handleUpdateMyProfile(req: Request, res: Response) {
+  try {
+    const userId = (req as any).userId;
+    const { name, avatar } = req.body;
+
+    const existing = await getLearnerByUserId(userId);
+    const updated = await updateLearner(existing.id, {
+      ...(name && { name }),
+      ...(avatar && { avatar }),
+    });
+
+    return res.json({ success: true, learner: updated });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+}

@@ -67,3 +67,23 @@ export async function handleUpdateProgress(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to update progress' });
   }
 }
+
+/**
+ * GET /api/progress/me
+ * Get the authenticated learner's own progress summary
+ */
+export async function handleGetMyProgress(req: Request, res: Response) {
+  try {
+    const userId = (req as any).userId;
+
+    // Get learner profile from user id
+    const { getLearnerByUserId } = await import('../learner/learner.service.js');
+    const learner = await getLearnerByUserId(userId);
+
+    const summary = await getLearnerProgressSummary(learner.id);
+    res.json({ success: true, ...summary });
+  } catch (error) {
+    console.error('Error fetching my progress:', error);
+    res.status(500).json({ error: 'Failed to fetch progress' });
+  }
+}
