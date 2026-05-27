@@ -1,6 +1,17 @@
 import { motion } from "motion/react";
 import { Home, Settings, HelpCircle, User, LogOut, Menu, X, FileText } from "lucide-react";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 interface NavigationHeaderProps {
   userName?: string;
@@ -79,17 +90,45 @@ export function NavigationHeader({
                   <p className="text-sm text-[#1F2430]">{userName}</p>
                   <p className="text-[10px] uppercase tracking-wider text-[#8A91A3]">Grade 1</p>
                 </div>
-                <div className="w-10 h-10 bg-white border border-[#1F243014] rounded-full flex items-center justify-center text-xl">
+                <button
+                  onClick={() => onNavigate("profile")}
+                  className="w-10 h-10 bg-white border border-[#1F243014] rounded-full flex items-center justify-center text-xl hover:ring-2 hover:ring-[#4F46E5] transition-all"
+                  title="My Profile"
+                >
                   {userAvatar}
-                </div>
+                </button>
                 {onLogout && (
-                  <button
-                    onClick={onLogout}
-                    className="p-2 text-[#8A91A3] hover:text-[#DC2626] hover:bg-white rounded-lg transition-colors"
-                    title="Logout"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        className="p-2 text-[#8A91A3] hover:text-[#DC2626] hover:bg-white rounded-lg transition-colors"
+                        title="Logout"
+                      >
+                        <LogOut className="w-4 h-4" />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-white rounded-2xl border border-[#1F243014]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-[#1F2430] text-xl">
+                          Leaving so soon? 👋
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-[#4B5266]">
+                          Are you sure you want to log out? Your progress is saved!
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]">
+                          Stay
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={onLogout}
+                          className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white"
+                        >
+                          Yes, log out
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 )}
               </div>
             )}
@@ -149,16 +188,35 @@ export function NavigationHeader({
             })}
 
             {onLogout && (
-              <button
-                onClick={() => {
-                  onLogout();
-                  setMenuOpen(false);
-                }}
-                className="w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left text-[#DC2626] hover:bg-white transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-                Logout
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left text-[#DC2626] hover:bg-white transition-colors">
+                    <LogOut className="w-5 h-5" />
+                    Logout
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-white rounded-2xl border border-[#1F243014]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-[#1F2430] text-xl">
+                      Leaving so soon? 👋
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-[#4B5266]">
+                      Are you sure you want to log out? Your progress is saved!
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]">
+                      Stay
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => { onLogout(); setMenuOpen(false); }}
+                      className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white"
+                    >
+                      Yes, log out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </motion.div>

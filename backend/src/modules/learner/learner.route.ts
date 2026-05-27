@@ -10,9 +10,15 @@ import {
   handleGetLearnerById,
   handleGetLearnerByUserId,
   handleUpdateLearner,
+  handleGetMyProfile,
+  handleUpdateMyProfile,
 } from './learner.controller.js';
 
 const router = Router();
+
+// Authenticated user's own profile
+router.get('/me', authMiddleware, handleGetMyProfile);
+router.put('/me', authMiddleware, handleUpdateMyProfile);
 
 // Protected route for authenticated users
 router.post('/profile', authMiddleware, handleSaveProfile);

@@ -17,6 +17,7 @@ import { PhonemeBank } from "./components/PhonemeBank";
 import { Settings } from "./components/Settings";
 import { Achievements } from "./components/Achievements";
 import { Help } from "./components/Help";
+import { ProfilePage } from "./components/ProfilePage";
 
 type Screen =
   | "landing"
@@ -34,7 +35,8 @@ type Screen =
   | "phoneme-bank"
   | "settings"
   | "achievements"
-  | "help";
+  | "help"
+  | "profile";
 
 function AppContent() {
   const { isAuthenticated, user, token, logout } = useAuth();
@@ -291,11 +293,22 @@ function AppContent() {
         )}
 
         {currentScreen === "settings" && (
-          <Settings />
+          <Settings
+            onNavigate={handleNavigate}
+            onAvatarUpdate={(avatar) => setLearnerAvatar(avatar)}
+          />
         )}
 
         {currentScreen === "help" && (
           <Help />
+        )}
+
+        {currentScreen === "profile" && (
+          <ProfilePage
+            onBack={() => setCurrentScreen("stage-selection")}
+            onAvatarUpdate={(avatar) => setLearnerAvatar(avatar)}
+            onNameUpdate={(name) => setLearnerName(name)}
+          />
         )}
       </div>
     </div>
