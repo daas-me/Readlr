@@ -26,7 +26,7 @@ const SCENES: Record<number, StoryScene> = {
     chapter: "Chapter 1",
     title: "Valley of Vowels",
     scene: "A quiet morning in the valley. Five magic doors hum with a different sound each.",
-    narration: "Hi, I'm Sinta! Today we'll open the five magic doors. Each one only opens when you say its sound. Ready?",
+    narration: "Hi, I'm Milo! Today we'll open the five magic doors. Each one only opens when you say its sound. Ready?",
     goal: "Say each vowel sound out loud to open its door.",
     accent: "#F59E0B",
     tint: "#FFF7ED",
@@ -60,13 +60,13 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
 
   // Auto-play the chapter introduction audio when the component mounts
   useEffect(() => {
-    playAudio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
+    playAudio(`/audio/stage${stageId}/MiloSaysChapter${stageId}.wav`);
   }, [stageId, playAudio]);
 
   const handleListen = () => {
     // Notice the backticks (`) instead of normal quotes!
     // If stageId is 2, this automatically becomes "/audio/stage2/SintaSaysChapter2.wav"
-    playAudio(`/audio/stage${stageId}/SintaSaysChapter${stageId}.wav`);
+    playAudio(`/audio/stage${stageId}/MiloSaysChapter${stageId}.wav`);
   };
 
   return (
@@ -140,7 +140,7 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
                       style={{ background: scene.accent }}
                     />
                     <span className="text-xs uppercase tracking-wider text-[#8A91A3]">
-                      Sinta says
+                      Milo says
                     </span>
                   </div>
                   <p className="text-[#1F2430] leading-relaxed">
@@ -201,7 +201,7 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
                 >
                   Your reading buddy
                 </p>
-                <p className="text-[#1F2430] text-lg">Sinta</p>
+                <p className="text-[#1F2430] text-lg">Milo</p>
               </div>
             </div>
           </motion.div>

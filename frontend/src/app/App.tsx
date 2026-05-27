@@ -30,11 +30,11 @@ const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextSta
 
 // Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
 const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
-  1: { vowel: "A", name: "Apple" },
-  2: { vowel: "E", name: "Elephant" },
-  3: { vowel: "I", name: "Ice Cream" },
-  4: { vowel: "O", name: "Orange" },
-  5: { vowel: "U", name: "Umbrella" },
+  1: { vowel: "A", name: "" },
+  2: { vowel: "E", name: "" },
+  3: { vowel: "I", name: "" },
+  4: { vowel: "O", name: "" },
+  5: { vowel: "U", name: "" },
 };
 
 type Screen =
