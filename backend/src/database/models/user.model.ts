@@ -1,29 +1,26 @@
-import { Database } from 'sqlite';
+import type { Database } from '../db.js';
 
 export interface User {
   id: number;
   email: string;
-  password: string;
+  password_hash: string;
   role: 'learner' | 'teacher';
-  name: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export async function createUserTable(db: Database): Promise<void> {
-  await db.exec(`
+  await db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('learner', 'teacher')),
-      name TEXT NOT NULL,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL CHECK(role IN ('learner', 'teacher')),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
-    
-    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
   `);
+  await db.run('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
 }
 
 export async function findUserByEmail(db: Database, email: string): Promise<User | undefined> {
@@ -34,10 +31,10 @@ export async function findUserById(db: Database, id: number): Promise<User | und
   return db.get('SELECT * FROM users WHERE id = ?', [id]);
 }
 
-export async function createUser(db: Database, email: string, password: string, role: string, name: string): Promise<User> {
+export async function createUser(db: Database, email: string, passwordHash: string, role: 'learner' | 'teacher'): Promise<User> {
   const result = await db.run(
-    'INSERT INTO users (email, password, role, name) VALUES (?, ?, ?, ?)',
-    [email, password, role, name]
+    'INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)',
+    [email, passwordHash, role]
   );
   
   const user = await findUserById(db, result.id as number);

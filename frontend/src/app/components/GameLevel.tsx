@@ -33,7 +33,7 @@ interface Challenge {
   consonant?: string;  // Used for blending
   vowel?: string;      // Used for blending/phoneme
   targetWord?: string; // The full word for blending (e.g., "Mama")
-  audioPath: string;
+  audioPath?: string;
   acceptedTranscripts: string[];
   storyContext: string;
 }
@@ -104,11 +104,63 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
       storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
     },
   },
+  3: { // Chapter 3: CVC Kingdom (still needs audio "audioPath" and story contexts ""storyContext")
+    1: {
+      id: 1, word: "CAT", audioPath: undefined,
+      acceptedTranscripts: ["cat", "c a t", "see a tee"],
+      storyContext: "Read the whole word: CAT!"
+    },
+    2: {
+      id: 2, word: "MAN", audioPath: undefined,
+      acceptedTranscripts: ["man", "m a n", "em a en"],
+      storyContext: "Read the whole word: MAN!"
+    },
+    3: {
+      id: 3, word: "HAT", audioPath: undefined,
+      acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
+      storyContext: "Read the whole word: HAT!"
+    },
+    4: {
+      id: 4, word: "PIG", audioPath: undefined,
+      acceptedTranscripts: ["pig", "p i g", "pee i gee"],
+      storyContext: "Read the whole word: PIG!"
+    },
+    5: {
+      id: 5, word: "DOG", audioPath: undefined,
+      acceptedTranscripts: ["dog", "d o g", "dee o gee"],
+      storyContext: "Read the whole word: DOG!"
+    },
+    6: {
+      id: 6, word: "SUN", audioPath: undefined,
+      acceptedTranscripts: ["sun", "s u n", "ess u en"],
+      storyContext: "Read the whole word: SUN!"
+    },
+    7: {
+      id: 7, word: "BED", audioPath: undefined,
+      acceptedTranscripts: ["bed", "b e d", "bee e dee"],
+      storyContext: "Read the whole word: BED!"
+    },
+    8: {
+      id: 8, word: "CUP", audioPath: undefined,
+      acceptedTranscripts: ["cup", "c u p", "see u pee"],
+      storyContext: "Read the whole word: CUP!"
+    },
+    9: {
+      id: 9, word: "BUS", audioPath: undefined,
+      acceptedTranscripts: ["bus", "b u s", "bee u ess"],
+      storyContext: "Read the whole word: BUS!"
+    },
+    10: {
+      id: 10, word: "TOP", audioPath: undefined,
+      acceptedTranscripts: ["top", "t o p", "tee o pee"],
+      storyContext: "Read the whole word: TOP!"
+    },
+  },
 };
 
 export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
-  const { playAudio, stopAudio, stopAllAudio } = useAudioManager();
+  const { playAudio, speakText, stopAudio, stopAllAudio } = useAudioManager();
 
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
   const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
@@ -119,6 +171,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
 
   const challenge = ALL_CHALLENGES[stageId]?.[levelId];
   const isBlendingMode = stageId === 2;
+  const isCvcMode = stageId === 3;
 
   // Cleanup audio when the user leaves the level completely
   useEffect(() => {
@@ -132,16 +185,22 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     setCharacterState("speaking");
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
-    const sound = playAudio(challenge.audioPath);
+    const sound = challenge.audioPath
+      ? playAudio(challenge.audioPath)
+      : speakText(challenge.word.toLowerCase(), 0.75);
     
     if (sound) {
-      // Ties the character state directly to the length of the audio file!
-      sound.onended = () => {
+      const onDone = () => {
         setCharacterState("idle");
         setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
       };
+      if (sound instanceof HTMLAudioElement) {
+        sound.onended = onDone;
+      } else {
+        sound.onend = onDone;
+      }
     }
-  }, [challenge, isBlendingMode, playAudio, stopAudio]);
+  }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
 
   useEffect(() => {
     attemptNumber.current = 0;
@@ -200,13 +259,12 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         const durationMs = Date.now() - attemptStartTime.current;
 
         const targetWords = new Set(challenge.acceptedTranscripts);
-        const matched = transcript.split(/\s+/).some(word => targetWords.has(word));
+        const matched = transcript.split(/\s+/).some((word: string) => targetWords.has(word));
 
         if (matched) {
           const tier = computeTier(confidence, attemptNumber.current);
           setEarnedTier(tier);
 
-          // Persist attempt record to localStorage for future progress saving
           const record = {
             stageId,
             levelId,
@@ -262,6 +320,18 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
                 <span className="text-4xl sm:text-6xl">{challenge.vowel}</span>
                 <span className="text-2xl sm:text-3xl text-gray-300">=</span>
                 <span className="text-4xl sm:text-6xl uppercase">{challenge.targetWord}</span>
+              </div>
+            </div>
+          ) : isCvcMode ? (
+            <div className="flex flex-col items-center">
+              <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Read the word:</h2>
+              <span className="text-5xl sm:text-7xl font-bold inline-block" style={{ color: accent }}>{challenge.word}</span>
+              <div className="mt-4 flex items-center gap-2 sm:gap-3 justify-center" style={{ color: accent }}>
+                {challenge.word.split("").map((letter, index) => (
+                  <span key={`${letter}-${index}`} className="text-xl sm:text-2xl font-bold">
+                    {letter}
+                  </span>
+                ))}
               </div>
             </div>
           ) : (

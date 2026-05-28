@@ -4,64 +4,25 @@
  */
 
 import { db } from '../db.js';
+import type {
+  Character,
+  CharacterAppearance,
+  CharacterBehavior,
+  CharacterPersonality,
+  CharacterVoice,
+  CreateCharacterRequest,
+  UpdateCharacterRequest,
+} from '../../modules/character/character.types.js';
 
-export interface Character {
-  id: number;
-  name: string;
-  template: string;
-  appearance: CharacterAppearance;
-  personality: CharacterPersonality;
-  voice: CharacterVoice;
-  behaviors: CharacterBehavior[];
-  created_at: string;
-  updated_at: string;
-}
+type CharacterRow = Omit<Character, 'appearance' | 'personality' | 'voice' | 'behaviors'>;
+type CharacterBehaviorRow = Omit<CharacterBehavior, 'animation_config'> & {
+  animation_config: string;
+};
 
-export interface CharacterAppearance {
-  id?: number;
-  character_id?: number;
-  head_color: string;
-  head_shape: string;
-  eye_color: string;
-  eye_shape: string;
-  mouth_color: string;
-  accessories: string[];
-  body_color: string;
-}
-
-export interface CharacterPersonality {
-  id?: number;
-  character_id?: number;
-  personality_type: string;
-  animation_speed: number;
-  expression_style: string;
-}
-
-export interface CharacterVoice {
-  id?: number;
-  character_id?: number;
-  voice_id: string;
-  pitch: number;
-  speed: number;
-  tone: string;
-  language: string;
-}
-
-export interface CharacterBehavior {
-  id?: number;
-  character_id?: number;
-  state: string;
-  animation_config: Record<string, any>;
-  sound_effect?: string;
-}
-
-export interface CreateCharacterRequest {
-  name: string;
-  template: string;
-  appearance: CharacterAppearance;
-  personality: CharacterPersonality;
-  voice: CharacterVoice;
-  behaviors?: CharacterBehavior[];
+function mergeDefined<T extends object>(base: T, updates: Partial<T>): T {
+  return Object.fromEntries(
+    Object.entries({ ...base, ...updates }).filter(([, value]) => value !== undefined)
+  ) as T;
 }
 
 export async function createCharacter(
@@ -136,7 +97,7 @@ export async function createCharacter(
 }
 
 export async function getCharacterById(id: number): Promise<Character> {
-  const character = await db.get('SELECT * FROM characters WHERE id = ?', [id]);
+  const character = await db.get('SELECT * FROM characters WHERE id = ?', [id]) as CharacterRow | undefined;
 
   if (!character) {
     throw new Error(`Character with id ${id} not found`);
@@ -145,32 +106,36 @@ export async function getCharacterById(id: number): Promise<Character> {
   const appearance = await db.get(
     'SELECT * FROM character_appearance WHERE character_id = ?',
     [id]
-  );
+  ) as (Omit<CharacterAppearance, 'accessories'> & { accessories: string }) | undefined;
 
   const personality = await db.get(
     'SELECT * FROM character_personality WHERE character_id = ?',
     [id]
-  );
+  ) as CharacterPersonality | undefined;
 
   const voice = await db.get(
     'SELECT * FROM character_voice WHERE character_id = ?',
     [id]
-  );
+  ) as CharacterVoice | undefined;
 
   const behaviors = await db.all(
     'SELECT * FROM character_behaviors WHERE character_id = ?',
     [id]
-  );
+  ) as CharacterBehaviorRow[];
+
+  if (!appearance || !personality || !voice) {
+    throw new Error(`Character with id ${id} is missing related configuration`);
+  }
 
   return {
     ...character,
     appearance: {
       ...appearance,
-      accessories: JSON.parse(appearance?.accessories || '[]'),
+      accessories: JSON.parse(appearance.accessories || '[]'),
     },
     personality,
     voice,
-    behaviors: behaviors.map((b: any) => ({
+    behaviors: behaviors.map((b) => ({
       ...b,
       animation_config: JSON.parse(b.animation_config),
     })),
@@ -188,63 +153,68 @@ export async function getCharacterByName(name: string): Promise<Character> {
 }
 
 export async function getAllCharacters(): Promise<Character[]> {
-  const characters = await db.all('SELECT * FROM characters');
+  const characters = await db.all('SELECT * FROM characters') as CharacterRow[];
 
-  return Promise.all(characters.map((c: any) => getCharacterById(c.id)));
+  return Promise.all(characters.map((c) => getCharacterById(c.id)));
 }
 
 export async function updateCharacter(
   id: number,
-  updates: Partial<CreateCharacterRequest>
+  updates: UpdateCharacterRequest
 ): Promise<Character> {
+  const current = await getCharacterById(id);
+
   if (updates.name) {
     await db.run('UPDATE characters SET name = ? WHERE id = ?', [updates.name, id]);
   }
 
   if (updates.appearance) {
+    const appearance = mergeDefined(current.appearance, updates.appearance);
     await db.run(
       `UPDATE character_appearance SET 
        head_color = ?, head_shape = ?, eye_color = ?, eye_shape = ?, 
        mouth_color = ?, accessories = ?, body_color = ?
        WHERE character_id = ?`,
       [
-        updates.appearance.head_color,
-        updates.appearance.head_shape,
-        updates.appearance.eye_color,
-        updates.appearance.eye_shape,
-        updates.appearance.mouth_color,
-        JSON.stringify(updates.appearance.accessories),
-        updates.appearance.body_color,
+        appearance.head_color,
+        appearance.head_shape,
+        appearance.eye_color,
+        appearance.eye_shape,
+        appearance.mouth_color,
+        JSON.stringify(appearance.accessories),
+        appearance.body_color,
         id,
       ]
     );
   }
 
   if (updates.personality) {
+    const personality = mergeDefined(current.personality, updates.personality);
     await db.run(
       `UPDATE character_personality SET 
        personality_type = ?, animation_speed = ?, expression_style = ?
        WHERE character_id = ?`,
       [
-        updates.personality.personality_type,
-        updates.personality.animation_speed,
-        updates.personality.expression_style,
+        personality.personality_type,
+        personality.animation_speed,
+        personality.expression_style,
         id,
       ]
     );
   }
 
   if (updates.voice) {
+    const voice = mergeDefined(current.voice, updates.voice);
     await db.run(
       `UPDATE character_voice SET 
        voice_id = ?, pitch = ?, speed = ?, tone = ?, language = ?
        WHERE character_id = ?`,
       [
-        updates.voice.voice_id,
-        updates.voice.pitch,
-        updates.voice.speed,
-        updates.voice.tone,
-        updates.voice.language,
+        voice.voice_id,
+        voice.pitch,
+        voice.speed,
+        voice.tone,
+        voice.language,
         id,
       ]
     );

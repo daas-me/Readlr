@@ -28,6 +28,29 @@ const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextSta
   3: { title: "CVC Kingdom", totalLevels: 10 },
 };
 
+const DEFAULT_PROGRESS: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
+
+function getProgressStorageKey(userId?: number): string | null {
+  return userId ? `readlr_progress_user_${userId}` : null;
+}
+
+function readProgressFromStorage(userId?: number): Record<number, number> {
+  const storageKey = getProgressStorageKey(userId);
+  if (!storageKey) return { ...DEFAULT_PROGRESS };
+
+  try {
+    const saved = localStorage.getItem(storageKey);
+    return saved ? { ...DEFAULT_PROGRESS, ...JSON.parse(saved) } : { ...DEFAULT_PROGRESS };
+  } catch {
+    return { ...DEFAULT_PROGRESS };
+  }
+}
+
+function saveProgressToStorage(userId: number | undefined, progress: Record<number, number>) {
+  const storageKey = getProgressStorageKey(userId);
+  if (!storageKey) return;
+  localStorage.setItem(storageKey, JSON.stringify(progress));
+}
 // Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
 const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
   1: { vowel: "A", name: "" },
@@ -163,29 +186,34 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
 }
 
 function AppContent() {
-  const { isAuthenticated, user, token, logout } = useAuth();
+  const { isAuthenticated, user, token, isLoading: isAuthLoading, logout } = useAuth();
   const initialRoute = parseAppPath(window.location.pathname);
   const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
   const [selectedStage, setSelectedStage] = useState<number>(initialRoute.stageId ?? 1);
   const [selectedLevel, setSelectedLevel] = useState<number>(initialRoute.levelId ?? 1);
-  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>(() => {
-    // Load from localStorage or use default
-    try {
-      const saved = localStorage.getItem('readlr_progress');
-      return saved ? JSON.parse(saved) : { 1: 0, 2: 0, 3: 0 };
-    } catch {
-      return { 1: 0, 2: 0, 3: 0 };
-    }
-  });
+  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ ...DEFAULT_PROGRESS });
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+  const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
+  const publicScreens: Screen[] = ["landing", "auth"];
+  const isPublicScreen = publicScreens.includes(currentScreen);
 
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "learner") {
+      setCompletedByStage(readProgressFromStorage(user.id));
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setCompletedByStage({ ...DEFAULT_PROGRESS });
+    }
+  }, [isAuthenticated, user]);
   useEffect(() => {
     const handlePopState = () => {
       const route = parseAppPath(window.location.pathname);
@@ -212,6 +240,12 @@ function AppContent() {
     }
   }, [currentScreen, selectedStage, selectedLevel, authMode]);
 
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated && !isPublicScreen) {
+      setCurrentScreen("landing");
+    }
+  }, [isAuthLoading, isAuthenticated, isPublicScreen]);
+
   // Protect celebration screen from direct URL access
   useEffect(() => {
     const route = parseAppPath(window.location.pathname);
@@ -229,9 +263,15 @@ function AppContent() {
     }
   }, [isAuthenticated, user, currentScreen]);
 
-  // Check if learner profile exists and fetch progress when showing learner-profile screen
   useEffect(() => {
-    if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
+    if (!isAuthenticated) {
+      setHasCheckedLearnerProfile(false);
+    }
+  }, [isAuthenticated]);
+
+  // Check if learner profile exists and keep the header identity stable after refresh/navigation.
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
       setIsCheckingProfile(true);
       
       const checkProfile = async () => {
@@ -245,23 +285,30 @@ function AppContent() {
 
           if (response.ok) {
             const data = await response.json();
-            // Profile exists, skip to welcome
             setLearnerName(data.name);
             setLearnerAvatar(data.avatar);
             setLearnerId(data.id);
-            setCurrentScreen("welcome");
+            if (currentScreen === "learner-profile") {
+              setCurrentScreen("welcome");
+            }
+          } else if (currentScreen !== "learner-profile") {
+            setCurrentScreen("learner-profile");
           }
         } catch (error) {
           // Profile doesn't exist, show profile setup
           console.log('No existing profile found, showing setup screen');
+          if (currentScreen !== "learner-profile") {
+            setCurrentScreen("learner-profile");
+          }
         } finally {
+          setHasCheckedLearnerProfile(true);
           setIsCheckingProfile(false);
         }
       };
 
       checkProfile();
     }
-  }, [isAuthenticated, user, token, currentScreen]);
+  }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
 
   // Fetch progress from backend when user authenticates
   useEffect(() => {
@@ -279,16 +326,19 @@ function AppContent() {
 
           if (response.ok) {
             const progressData = await response.json();
-            // progressData should be an array of progress objects per stage
-            const newCompletedByStage: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
+            const stages = Array.isArray(progressData)
+              ? progressData
+              : Array.isArray(progressData.stages)
+                ? progressData.stages
+                : [];
+            const newCompletedByStage: Record<number, number> = { ...DEFAULT_PROGRESS };
             
-            if (Array.isArray(progressData)) {
-              progressData.forEach((progress: any) => {
-                newCompletedByStage[progress.stage_id] = progress.completed_levels;
-              });
-            }
+            stages.forEach((progress: { stage_id: number; completed_levels: number }) => {
+              newCompletedByStage[progress.stage_id] = progress.completed_levels;
+            });
             
             setCompletedByStage(newCompletedByStage);
+            saveProgressToStorage(user.id, newCompletedByStage);
           }
         } catch (error) {
           console.error('Failed to fetch progress from backend:', error);
@@ -316,9 +366,12 @@ function AppContent() {
     // After auth, learner-profile will be shown (auto-navigate via useEffect)
   };
 
-  const handleProfileComplete = (name: string, avatar: string) => {
+  const handleProfileComplete = (name: string, avatar: string, newLearnerId?: number) => {
     setLearnerName(name);
     setLearnerAvatar(avatar);
+    if (newLearnerId) setLearnerId(newLearnerId);
+    setHasCheckedLearnerProfile(true);
+    setCompletedByStage(readProgressFromStorage(user?.id));
     setCurrentScreen("welcome");
   };
 
@@ -343,11 +396,13 @@ function AppContent() {
   const handleLevelComplete = async () => {
     const newProgress = Math.max(completedByStage[selectedStage] ?? 0, selectedLevel);
     
-    // Update local state
-    setCompletedByStage((prev) => ({
-      ...prev,
+    // Update local state and the per-user fallback cache.
+    const nextProgress = {
+      ...completedByStage,
       [selectedStage]: newProgress,
-    }));
+    };
+    setCompletedByStage(nextProgress);
+    saveProgressToStorage(user?.id, nextProgress);
 
     // Save to backend
     if (learnerId && token) {
@@ -458,7 +513,8 @@ function AppContent() {
     setLearnerName("");
     setLearnerAvatar("🦊");
     setLearnerId(null);
-    setCompletedByStage({ 1: 0, 2: 0, 3: 0 });
+    setHasCheckedLearnerProfile(false);
+    setCompletedByStage({ ...DEFAULT_PROGRESS });
   };
 
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
@@ -482,11 +538,23 @@ function AppContent() {
     );
   }
 
+  if (isAuthLoading && token && !user && !isPublicScreen) {
+    return (
+      <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#E6DED2] border-t-[#4F46E5] rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && !isPublicScreen) {
+    return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
+  }
+
   return (
     <div className="size-full flex flex-col">
       {showLearnerHeader && (
         <NavigationHeader
-          userName={learnerName}
+          userName={learnerName || user?.name || "Reader"}
           userAvatar={learnerAvatar}
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
@@ -597,6 +665,7 @@ function AppContent() {
         {currentScreen === "dashboard" && (
           <UnifiedDashboard
             userName={learnerName || user?.name}
+            completedByStage={completedByStage}
           />
         )}
 
