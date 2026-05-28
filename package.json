@@ -16,8 +16,7 @@
     "backend:build": "npm -w backend run build"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "typescript": "^5.3.3"
   }
 }
-
-

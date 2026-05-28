@@ -41,6 +41,8 @@ export function CharacterCompanion({
     state === "listening" ? 1.25 : state === "celebrating" ? 1.15 : 1;
   const eyeY = state === "thinking" ? -4 : 0;
 
+  const isSpeaking = state === "speaking";
+
   return (
     <div className="relative" style={{ width: size, height: size }}>
       {/* Listening pulse rings */}
@@ -191,22 +193,52 @@ export function CharacterCompanion({
 
           {/* Mouth */}
           <motion.ellipse
-            animate={{ rx: mouth.rx, ry: mouth.ry }}
-            initial={{ rx: mouth.rx, ry: mouth.ry }}
-            transition={{ duration: 0.25 }}
+            animate={
+              isSpeaking
+                ? {
+                    ry: [mouth.ry, mouth.ry * 0.25, mouth.ry, mouth.ry * 0.45, mouth.ry],
+                    rx: [mouth.rx, mouth.rx * 0.95, mouth.rx, mouth.rx * 0.92, mouth.rx],
+                  }
+                : { rx: mouth.rx, ry: mouth.ry }
+            }
+            transition={
+              isSpeaking
+                ? { duration: 0.8, repeat: Infinity, ease: "easeInOut" }
+                : { duration: 0.25 }
+            }
             cx={150}
             cy={215}
-            rx={mouth.rx}
-            ry={mouth.ry}
             fill="#1e1b4b"
           />
+
           {/* Tongue (visible when mouth open) */}
           {mouth.round && mouth.ry > 25 && (
-            <ellipse cx="150" cy="225" rx={mouth.rx * 0.55} ry={mouth.ry * 0.4} fill="#f472b6" />
+            <motion.ellipse 
+              cx="150" 
+              animate={
+                isSpeaking
+                  ? {
+                      rx: [mouth.rx * 0.55, mouth.rx * 0.55 * 0.95, mouth.rx * 0.55, mouth.rx * 0.55 * 0.92, mouth.rx * 0.55],
+                      ry: [mouth.ry * 0.4, mouth.ry * 0.4 * 0.1, mouth.ry * 0.4, mouth.ry * 0.4 * 0.2, mouth.ry * 0.4],
+                      cy: [225, 217, 225, 219, 225]
+                    }
+                  : { rx: mouth.rx * 0.55, ry: mouth.ry * 0.4, cy: 225 }
+              }
+              transition={
+                isSpeaking
+                  ? { duration: 0.8, repeat: Infinity, ease: "easeInOut" }
+                  : { duration: 0.25 }
+              }
+              fill="#f472b6" 
+            />
           )}
+
           {/* Smile curve when speaking E/I */}
           {!mouth.round && mouth.rx > 50 && (
-            <path
+            <motion.path
+              animate={isSpeaking ? { scaleY: [1, 0.3, 1, 0.5, 1] } : { scaleY: 1 }}
+              transition={isSpeaking ? { duration: 0.8, repeat: Infinity, ease: "easeInOut" } : { duration: 0.25 }}
+              style={{ transformOrigin: "150px 215px" }}
               d={`M ${150 - mouth.rx} 215 Q 150 ${215 + mouth.ry + 8} ${150 + mouth.rx} 215`}
               stroke="#1e1b4b"
               strokeWidth="3"

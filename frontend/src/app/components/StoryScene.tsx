@@ -58,14 +58,19 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
   const scene = SCENES[stageId] ?? SCENES[1];
   const { playAudio } = useAudioManager();
 
-  // Auto-play the chapter introduction audio when the component mounts
+  // Auto-play the chapter introduction audio when the component mounts with a delay
   useEffect(() => {
-    playAudio(`/audio/stage${stageId}/MiloSaysChapter${stageId}.wav`);
+    const timer = setTimeout(() => {
+      playAudio(`/audio/stage${stageId}/MiloSaysChapter${stageId}.wav`);
+    }, 700); // 2-second delay (2000ms)
+
+    // Cleanup: If the user leaves the screen before 2 seconds, cancel the audio
+    return () => clearTimeout(timer);
   }, [stageId, playAudio]);
 
   const handleListen = () => {
     // Notice the backticks (`) instead of normal quotes!
-    // If stageId is 2, this automatically becomes "/audio/stage2/SintaSaysChapter2.wav"
+    // If stageId is 2, this automatically becomes "/audio/stage2/MiloSaysChapter2.wav"
     playAudio(`/audio/stage${stageId}/MiloSaysChapter${stageId}.wav`);
   };
 
@@ -132,7 +137,7 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
                   {scene.scene}
                 </p>
 
-                {/* Sinta speech */}
+                {/* Milo speech */}
                 <div className="bg-[#FAF7F2] rounded-2xl p-5 border border-[#1F243014] mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span
@@ -186,7 +191,7 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
                 </motion.button>
               </div>
 
-              {/* Right — Sinta + illustration card */}
+              {/* Right — Milo + illustration card */}
               <div
                 className="relative flex flex-col items-center justify-center p-8 md:p-10 border-t md:border-t-0 md:border-l border-[#1F243014]"
                 style={{ background: scene.tint }}
@@ -213,7 +218,7 @@ export function StoryScene({ stageId, onBack, onBegin }: StorySceneProps) {
             transition={{ delay: 0.3 }}
             className="mt-6 text-center text-xs text-[#8A91A3]"
           >
-            Tip — find a quiet spot so Sinta can hear you clearly.
+            Tip — find a quiet spot so Milo can hear you clearly.
           </motion.p>
         </div>
       </div>
