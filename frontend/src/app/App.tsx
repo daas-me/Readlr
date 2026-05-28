@@ -186,7 +186,7 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
 }
 
 function AppContent() {
-  const { isAuthenticated, user, token, logout } = useAuth();
+  const { isAuthenticated, user, token, isLoading: isAuthLoading, logout } = useAuth();
   const initialRoute = parseAppPath(window.location.pathname);
   const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
@@ -200,6 +200,8 @@ function AppContent() {
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
+  const publicScreens: Screen[] = ["landing", "auth"];
+  const isPublicScreen = publicScreens.includes(currentScreen);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner") {
@@ -236,6 +238,12 @@ function AppContent() {
       window.history.pushState({}, "", nextPath);
     }
   }, [currentScreen, selectedStage, selectedLevel, authMode]);
+
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated && !isPublicScreen) {
+      setCurrentScreen("landing");
+    }
+  }, [isAuthLoading, isAuthenticated, isPublicScreen]);
 
   // Protect celebration screen from direct URL access
   useEffect(() => {
@@ -512,6 +520,18 @@ function AppContent() {
         initialMode={authMode}
       />
     );
+  }
+
+  if (isAuthLoading && token && !user && !isPublicScreen) {
+    return (
+      <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#E6DED2] border-t-[#4F46E5] rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && !isPublicScreen) {
+    return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
 
   return (

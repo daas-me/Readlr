@@ -28,17 +28,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('auth_token');
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(() => Boolean(localStorage.getItem('auth_token')));
   const [error, setError] = useState<string | null>(null);
 
   // Check if token is still valid on mount
   useEffect(() => {
     if (token) {
       verifyToken(token);
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
   const verifyToken = useCallback(async (authToken: string) => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${API_URL}/auth/profile`, {
         headers: {
@@ -59,6 +62,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Token verification failed:', err);
       localStorage.removeItem('auth_token');
       setToken(null);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
