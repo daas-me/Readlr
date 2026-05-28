@@ -9,6 +9,16 @@ import {
   getStageProgress,
   updateStageProgress,
 } from './progress.service.js';
+import { getLearnerByUserId } from '../learner/learner.service.js';
+
+async function ensureOwnLearner(req: Request, learnerId: number): Promise<void> {
+  const userId = (req as any).userId;
+  const learner = await getLearnerByUserId(userId);
+
+  if (learner.id !== learnerId) {
+    throw new Error('Access denied');
+  }
+}
 
 /**
  * GET /api/progress/learners/:learnerId
@@ -17,11 +27,13 @@ import {
 export async function handleGetProgressSummary(req: Request, res: Response) {
   try {
     const { learnerId } = req.params;
-    const summary = await getLearnerProgressSummary(parseInt(learnerId));
+    const parsedLearnerId = parseInt(learnerId);
+    await ensureOwnLearner(req, parsedLearnerId);
+    const summary = await getLearnerProgressSummary(parsedLearnerId);
     res.json(summary);
   } catch (error) {
     console.error('Error fetching progress:', error);
-    res.status(500).json({ error: 'Failed to fetch progress' });
+    res.status(error instanceof Error && error.message === 'Access denied' ? 403 : 500).json({ error: 'Failed to fetch progress' });
   }
 }
 
@@ -32,11 +44,13 @@ export async function handleGetProgressSummary(req: Request, res: Response) {
 export async function handleGetStageProgress(req: Request, res: Response) {
   try {
     const { learnerId, stageId } = req.params;
-    const progress = await getStageProgress(parseInt(learnerId), parseInt(stageId));
+    const parsedLearnerId = parseInt(learnerId);
+    await ensureOwnLearner(req, parsedLearnerId);
+    const progress = await getStageProgress(parsedLearnerId, parseInt(stageId));
     res.json(progress);
   } catch (error) {
     console.error('Error fetching stage progress:', error);
-    res.status(404).json({ error: 'Progress not found' });
+    res.status(error instanceof Error && error.message === 'Access denied' ? 403 : 404).json({ error: 'Progress not found' });
   }
 }
 
@@ -48,6 +62,9 @@ export async function handleUpdateProgress(req: Request, res: Response) {
   try {
     const { learnerId, stageId } = req.params;
     const { completed_levels, total_levels } = req.body;
+    const parsedLearnerId = parseInt(learnerId);
+
+    await ensureOwnLearner(req, parsedLearnerId);
 
     if (completed_levels === undefined || total_levels === undefined) {
       return res.status(400).json({
@@ -56,7 +73,7 @@ export async function handleUpdateProgress(req: Request, res: Response) {
     }
 
     const progress = await updateStageProgress(
-      parseInt(learnerId),
+      parsedLearnerId,
       parseInt(stageId),
       completed_levels,
       total_levels
@@ -64,7 +81,7 @@ export async function handleUpdateProgress(req: Request, res: Response) {
     res.json(progress);
   } catch (error) {
     console.error('Error updating progress:', error);
-    res.status(500).json({ error: 'Failed to update progress' });
+    res.status(error instanceof Error && error.message === 'Access denied' ? 403 : 500).json({ error: 'Failed to update progress' });
   }
 }
 
@@ -76,8 +93,6 @@ export async function handleGetMyProgress(req: Request, res: Response) {
   try {
     const userId = (req as any).userId;
 
-    // Get learner profile from user id
-    const { getLearnerByUserId } = await import('../learner/learner.service.js');
     const learner = await getLearnerByUserId(userId);
 
     const summary = await getLearnerProgressSummary(learner.id);

@@ -23,10 +23,10 @@ router.put('/me', authMiddleware, handleUpdateMyProfile);
 // Protected route for authenticated users
 router.post('/profile', authMiddleware, handleSaveProfile);
 
-// Public routes
-router.post('/', handleCreateLearner);
-router.get('/:id', handleGetLearnerById);
-router.get('/user/:userId', handleGetLearnerByUserId);
-router.put('/:id', handleUpdateLearner);
+// Authenticated routes
+router.post('/', authMiddleware, handleCreateLearner);
+router.get('/user/:userId', authMiddleware, handleGetLearnerByUserId);
+router.get('/:id', authMiddleware, handleGetLearnerById);
+router.put('/:id', authMiddleware, handleUpdateLearner);
 
 export default router;
