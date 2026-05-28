@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { User, ArrowRight, Check } from "lucide-react";
 import { useAuth } from "../../modules/auth/index";
 
 interface LearnerProfileProps {
-  onComplete: (name: string, avatar: string) => void;
+  onComplete: (name: string, avatar: string, learnerId?: number) => void;
 }
 
 export function LearnerProfile({ onComplete }: LearnerProfileProps) {
@@ -41,7 +41,8 @@ export function LearnerProfile({ onComplete }: LearnerProfileProps) {
         throw new Error(data.message || 'Failed to save profile');
       }
 
-      onComplete(name, selectedAvatar);
+      const data = await response.json();
+      onComplete(name, selectedAvatar, data.learner?.id);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to save profile';
       setError(errorMessage);
