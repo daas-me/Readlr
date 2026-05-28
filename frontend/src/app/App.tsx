@@ -198,6 +198,7 @@ function AppContent() {
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+  const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
   const publicScreens: Screen[] = ["landing", "auth"];
@@ -262,9 +263,15 @@ function AppContent() {
     }
   }, [isAuthenticated, user, currentScreen]);
 
-  // Check if learner profile exists and fetch progress when showing learner-profile screen
   useEffect(() => {
-    if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
+    if (!isAuthenticated) {
+      setHasCheckedLearnerProfile(false);
+    }
+  }, [isAuthenticated]);
+
+  // Check if learner profile exists and keep the header identity stable after refresh/navigation.
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
       setIsCheckingProfile(true);
       
       const checkProfile = async () => {
@@ -278,23 +285,30 @@ function AppContent() {
 
           if (response.ok) {
             const data = await response.json();
-            // Profile exists, skip to welcome
             setLearnerName(data.name);
             setLearnerAvatar(data.avatar);
             setLearnerId(data.id);
-            setCurrentScreen("welcome");
+            if (currentScreen === "learner-profile") {
+              setCurrentScreen("welcome");
+            }
+          } else if (currentScreen !== "learner-profile") {
+            setCurrentScreen("learner-profile");
           }
         } catch (error) {
           // Profile doesn't exist, show profile setup
           console.log('No existing profile found, showing setup screen');
+          if (currentScreen !== "learner-profile") {
+            setCurrentScreen("learner-profile");
+          }
         } finally {
+          setHasCheckedLearnerProfile(true);
           setIsCheckingProfile(false);
         }
       };
 
       checkProfile();
     }
-  }, [isAuthenticated, user, token, currentScreen]);
+  }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
 
   // Fetch progress from backend when user authenticates
   useEffect(() => {
@@ -356,6 +370,7 @@ function AppContent() {
     setLearnerName(name);
     setLearnerAvatar(avatar);
     if (newLearnerId) setLearnerId(newLearnerId);
+    setHasCheckedLearnerProfile(true);
     setCompletedByStage(readProgressFromStorage(user?.id));
     setCurrentScreen("welcome");
   };
@@ -498,6 +513,7 @@ function AppContent() {
     setLearnerName("");
     setLearnerAvatar("🦊");
     setLearnerId(null);
+    setHasCheckedLearnerProfile(false);
     setCompletedByStage({ ...DEFAULT_PROGRESS });
   };
 
@@ -538,7 +554,7 @@ function AppContent() {
     <div className="size-full flex flex-col">
       {showLearnerHeader && (
         <NavigationHeader
-          userName={learnerName}
+          userName={learnerName || user?.name || "Reader"}
           userAvatar={learnerAvatar}
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
