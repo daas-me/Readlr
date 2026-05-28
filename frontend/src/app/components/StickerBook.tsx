@@ -1,8 +1,32 @@
+import { useMemo } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Star, Lock, Check } from "lucide-react";
+import { ArrowLeft, Star, Lock, Check, Sparkles } from "lucide-react";
+
+interface AttemptRecord {
+  stageId: number;
+  levelId: number;
+  word: string;
+  attemptNumber: number;
+  confidence: number;
+  tier: string;
+  timestamp: string;
+}
+
+function loadSelfCorrections(): AttemptRecord[] {
+  try {
+    const records: AttemptRecord[] = JSON.parse(
+      localStorage.getItem("readlr_attempt_records") || "[]"
+    );
+    // A self-correction = succeeded but needed more than 1 attempt
+    return records.filter((r) => r.attemptNumber > 1);
+  } catch {
+    return [];
+  }
+}
 
 interface StickerBookProps {
   onBack: () => void;
+  completedByStage?: Record<number, number>;
 }
 
 interface Sticker {
@@ -10,27 +34,34 @@ interface Sticker {
   emoji: string;
   name: string;
   stage: string;
-  earned: boolean;
+  stageId: number;
+  levelId: number;
 }
 
-export function StickerBook({ onBack }: StickerBookProps) {
-  const stickers: Sticker[] = [
-    { id: 1, emoji: "🦋", name: "Butterfly", stage: "Valley of Vowels — A", earned: true },
-    { id: 2, emoji: "🐝", name: "Bee", stage: "Valley of Vowels — E", earned: true },
-    { id: 3, emoji: "🐞", name: "Ladybug", stage: "Valley of Vowels — I", earned: true },
-    { id: 4, emoji: "🦉", name: "Owl", stage: "Valley of Vowels — O", earned: false },
-    { id: 5, emoji: "🦄", name: "Unicorn", stage: "Valley of Vowels — U", earned: false },
-    { id: 6, emoji: "🐸", name: "Frog", stage: "Blending Bridges 1", earned: false },
-    { id: 7, emoji: "🐢", name: "Turtle", stage: "Blending Bridges 2", earned: false },
-    { id: 8, emoji: "🦎", name: "Lizard", stage: "Blending Bridges 3", earned: false },
-    { id: 9, emoji: "🦜", name: "Parrot", stage: "CVC Kingdom 1", earned: false },
-    { id: 10, emoji: "🦚", name: "Peacock", stage: "CVC Kingdom 2", earned: false },
-    { id: 11, emoji: "🦁", name: "Lion", stage: "CVC Kingdom 3", earned: false },
-    { id: 12, emoji: "🐯", name: "Tiger", stage: "CVC Kingdom Final", earned: false },
-  ];
+const STICKER_DEFS: Sticker[] = [
+  { id: 1,  emoji: "🦋", name: "Butterfly", stage: "Valley of Vowels — A",  stageId: 1, levelId: 1 },
+  { id: 2,  emoji: "🐝", name: "Bee",       stage: "Valley of Vowels — E",  stageId: 1, levelId: 2 },
+  { id: 3,  emoji: "🐞", name: "Ladybug",   stage: "Valley of Vowels — I",  stageId: 1, levelId: 3 },
+  { id: 4,  emoji: "🦉", name: "Owl",       stage: "Valley of Vowels — O",  stageId: 1, levelId: 4 },
+  { id: 5,  emoji: "🦄", name: "Unicorn",   stage: "Valley of Vowels — U",  stageId: 1, levelId: 5 },
+  { id: 6,  emoji: "🐸", name: "Frog",      stage: "Blending Bridges 1",    stageId: 2, levelId: 1 },
+  { id: 7,  emoji: "🐢", name: "Turtle",    stage: "Blending Bridges 2",    stageId: 2, levelId: 2 },
+  { id: 8,  emoji: "🦎", name: "Lizard",    stage: "Blending Bridges 3",    stageId: 2, levelId: 3 },
+  { id: 9,  emoji: "🦜", name: "Parrot",    stage: "CVC Kingdom 1",         stageId: 3, levelId: 1 },
+  { id: 10, emoji: "🦚", name: "Peacock",   stage: "CVC Kingdom 2",         stageId: 3, levelId: 2 },
+  { id: 11, emoji: "🦁", name: "Lion",      stage: "CVC Kingdom 3",         stageId: 3, levelId: 3 },
+  { id: 12, emoji: "🐯", name: "Tiger",     stage: "CVC Kingdom Final",     stageId: 3, levelId: 4 },
+];
+
+export function StickerBook({ onBack, completedByStage = {} }: StickerBookProps) {
+  const stickers = STICKER_DEFS.map((s) => ({
+    ...s,
+    earned: (completedByStage[s.stageId] ?? 0) >= s.levelId,
+  }));
 
   const earnedCount = stickers.filter((s) => s.earned).length;
   const pct = Math.round((earnedCount / stickers.length) * 100);
+  const selfCorrections = useMemo(() => loadSelfCorrections(), []);
 
   return (
     <div className="size-full bg-[#FAF7F2] overflow-auto">
@@ -140,6 +171,63 @@ export function StickerBook({ onBack }: StickerBookProps) {
                 ? "Amazing — you've collected every sticker in the album!"
                 : `Keep learning to unlock ${stickers.length - earnedCount} more stickers.`}
             </p>
+          </motion.div>
+
+          {/* Self-Correction Stars */}
+          <motion.div
+            initial={{ y: 8, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-[#F59E0B]" />
+              <h2 className="text-xl text-[#1F2430] tracking-tight">Self-Correction Stars</h2>
+              <span className="ml-auto text-xs uppercase tracking-wider text-[#8A91A3]">
+                {selfCorrections.length} earned
+              </span>
+            </div>
+
+            <p className="text-xs text-[#8A91A3] mb-4">
+              Earned when you fix a mistake on your own — without Milo's help!
+            </p>
+
+            {selfCorrections.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 border border-[#1F243014] flex flex-col items-center gap-3 text-center">
+                <div className="w-14 h-14 rounded-full bg-[#FFF7ED] flex items-center justify-center">
+                  <Star className="w-7 h-7 text-[#F59E0B]" />
+                </div>
+                <p className="text-[#1F2430]">No stars yet</p>
+                <p className="text-xs text-[#8A91A3] max-w-xs">
+                  When you get a word wrong and then fix it yourself on the next try, you'll earn a Self-Correction Star!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {selfCorrections.map((record, index) => (
+                  <motion.div
+                    key={`${record.stageId}-${record.levelId}-${record.timestamp}`}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -3 }}
+                    className="bg-gradient-to-br from-[#FFF7ED] to-[#FEF3C7] rounded-2xl p-5 border border-[#F59E0B33] cursor-pointer"
+                  >
+                    <div className="aspect-square rounded-xl bg-white/60 flex items-center justify-center mb-4 relative">
+                      <span className="text-5xl">⭐</span>
+                      <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#F59E0B] flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      </span>
+                    </div>
+                    <p className="text-[#1F2430] font-medium">{record.word}</p>
+                    <p className="text-xs text-[#8A91A3] mt-0.5">
+                      Stage {record.stageId} · Try {record.attemptNumber}
+                    </p>
+                    <p className="text-xs text-[#F59E0B] mt-1 font-medium">Self-Correction!</p>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

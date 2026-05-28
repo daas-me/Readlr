@@ -1,117 +1,69 @@
-import { Buffer } from 'buffer';
+import OpenAI from 'openai';
+import config from '../../config/env.js';
 import { AudioResult } from './audio.types.js';
 
-// Phoneme mapping for common vowels
-const PHONEME_PATTERNS: Record<string, string[]> = {
-  'ah': ['ah', 'a', 'ɑ'],
-  'ee': ['ee', 'i', 'iː'],
-  'oo': ['oo', 'u', 'uː'],
-  'eh': ['eh', 'e', 'ɛ'],
-  'ih': ['ih', 'ɪ'],
-};
+const openai = new OpenAI({ apiKey: config.openaiApiKey });
 
-/**
- * Process audio and calculate phoneme score
- * For now, this is a simplified implementation without external APIs
- */
 export async function processAudio(
   file: Express.Multer.File,
   targetPhoneme: string,
-  childId?: string
+  childId?: string,
+  acceptedTranscripts?: string[]
 ): Promise<AudioResult> {
-  try {
-    // TODO: Replace with actual audio processing once API is ready
-    // For now, we'll simulate with simple random scoring
-    
-    const detectedPhoneme = generateRandomPhoneme();
-    const matched = comparePhonemes(detectedPhoneme, targetPhoneme);
-    const score = calculateScore(detectedPhoneme, targetPhoneme);
-    const feedback = generateFeedback(matched, targetPhoneme, detectedPhoneme);
+  const startTime = Date.now();
 
-    return {
-      matched,
-      score,
-      transcription: `[Audio received - ${file.originalname}]`,
-      detectedPhoneme,
-      targetPhoneme,
-      feedback,
-    };
-  } catch (error) {
-    console.error('Error processing audio:', error);
-    throw error;
-  }
-}
+  const response = await openai.audio.transcriptions.create({
+    file: new File([file.buffer], file.originalname || 'audio.webm', {
+      type: file.mimetype || 'audio/webm',
+    }),
+    model: 'whisper-1',
+    language: 'en',
+    response_format: 'verbose_json',
+    temperature: 0,
+    // hint to Whisper — improves accuracy for short phoneme/word targets
+    prompt: targetPhoneme,
+  });
 
-function generateRandomPhoneme(): string {
-  const phonemes = Object.keys(PHONEME_PATTERNS);
-  return phonemes[Math.floor(Math.random() * phonemes.length)];
-}
+  const durationMs = Date.now() - startTime;
+  const transcription = (response.text ?? '').toLowerCase().trim();
 
-function comparePhonemes(detected: string, target: string): boolean {
-  // Normalize both phonemes
-  const detectedPatterns = PHONEME_PATTERNS[detected.toLowerCase()] || [detected];
-  const targetPatterns = PHONEME_PATTERNS[target.toLowerCase()] || [target];
-
-  // Check if there's any overlap
-  return detectedPatterns.some(d => targetPatterns.includes(d));
-}
-
-function calculateScore(detected: string, target: string): number {
-  // Return score 0-100
-  if (detected.toLowerCase() === target.toLowerCase()) {
-    return 100;
+  // Derive confidence from segment log-probabilities (verbose_json only)
+  const segments = (response as any).segments as Array<{ avg_logprob: number }> | undefined;
+  let confidence = 0.5;
+  if (segments && segments.length > 0) {
+    const avgLogprob =
+      segments.reduce((sum, s) => sum + s.avg_logprob, 0) / segments.length;
+    // logprob is ≤ 0; exp(0) = 1.0 (perfect), exp(-∞) → 0
+    confidence = Math.max(0, Math.min(1, Math.exp(avgLogprob)));
   }
 
-  // Check if they're similar phonemes
-  const detectedPatterns = PHONEME_PATTERNS[detected.toLowerCase()] || [];
-  const targetPatterns = PHONEME_PATTERNS[target.toLowerCase()] || [];
+  // Match transcription against the challenge's accepted word list
+  const targets = acceptedTranscripts?.length
+    ? acceptedTranscripts.map(t => t.toLowerCase())
+    : [targetPhoneme.toLowerCase()];
 
-  if (detectedPatterns.some(d => targetPatterns.includes(d))) {
-    return 75;
-  }
+  const spokenWords = transcription.split(/\s+/);
+  const matched = targets.some(
+    t => spokenWords.includes(t) || transcription.includes(t)
+  );
 
-  // Levenshtein distance for partial match
-  const distance = levenshteinDistance(detected, target);
-  const maxLength = Math.max(detected.length, target.length);
-  return Math.max(0, 100 - (distance / maxLength) * 100);
-}
+  // Score: full confidence on match, partial on near-miss
+  const score = matched
+    ? Math.round(confidence * 100)
+    : Math.round(confidence * 40);
 
-function levenshteinDistance(str1: string, str2: string): number {
-  const matrix: number[][] = [];
+  const feedback = matched
+    ? `Great job! You said "${targetPhoneme}" correctly!`
+    : `Good try! You said "${transcription || '...'}", but try saying "${targetPhoneme}". Keep practicing!`;
 
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i];
-  }
-
-  for (let j = 0; j <= str1.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
-      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-
-  return matrix[str2.length][str1.length];
-}
-
-function generateFeedback(matched: boolean, target: string, detected: string): string {
-  if (matched) {
-    return `Great job! You said "${target}" correctly!`;
-  }
-
-  if (detected === target) {
-    return `Perfect! You nailed the "${target}" sound!`;
-  }
-
-  return `Good try! You said "${detected}", but try the "${target}" sound. Keep practicing!`;
+  return {
+    matched,
+    score,
+    transcription,
+    detectedPhoneme: transcription,
+    targetPhoneme,
+    feedback,
+    confidence,
+    durationMs,
+  };
 }

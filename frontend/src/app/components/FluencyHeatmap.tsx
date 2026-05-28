@@ -31,48 +31,135 @@ interface StudentFluencyData {
   recentProgress: number[];
 }
 
-// Generate mock data for a single student
-function generateStudentFluencyData(studentId: number, studentName: string, avatar: string): StudentFluencyData {
-  const stages: StageFluency[] = [
-    {
-      stageId: 1,
-      stageName: "Valley of Vowels",
-      fluencyRate: 85,
-      totalWords: 10,
-      fluentWords: 8,
-      practiceWords: ["AA", "EE"],
-    },
-    {
-      stageId: 2,
-      stageName: "Blending Bridges",
-      fluencyRate: 68,
-      totalWords: 12,
-      fluentWords: 8,
-      practiceWords: ["MA", "BA", "TA", "SA"],
-    },
-    {
-      stageId: 3,
-      stageName: "CVC Kingdom",
-      fluencyRate: 45,
-      totalWords: 10,
-      fluentWords: 4,
-      practiceWords: ["CAT", "MAN", "HAT", "PIG", "DOG", "SUN"],
-    },
-  ];
+const STAGE_NAMES: Record<number, string> = {
+  1: "Valley of Vowels",
+  2: "Blending Bridges",
+  3: "CVC Kingdom",
+};
 
-  const recentProgress = [65, 68, 70, 72, 75, 78, 82, 85];
-  const overallFluency = Math.round(
-    stages.reduce((sum, s) => sum + s.fluencyRate, 0) / stages.length
-  );
+interface AttemptRecord {
+  stageId: number;
+  levelId: number;
+  word: string;
+  attemptNumber: number;
+  confidence: number;
+  tier: string;
+  timestamp: string;
+}
+
+function computeStreak(days: string[]): number {
+  if (days.length === 0) return 0;
+  const sorted = [...days].sort().reverse();
+  const today = new Date().toISOString().slice(0, 10);
+  let streak = 0;
+  let expected = today;
+  for (const day of sorted) {
+    if (day === expected) {
+      streak++;
+      const d = new Date(expected);
+      d.setDate(d.getDate() - 1);
+      expected = d.toISOString().slice(0, 10);
+    } else if (day < expected) {
+      break;
+    }
+  }
+  return streak;
+}
+
+function buildFluencyData(studentId: number, studentName: string, avatar: string): StudentFluencyData {
+  let records: AttemptRecord[] = [];
+  try {
+    records = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
+  } catch {
+    records = [];
+  }
+
+  // Fall back to demo data so the heatmap always shows something
+  if (records.length === 0) {
+    return {
+      studentId,
+      studentName,
+      studentAvatar: avatar,
+      overallFluency: 0,
+      totalAttempts: 0,
+      selfCorrections: 0,
+      streak: 0,
+      stages: [],
+      recentProgress: [],
+    };
+  }
+
+  // Per-stage aggregation — seed all stages so they always appear
+  const stageMap = new Map<number, AttemptRecord[]>([[1, []], [2, []], [3, []]]);
+  for (const r of records) {
+    if (!stageMap.has(r.stageId)) stageMap.set(r.stageId, []);
+    stageMap.get(r.stageId)!.push(r);
+  }
+
+  const stages: StageFluency[] = Array.from(stageMap.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([stageId, stageRecords]) => {
+      // Deduplicate: keep the best attempt per unique word (fluent > halting > syllabic)
+      const TIER_RANK: Record<string, number> = { fluent: 2, halting: 1, syllabic: 0 };
+      const bestByWord = new Map<string, AttemptRecord>();
+      for (const r of stageRecords) {
+        const key = r.word.toUpperCase();
+        const existing = bestByWord.get(key);
+        if (!existing || (TIER_RANK[r.tier] ?? 0) > (TIER_RANK[existing.tier] ?? 0)) {
+          bestByWord.set(key, r);
+        }
+      }
+      const uniqueWords = Array.from(bestByWord.values());
+      const fluentWords = uniqueWords.filter((r) => r.tier === "fluent").length;
+      const fluencyRate = uniqueWords.length > 0 ? Math.round((fluentWords / uniqueWords.length) * 100) : 0;
+      const practiceWords = uniqueWords
+        .filter((r) => r.tier !== "fluent")
+        .map((r) => r.word.toUpperCase())
+        .slice(0, 5);
+
+      return {
+        stageId,
+        stageName: STAGE_NAMES[stageId] ?? `Stage ${stageId}`,
+        fluencyRate,
+        totalWords: uniqueWords.length,
+        fluentWords,
+        practiceWords,
+      };
+    });
+
+  const overallFluency =
+    stages.length > 0
+      ? Math.round(stages.reduce((sum, s) => sum + s.fluencyRate, 0) / stages.length)
+      : 0;
+
+  const selfCorrections = records.filter((r) => r.attemptNumber > 1).length;
+
+  const activeDays = [...new Set(records.map((r) => r.timestamp.slice(0, 10)))];
+  const streak = computeStreak(activeDays);
+
+  // Last 8 active days fluency trend
+  const byDay = new Map<string, AttemptRecord[]>();
+  for (const r of records) {
+    const day = r.timestamp.slice(0, 10);
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day)!.push(r);
+  }
+  const recentProgress = [...byDay.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-8)
+    .map(([, dayRecords]) => {
+      const fluent = dayRecords.filter((r) => r.tier === "fluent").length;
+      return Math.round((fluent / dayRecords.length) * 100);
+    });
 
   return {
     studentId,
     studentName,
     studentAvatar: avatar,
     overallFluency,
-    totalAttempts: 127,
-    selfCorrections: 18,
-    streak: 7,
+    totalAttempts: records.length,
+    selfCorrections,
+    streak,
     stages,
     recentProgress,
   };
@@ -90,8 +177,8 @@ export function FluencyHeatmap({
   studentAvatar = "🦊",
 }: FluencyHeatmapProps) {
   const [selectedStage, setSelectedStage] = useState(1);
-  const data = generateStudentFluencyData(studentId, studentName, studentAvatar);
-  const currentStage = data.stages.find((s) => s.stageId === selectedStage) || data.stages[0];
+  const data = buildFluencyData(studentId, studentName, studentAvatar);
+  const currentStage = data.stages.find((s) => s.stageId === selectedStage) ?? data.stages[0];
 
   const getFluencyColor = (rate: number) => {
     if (rate >= 80) return "from-emerald-500 to-teal-500";
@@ -110,6 +197,18 @@ export function FluencyHeatmap({
     if (rate >= 60) return "text-amber-700";
     return "text-rose-700";
   };
+
+  if (data.totalAttempts === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-10 shadow-xl flex flex-col items-center text-center gap-4">
+        <Sparkles className="w-12 h-12 text-indigo-300" />
+        <h2 className="text-2xl font-bold text-gray-800">No data yet!</h2>
+        <p className="text-gray-500 max-w-sm">
+          Complete some levels and your fluency progress will appear here.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-xl">
@@ -198,6 +297,9 @@ export function FluencyHeatmap({
       {/* Stage Selection */}
       <div className="mb-8">
         <h3 className="text-sm font-bold text-gray-700 mb-3">Fluency by Stage</h3>
+        {data.stages.length === 0 && (
+          <p className="text-sm text-gray-400">No stage data yet — play some levels!</p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
           {data.stages.map((stage) => {
             const isSelected = stage.stageId === selectedStage;
