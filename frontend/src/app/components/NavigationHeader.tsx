@@ -45,7 +45,7 @@ export function NavigationHeader({
         className="bg-[#FAF7F2]/85 backdrop-blur-md border-b border-[#1F243014] sticky top-0 z-50"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center h-16">
             {/* Logo */}
             <motion.div
               whileHover={{ y: -1 }}
@@ -62,7 +62,7 @@ export function NavigationHeader({
             </motion.div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 flex-1 justify-center mx-4">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const active = currentScreen === item.id;
@@ -84,10 +84,10 @@ export function NavigationHeader({
             </nav>
 
             {/* User Profile */}
-            {userName && (
-              <div className="hidden md:flex items-center gap-3">
+            {(userName || userAvatar) && (
+              <div className="hidden md:flex items-center gap-3 flex-shrink-0">
                 <div className="text-right leading-tight">
-                  <p className="text-sm text-[#1F2430]">{userName}</p>
+                  <p className="text-sm text-[#1F2430]">{userName || "Learner"}</p>
                   <p className="text-[10px] uppercase tracking-wider text-[#8A91A3]">Grade 1</p>
                 </div>
                 <button
