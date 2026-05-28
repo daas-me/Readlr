@@ -71,12 +71,104 @@ type Screen =
   | "help"
   | "profile";
 
+interface AppRouteState {
+  screen: Screen;
+  authMode?: "login" | "register";
+  stageId?: number;
+  levelId?: number;
+}
+
+const DEFAULT_ROUTE: AppRouteState = { screen: "landing" };
+
+function parseAppPath(pathname: string): AppRouteState {
+  const path = pathname.replace(/\/+$/, "") || "/";
+
+  if (path === "/") return DEFAULT_ROUTE;
+  if (path === "/login") return { screen: "auth", authMode: "login" };
+  if (path === "/register") return { screen: "auth", authMode: "register" };
+  if (path === "/profile/setup") return { screen: "learner-profile" };
+  if (path === "/welcome") return { screen: "welcome" };
+  if (path === "/home") return { screen: "stage-selection" };
+  if (path === "/stickers") return { screen: "sticker-book" };
+  if (path === "/progress") return { screen: "dashboard" };
+  if (path === "/sounds") return { screen: "phoneme-bank" };
+  if (path === "/settings") return { screen: "settings" };
+  if (path === "/achievements") return { screen: "achievements" };
+  if (path === "/help") return { screen: "help" };
+  if (path === "/profile") return { screen: "profile" };
+
+  const stageMatch = path.match(/^\/stage-(\d+)(?:\/(chapters|chapter-(\d+)(?:\/(intro|complete|summary|level-complete))?))?$/);
+  if (stageMatch) {
+    const stageId = Number(stageMatch[1]);
+    const stageSection = stageMatch[2];
+    const levelId = stageMatch[3] ? Number(stageMatch[3]) : 1;
+    const chapterSection = stageMatch[4];
+
+    if (!stageSection) return { screen: "story-scene", stageId, levelId: 1 };
+    if (stageSection === "chapters") return { screen: "level-map", stageId, levelId: 1 };
+    if (chapterSection === "intro") return { screen: "chapter-bridge", stageId, levelId };
+    if (chapterSection === "complete") return { screen: "chapter-celebration", stageId, levelId };
+    if (chapterSection === "summary") return { screen: "session-summary", stageId, levelId };
+    if (chapterSection === "level-complete") return { screen: "level-complete", stageId, levelId };
+
+    return { screen: "game", stageId, levelId };
+  }
+
+  return DEFAULT_ROUTE;
+}
+
+function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode: "login" | "register"): string {
+  switch (screen) {
+    case "landing":
+      return "/";
+    case "auth":
+      return authMode === "login" ? "/login" : "/register";
+    case "learner-profile":
+      return "/profile/setup";
+    case "welcome":
+      return "/welcome";
+    case "stage-selection":
+      return "/home";
+    case "story-scene":
+      return `/stage-${stageId}`;
+    case "chapter-bridge":
+      return `/stage-${stageId}/chapter-${levelId}/intro`;
+    case "level-map":
+      return `/stage-${stageId}/chapters`;
+    case "game":
+      return `/stage-${stageId}/chapter-${levelId}`;
+    case "chapter-celebration":
+      return `/stage-${stageId}/chapter-${levelId}/complete`;
+    case "level-complete":
+      return `/stage-${stageId}/chapter-${levelId}/level-complete`;
+    case "session-summary":
+      return `/stage-${stageId}/chapter-${levelId}/summary`;
+    case "sticker-book":
+      return "/stickers";
+    case "dashboard":
+      return "/progress";
+    case "phoneme-bank":
+      return "/sounds";
+    case "settings":
+      return "/settings";
+    case "achievements":
+      return "/achievements";
+    case "help":
+      return "/help";
+    case "profile":
+      return "/profile";
+    default:
+      return "/";
+  }
+}
+
 function AppContent() {
   const { isAuthenticated, user, token, logout } = useAuth();
-  const [currentScreen, setCurrentScreen] = useState<Screen>("landing");
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
-  const [selectedStage, setSelectedStage] = useState<number>(1);
-  const [selectedLevel, setSelectedLevel] = useState<number>(1);
+  const initialRoute = parseAppPath(window.location.pathname);
+  const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
+  const [selectedStage, setSelectedStage] = useState<number>(initialRoute.stageId ?? 1);
+  const [selectedLevel, setSelectedLevel] = useState<number>(initialRoute.levelId ?? 1);
   const [completedByStage, setCompletedByStage] = useState<Record<number, number>>(() => {
     // Load from localStorage or use default
     try {
@@ -92,6 +184,26 @@ function AppContent() {
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseAppPath(window.location.pathname);
+      setCurrentScreen(route.screen);
+      if (route.authMode) setAuthMode(route.authMode);
+      if (route.stageId) setSelectedStage(route.stageId);
+      if (route.levelId) setSelectedLevel(route.levelId);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    const nextPath = buildAppPath(currentScreen, selectedStage, selectedLevel, authMode);
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, "", nextPath);
+    }
+  }, [currentScreen, selectedStage, selectedLevel, authMode]);
 
   // Auto-navigate authenticated users
   useEffect(() => {
