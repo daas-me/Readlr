@@ -37,6 +37,19 @@ const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
   5: { vowel: "U", name: "" },
 };
 
+const BLENDING_MAP: Record<number, { consonant: string; vowel: string; name: string }> = {
+  1: { consonant: "M", vowel: "A", name: "MA" },
+  2: { consonant: "B", vowel: "A", name: "BA" },
+  3: { consonant: "T", vowel: "A", name: "TA" },
+  4: { consonant: "S", vowel: "A", name: "SA" },
+  5: { consonant: "L", vowel: "A", name: "LA" },
+  6: { consonant: "P", vowel: "A", name: "PA" },
+  7: { consonant: "N", vowel: "A", name: "NA" },
+  8: { consonant: "D", vowel: "A", name: "DA" },
+};
+
+
+
 type Screen =
   | "landing"
   | "auth"
@@ -374,9 +387,15 @@ function AppContent() {
           <ChapterBridge
             stageName={STAGE_CONFIG[selectedStage]?.title ?? "Chapter"}
             currentLevel={selectedLevel}
-            vowel={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" : ""}
+            // For Stage 1, use VOWEL_MAP. For Stage 2, pass empty strings or use the first letter of the blend
+            vowel={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" : BLENDING_MAP[selectedLevel]?.vowel ?? "A"}
             vowelName={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.name ?? "Apple" : ""}
             stageId={selectedStage}
+            // Pass the blending pair only if we are in Stage 2
+            blendingPair={selectedStage === 2 ? {
+              consonant: BLENDING_MAP[selectedLevel]?.consonant ?? "M",
+              vowel: BLENDING_MAP[selectedLevel]?.vowel ?? "A"
+            } : undefined}
             onBeginChapter={handleBeginChapterFromBridge}
           />
         )}
