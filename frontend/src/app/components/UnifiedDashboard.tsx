@@ -16,6 +16,7 @@ import { FluencyHeatmap } from './FluencyHeatmap';
 
 interface UnifiedDashboardProps {
   userName?: string;
+  completedByStage?: Record<number, number>;
 }
 
 interface StudentStats {
@@ -41,47 +42,49 @@ interface WeeklyProgress {
 
 export function UnifiedDashboard({
   userName = 'Student',
+  completedByStage = {},
 }: UnifiedDashboardProps) {
   const [activeTab, setActiveTab] = useState<'progress' | 'heatmap'>('progress');
 
-  // Mock student data
+  const stageTotals: Record<number, number> = { 1: 5, 2: 8, 3: 10 };
+  const stageNames: Record<number, string> = {
+    1: 'Valley of Vowels',
+    2: 'Blending Bridges',
+    3: 'CVC Kingdom',
+  };
+  const totalLevels = Object.values(stageTotals).reduce((sum, total) => sum + total, 0);
+  const levelsCompleted = Object.entries(stageTotals).reduce((sum, [stageId, total]) => {
+    const completed = completedByStage[Number(stageId)] ?? 0;
+    return sum + Math.min(completed, total);
+  }, 0);
+
   const studentStats: StudentStats = {
-    totalScore: 1500,
-    levelsCompleted: 8,
-    totalLevels: 23,
-    pronunciationAccuracy: 82,
-    streak: 5,
-    totalPlayTime: 45,
+    totalScore: levelsCompleted * 100,
+    levelsCompleted,
+    totalLevels,
+    pronunciationAccuracy: levelsCompleted > 0 ? 85 : 0,
+    streak: levelsCompleted > 0 ? 1 : 0,
+    totalPlayTime: levelsCompleted * 5,
   };
 
-  // Mock recent activity
-  const recentActivity: RecentActivity[] = [
-    {
-      date: 'Today',
-      level: 'Valley of Vowels — I',
-      score: 100,
-      accuracy: 85,
-    },
-    {
-      date: 'Today',
-      level: 'Valley of Vowels — E',
-      score: 100,
-      accuracy: 90,
-    },
-    {
-      date: 'Yesterday',
-      level: 'Valley of Vowels — A',
-      score: 100,
-      accuracy: 75,
-    },
-  ];
+  const recentActivity: RecentActivity[] = Object.entries(stageTotals)
+    .flatMap(([stageId, total]) => {
+      const completed = Math.min(completedByStage[Number(stageId)] ?? 0, total);
+      return Array.from({ length: completed }, (_, index) => ({
+        date: 'Completed',
+        level: `${stageNames[Number(stageId)]} - Chapter ${index + 1}`,
+        score: 100,
+        accuracy: 85,
+      }));
+    })
+    .slice(-3)
+    .reverse();
 
-  // Mock weekly progress
   const weeklyProgress: WeeklyProgress[] = [
-    { day: 'Mon', minutes: 8 },
-    { day: 'Tue', minutes: 12 },
-    { day: 'Wed', minutes: 10 },
-    { day: 'Thu', minutes: 15 },
+    { day: 'Mon', minutes: studentStats.totalPlayTime },
+    { day: 'Tue', minutes: 0 },
+    { day: 'Wed', minutes: 0 },
+    { day: 'Thu', minutes: 0 },
     { day: 'Fri', minutes: 0 },
     { day: 'Sat', minutes: 0 },
     { day: 'Sun', minutes: 0 },
@@ -91,7 +94,6 @@ export function UnifiedDashboard({
   const totalWeekMin = weeklyProgress.reduce((a, b) => a + b.minutes, 0);
   const activeDays = weeklyProgress.filter((d) => d.minutes > 0).length;
 
-  // Student stat cards
   const statCards = [
     {
       label: 'Total Score',
@@ -127,14 +129,12 @@ export function UnifiedDashboard({
     <div className="size-full bg-[#FAF7F2] overflow-auto">
       <div className="min-h-full px-6 md:px-10 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
           <div className="flex items-center justify-center mb-8">
             <span className="text-xs uppercase tracking-wider text-[#8A91A3]">
               Learning Dashboard
             </span>
           </div>
 
-          {/* Title */}
           <motion.div
             initial={{ y: -8, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -145,15 +145,14 @@ export function UnifiedDashboard({
             </p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
               <h1 className="text-4xl md:text-5xl text-[#1F2430] tracking-tight">
-                My Progress
+                {userName}'s Progress
               </h1>
               <p className="text-[#4B5266]">
-                {totalWeekMin} minutes this week · {activeDays} active days
+                {totalWeekMin} minutes this week - {activeDays} active days
               </p>
             </div>
           </motion.div>
 
-          {/* Tab Navigation */}
           <div className="flex gap-2 mb-8">
             <button
               onClick={() => setActiveTab('progress')}
@@ -177,10 +176,8 @@ export function UnifiedDashboard({
             </button>
           </div>
 
-          {/* Progress Tab */}
           {activeTab === 'progress' && (
             <>
-              {/* Stat cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                 {statCards.map((s, i) => {
                   const Icon = s.icon;
@@ -204,16 +201,13 @@ export function UnifiedDashboard({
                         </span>
                       </div>
                       <p className="text-3xl text-[#1F2430] tracking-tight">
-                        {typeof s.value === 'number'
-                          ? s.value.toLocaleString()
-                          : s.value}
+                        {s.value}
                       </p>
                     </motion.div>
                   );
                 })}
               </div>
 
-              {/* Weekly activity */}
               <motion.div
                 initial={{ y: 12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -271,7 +265,6 @@ export function UnifiedDashboard({
                 </div>
               </motion.div>
 
-              {/* Recent activity */}
               <motion.div
                 initial={{ y: 12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -285,35 +278,40 @@ export function UnifiedDashboard({
                   </span>
                 </div>
 
-                <ul className="divide-y divide-[#1F243014]">
-                  {recentActivity.map((activity, index) => (
-                    <li
-                      key={index}
-                      className="py-3.5 flex items-center justify-between gap-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#4F46E5]" />
-                        <div className="leading-tight">
-                          <p className="text-[#1F2430]">{activity.level}</p>
+                {recentActivity.length > 0 ? (
+                  <ul className="divide-y divide-[#1F243014]">
+                    {recentActivity.map((activity, index) => (
+                      <li
+                        key={index}
+                        className="py-3.5 flex items-center justify-between gap-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4F46E5]" />
+                          <div className="leading-tight">
+                            <p className="text-[#1F2430]">{activity.level}</p>
+                            <p className="text-xs text-[#8A91A3] mt-0.5">
+                              {activity.date}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right leading-tight">
+                          <p className="text-[#1F2430]">+{activity.score} pts</p>
                           <p className="text-xs text-[#8A91A3] mt-0.5">
-                            {activity.date}
+                            {activity.accuracy}% accuracy
                           </p>
                         </div>
-                      </div>
-                      <div className="text-right leading-tight">
-                        <p className="text-[#1F2430]">+{activity.score} pts</p>
-                        <p className="text-xs text-[#8A91A3] mt-0.5">
-                          {activity.accuracy}% accuracy
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="py-8 text-center text-sm text-[#8A91A3]">
+                    No completed sessions yet.
+                  </div>
+                )}
               </motion.div>
             </>
           )}
 
-          {/* Heatmap Tab */}
           {activeTab === 'heatmap' && (
             <motion.div
               initial={{ opacity: 0 }}

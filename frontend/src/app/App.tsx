@@ -629,6 +629,7 @@ function AppContent() {
         {currentScreen === "dashboard" && (
           <UnifiedDashboard
             userName={learnerName || user?.name}
+            completedByStage={completedByStage}
           />
         )}
 
