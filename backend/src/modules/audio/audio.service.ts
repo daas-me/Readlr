@@ -2,7 +2,15 @@ import OpenAI from 'openai';
 import config from '../../config/env.js';
 import { AudioResult } from './audio.types.js';
 
-const openai = new OpenAI({ apiKey: config.openaiApiKey });
+let openai: OpenAI | null = null;
+
+try {
+  if (config.openaiApiKey) {
+    openai = new OpenAI({ apiKey: config.openaiApiKey });
+  }
+} catch (error) {
+  console.warn('OpenAI client initialization failed. Audio transcription will use mock responses.');
+}
 
 export async function processAudio(
   file: Express.Multer.File,
@@ -11,6 +19,23 @@ export async function processAudio(
   acceptedTranscripts?: string[]
 ): Promise<AudioResult> {
   const startTime = Date.now();
+
+  // Mock response if OpenAI is not available
+  if (!openai) {
+    console.log('Mock audio processing (OpenAI not configured)');
+    const durationMs = Date.now() - startTime;
+    return {
+      matched: true,
+      score: 95,
+      transcription: targetPhoneme.toLowerCase(),
+      detectedPhoneme: targetPhoneme.toLowerCase(),
+      targetPhoneme,
+      feedback: `Mock response: "${targetPhoneme}" recognized!`,
+      confidence: 0.95,
+      durationMs,
+      //childId: childId || undefined,
+    };
+  }
 
   const response = await openai.audio.transcriptions.create({
     file: new File([file.buffer], file.originalname || 'audio.webm', {
