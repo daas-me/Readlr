@@ -5,6 +5,42 @@ import confetti from "canvas-confetti";
 import { CharacterCompanion, CharacterState } from "./CharacterCompanion";
 import { useAudioManager } from "../../hooks/useAudioManager";
 
+type FluencyTier = "fluent" | "halting" | "syllabic";
+
+function computeTier(confidence: number, attemptNumber: number): FluencyTier {
+  if (confidence < 0.40) return "syllabic";
+  if (attemptNumber > 1) return "halting";
+  return "fluent";
+}
+
+function editDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  return dp[a.length][b.length];
+}
+
+function fuzzyMatch(word: string, targets: Set<string>): boolean {
+  if (targets.has(word)) return true;
+  for (const target of targets) {
+    // Allow 1 edit for short words (≤4 chars), 2 edits for longer words
+    const maxDist = target.length <= 4 ? 1 : 2;
+    if (editDistance(word, target) <= maxDist) return true;
+  }
+  return false;
+}
+
+const TIER_LABEL: Record<FluencyTier, { label: string; color: string }> = {
+  fluent:   { label: "Fluent ⭐",   color: "#10B981" },
+  halting:  { label: "Halting 🔄",  color: "#F59E0B" },
+  syllabic: { label: "Keep Trying 💪", color: "#EF4444" },
+};
+
 interface GameLevelProps {
   stageId: number;
   levelId: number;
@@ -19,7 +55,7 @@ interface Challenge {
   consonant?: string;  // Used for blending
   vowel?: string;      // Used for blending/phoneme
   targetWord?: string; // The full word for blending (e.g., "Mama")
-  audioPath?: string;
+  audioPath: string;
   acceptedTranscripts: string[];
   storyContext: string;
 }
@@ -41,55 +77,56 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
     5: { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to move the boulder!" },
   },
   2: { // Chapter 2: Blending Bridges
-    1: { 
+    1: {
       id: 1, word: "MA", consonant: "M", vowel: "A", targetWord: "Mama",
-      audioPath: "/audio/stage2/MA.wav", 
-      acceptedTranscripts: ["ma", "mama", "mah", "maa", "m a", "momma", "mamma"], 
-      storyContext: "Blend M and A to say 'MA', then say 'Mama'!" 
+      audioPath: "/audio/stage2/MA.wav",
+      acceptedTranscripts: ["ma", "mama", "mah", "maa", "m a", "momma", "mamma"],
+      storyContext: "Blend M and A to say 'MA', then say 'Mama'!"
     },
-    2: { 
+    2: {
       id: 2, word: "BA", consonant: "B", vowel: "A", targetWord: "Baba",
-      audioPath: "/audio/stage2/BA.wav", 
-      acceptedTranscripts: ["ba", "baba", "bah", "baa", "b a", "bubba", "bub"], 
-      storyContext: "Blend B and A to say 'BA', then say 'Baba'!" 
+      audioPath: "/audio/stage2/BA.wav",
+      acceptedTranscripts: ["ba", "baba", "bah", "baa", "b a", "bubba", "bub"],
+      storyContext: "Blend B and A to say 'BA', then say 'Baba'!"
     },
-    3: { 
+    3: {
       id: 3, word: "TA", consonant: "T", vowel: "A", targetWord: "Tata",
-      audioPath: "/audio/stage2/TA.wav", 
-      acceptedTranscripts: ["ta", "tata", "tah", "taa", "t a", "tada"], 
-      storyContext: "Blend T and A to say 'TA', then say 'Tata'!" 
+      audioPath: "/audio/stage2/TA.wav",
+      acceptedTranscripts: ["ta", "tata", "tah", "taa", "t a", "tada"],
+      storyContext: "Blend T and A to say 'TA', then say 'Tata'!"
     },
-    4: { 
+    4: {
       id: 4, word: "SA", consonant: "S", vowel: "A", targetWord: "Sasa",
-      audioPath: "/audio/stage2/SA.wav", 
-      acceptedTranscripts: ["sa", "sasa", "sah", "saa", "s a", "saw"], 
-      storyContext: "Blend S and A to say 'SA', then say 'Sasa'!" 
+      audioPath: "/audio/stage2/SA.wav",
+      acceptedTranscripts: ["sa", "sasa", "sah", "saa", "s a", "saw"],
+      storyContext: "Blend S and A to say 'SA', then say 'Sasa'!"
     },
-    5: { 
+    5: {
       id: 5, word: "LA", consonant: "L", vowel: "A", targetWord: "Lala",
-      audioPath: "/audio/stage2/LA.wav", 
-      acceptedTranscripts: ["la", "lala", "lah", "laa", "l a", "law", "lola"], 
-      storyContext: "Blend L and A to say 'LA', then say 'Lala'!" 
+      audioPath: "/audio/stage2/LA.wav",
+      acceptedTranscripts: ["la", "lala", "lah", "laa", "l a", "law", "lola"],
+      storyContext: "Blend L and A to say 'LA', then say 'Lala'!"
     },
-    6: { 
+    6: {
       id: 6, word: "PA", consonant: "P", vowel: "A", targetWord: "Papa",
-      audioPath: "/audio/stage2/PA.wav", 
-      acceptedTranscripts: ["pa", "papa", "pah", "paa", "p a", "paw", "poppa"], 
-      storyContext: "Blend P and A to say 'PA', then say 'Papa'!" 
+      audioPath: "/audio/stage2/PA.wav",
+      acceptedTranscripts: ["pa", "papa", "pah", "paa", "p a", "paw", "poppa"],
+      storyContext: "Blend P and A to say 'PA', then say 'Papa'!"
     },
-    7: { 
+    7: {
       id: 7, word: "NA", consonant: "N", vowel: "A", targetWord: "Nana",
-      audioPath: "/audio/stage2/NA.wav", 
-      acceptedTranscripts: ["na", "nana", "nah", "naa", "n a", "naw", "nonna"], 
-      storyContext: "Blend N and A to say 'NA', then say 'Nana'!" 
+      audioPath: "/audio/stage2/NA.wav",
+      acceptedTranscripts: ["na", "nana", "nah", "naa", "n a", "naw", "nonna"],
+      storyContext: "Blend N and A to say 'NA', then say 'Nana'!"
     },
-    8: { 
+    8: {
       id: 8, word: "DA", consonant: "D", vowel: "A", targetWord: "Dada",
-      audioPath: "/audio/stage2/DA.wav", 
-      acceptedTranscripts: ["da", "dada", "dah", "daa", "d a", "dad"], 
-      storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
+      audioPath: "/audio/stage2/DA.wav",
+      acceptedTranscripts: ["da", "dada", "dah", "daa", "d a", "dad"],
+      storyContext: "Blend D and A to say 'DA', then say 'Dada'!"
     },
   },
+  // ✅ CONFLICT 1 RESOLVED: Stage 3 CVC Kingdom kept from feature/Chapter3Audio
   3: { // Chapter 3: CVC Kingdom
     1: {
       id: 1, word: "CAT", audioPath: "/audio/stage3/CAT.wav",
@@ -144,15 +181,94 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
   },
 };
 
+const VOWEL_WORD_SETS: Array<{
+  phoneme: string;
+  audioWord: string;
+  audioPath: string;
+  words: string[];
+}> = [
+  {
+    phoneme: "A",
+    audioWord: "Apple",
+    audioPath: "/audio/stage1/Apple.wav",
+    words: ["Apple", "Ant", "Axe", "Alligator", "Astronaut", "Anchor", "Arrow", "Acorn", "Apron", "Album"],
+  },
+  {
+    phoneme: "E",
+    audioWord: "Egg",
+    audioPath: "/audio/stage1/Egg.wav",
+    words: ["Egg", "Elephant", "Elbow", "Engine", "Envelope", "Exit", "Echo", "Emerald", "Eskimo", "Exercise"],
+  },
+  {
+    phoneme: "I",
+    audioWord: "Igloo",
+    audioPath: "/audio/stage1/Igloo.wav",
+    words: ["Igloo", "Insect", "Ink", "Island", "Invitation", "Iguana", "Idea", "Ice", "Iron", "Inside"],
+  },
+  {
+    phoneme: "O",
+    audioWord: "Octopus",
+    audioPath: "/audio/stage1/Octopus.wav",
+    words: ["Octopus", "Orange", "Ostrich", "Otter", "Owl", "Ocean", "Olive", "Oven", "Office", "Orbit"],
+  },
+  {
+    phoneme: "U",
+    audioWord: "Umbrella",
+    audioPath: "/audio/stage1/Umbrella.wav",
+    words: ["Umbrella", "Unicorn", "Up", "Under", "Uniform", "Ukulele", "Uncle", "Utensil", "Urn", "Us"],
+  },
+];
+
+const VOWEL_GATE_CHALLENGES: Challenge[] = [
+  { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to light the A door!" },
+  { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to light the E door!" },
+  { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to light the I door!" },
+  { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to light the O door!" },
+  { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to unlock the Valley of Vowels!" },
+];
+
+function getChallenge(stageId: number, levelId: number): Challenge {
+  if (stageId === 1) {
+    if (levelId <= VOWEL_GATE_CHALLENGES.length) {
+      return VOWEL_GATE_CHALLENGES[levelId - 1];
+    }
+
+    const valleyLevel = Math.max(1, Math.min(levelId - VOWEL_GATE_CHALLENGES.length, 50));
+    const group = VOWEL_WORD_SETS[Math.floor((valleyLevel - 1) / 10)];
+    const word = group.words[(valleyLevel - 1) % 10];
+
+    return {
+      id: levelId,
+      word,
+      phoneme: group.phoneme,
+      audioPath: group.audioPath,
+      acceptedTranscripts: [
+        word.toLowerCase(),
+        group.phoneme.toLowerCase(),
+        group.audioWord.toLowerCase(),
+      ],
+      storyContext: `Say '${word}' to restore the ${group.phoneme} part of the valley!`,
+    };
+  }
+
+  return ALL_CHALLENGES[stageId]?.[levelId] ?? ALL_CHALLENGES[2][1];
+}
+
 export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
-  const { playAudio, speakText, stopAudio, stopAllAudio } = useAudioManager();
+  const { playAudio, stopAudio, stopAllAudio } = useAudioManager();
 
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
   const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
-  
-  const challenge = ALL_CHALLENGES[stageId]?.[levelId];
+  const [earnedTier, setEarnedTier] = useState<FluencyTier | null>(null);
+  const [lastTranscript, setLastTranscript] = useState<string | null>(null);
+
+  const attemptNumber = useRef(0);
+  const attemptStartTime = useRef<number>(0);
+
+  const challenge = getChallenge(stageId, levelId);
   const isBlendingMode = stageId === 2;
+  // ✅ MISSING VARIABLE RESTORED: isCvcMode was referenced in JSX but never defined
   const isCvcMode = stageId === 3;
 
   // Trackers for active web speech instances and custom safety timers
@@ -186,24 +302,22 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     setCharacterState("speaking");
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
-    const sound = challenge.audioPath
-      ? playAudio(challenge.audioPath)
-      : speakText(challenge.word.toLowerCase(), 0.75);
-    
+    const sound = playAudio(challenge.audioPath);
+
     if (sound) {
-      const onDone = () => {
+      // Ties the character state directly to the length of the audio file!
+      sound.onended = () => {
         setCharacterState("idle");
         setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
       };
-      if (sound instanceof HTMLAudioElement) {
-        sound.onended = onDone;
-      } else {
-        sound.onend = onDone;
-      }
     }
-  }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
+  }, [challenge, isBlendingMode, playAudio, stopAudio]);
 
+  // ✅ CONFLICT 2 RESOLVED: kept attempt/tier resets from main + autoplay timer from both
   useEffect(() => {
+    attemptNumber.current = 0;
+    setEarnedTier(null);
+
     const autoplayTimer = setTimeout(() => {
       speakPhoneme();
     }, 1000);
@@ -212,7 +326,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       clearTimeout(autoplayTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stageId, levelId]); 
+  }, [stageId, levelId]);
 
   const handleSpeechResult = (outcome: Outcome) => {
     stopAudio();
@@ -240,7 +354,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     if (characterState === "listening") return;
 
     stopAudio();
-    
+
     if (recognitionRef.current) {
       try { recognitionRef.current.abort(); } catch (e) {}
     }
@@ -254,24 +368,54 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = true;
-    
+
     recognitionRef.current = recognition;
     let hasResponded = false;
 
     setCharacterState("listening");
     setBubbleMessage(`Listening...`);
+    attemptStartTime.current = Date.now();
+    attemptNumber.current += 1;
 
+    // ✅ CONFLICT 3 RESOLVED: merged silenceTimeout clear + hasResponded guard (feature)
+    //    with confidence tracking, fuzzyMatch, and localStorage recording (main)
     recognition.onresult = (event: any) => {
       if (event.results[event.results.length - 1].isFinal) {
         if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
-        
-        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-        const targetWords = new Set(challenge.acceptedTranscripts);
-        
-        hasResponded = true;
-        try { recognition.stop(); } catch(e) {}
 
-        if (transcript.split(/\s+/).some((word: string) => targetWords.has(word))) {
+        const result = event.results[event.results.length - 1][0];
+        const transcript = result.transcript.toLowerCase().trim();
+        const confidence: number = result.confidence || 0.5;
+        const durationMs = Date.now() - attemptStartTime.current;
+
+        setLastTranscript(`${transcript} (confidence: ${confidence.toFixed(2)})`);
+        const targetWords = new Set(challenge.acceptedTranscripts);
+        // Stage 1 targets vowel discrimination — exact match only so "igg" ≠ "egg"
+        const matchWord = (word: string) => stageId === 1
+          ? targetWords.has(word)
+          : fuzzyMatch(word, targetWords);
+        const matched = transcript.split(/\s+/).some((word: string) => matchWord(word.replace(/[^a-z]/g, "")));
+
+        hasResponded = true;
+        try { recognition.stop(); } catch (e) {}
+
+        if (matched) {
+          const tier = computeTier(confidence, attemptNumber.current);
+          setEarnedTier(tier);
+
+          const record = {
+            stageId,
+            levelId,
+            word: challenge.word,
+            attemptNumber: attemptNumber.current,
+            confidence,
+            durationMs,
+            tier,
+            timestamp: new Date().toISOString(),
+          };
+          const existing = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
+          localStorage.setItem("readlr_attempt_records", JSON.stringify([...existing, record]));
+
           handleSpeechResult("success");
         } else {
           handleSpeechResult("incorrect");
@@ -289,7 +433,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
       recognitionRef.current = null;
       if (!hasResponded) {
-        handleSpeechResult("incorrect"); 
+        handleSpeechResult("incorrect");
       }
     };
 
@@ -302,7 +446,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         try { recognition.abort(); } catch (e) {}
         handleSpeechResult("silent");
       }
-    }, 5000); // 5000 milliseconds = 5 seconds
+    }, 5000);
   };
 
   return (
@@ -312,12 +456,12 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         <button onClick={onBack} className="absolute top-6 left-6 px-3 py-2 rounded-xl bg-white border text-sm hover:bg-gray-50 transition-colors">
           <ArrowLeft className="w-4 h-4 inline mr-1" /> Back
         </button>
-        
+
         <motion.div className="bg-white rounded-2xl px-6 sm:px-8 py-4 shadow-lg text-center max-w-md w-full">
           <p className="text-lg sm:text-xl font-bold text-[#1F2430]">{bubbleMessage}</p>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="flex-shrink-0"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
@@ -337,6 +481,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
                 <span className="text-4xl sm:text-6xl uppercase">{challenge.targetWord}</span>
               </div>
             </div>
+          // ✅ CONFLICT 4 RESOLVED: CVC letter-split display kept from feature/Chapter3Audio
           ) : isCvcMode ? (
             <div className="flex flex-col items-center">
               <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Read the word:</h2>
@@ -368,18 +513,32 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           <button onClick={speakPhoneme} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
             <Volume2 className="w-4 h-4 flex-shrink-0" /> Listen
           </button>
-          
-          <button 
+
+          <button
             disabled={characterState === "listening"}
-            onClick={handleListen} 
-            className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base" 
+            onClick={handleListen}
+            className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base"
             style={{ background: accent }}
           >
             <Mic className="w-4 h-4 flex-shrink-0" /> {characterState === "listening" ? "Listening..." : "Tap to Speak"}
           </button>
         </div>
-        
+
+        {lastTranscript && (
+          <p className="text-xs text-gray-400 text-center">heard: "{lastTranscript}"</p>
+        )}
         <p className="mt-2 sm:mt-4 text-gray-500 text-xs sm:text-sm text-center max-w-md">{challenge.storyContext}</p>
+
+        {earnedTier && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="px-4 py-2 rounded-full text-white text-sm font-bold"
+            style={{ backgroundColor: TIER_LABEL[earnedTier].color }}
+          >
+            {TIER_LABEL[earnedTier].label}
+          </motion.div>
+        )}
       </div>
     </div>
   );

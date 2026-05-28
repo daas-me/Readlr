@@ -23,11 +23,12 @@ import { ProfilePage } from "./components/ProfilePage";
 
 // Stage configuration for determining progress
 const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextStageId?: number }> = {
-  1: { title: "Valley of Vowels", totalLevels: 5, nextStageId: 2 },
+  1: { title: "Valley of Vowels", totalLevels: 55, nextStageId: 2 },
   2: { title: "Blending Bridges", totalLevels: 8, nextStageId: 3 },
   3: { title: "CVC Kingdom", totalLevels: 10 },
 };
 
+// ── from feature/Chapter3Audio: per-user storage helpers ──────────────────────
 const DEFAULT_PROGRESS: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
 
 function getProgressStorageKey(userId?: number): string | null {
@@ -37,7 +38,6 @@ function getProgressStorageKey(userId?: number): string | null {
 function readProgressFromStorage(userId?: number): Record<number, number> {
   const storageKey = getProgressStorageKey(userId);
   if (!storageKey) return { ...DEFAULT_PROGRESS };
-
   try {
     const saved = localStorage.getItem(storageKey);
     return saved ? { ...DEFAULT_PROGRESS, ...JSON.parse(saved) } : { ...DEFAULT_PROGRESS };
@@ -52,13 +52,63 @@ function saveProgressToStorage(userId: number | undefined, progress: Record<numb
   localStorage.setItem(storageKey, JSON.stringify(progress));
 }
 
-// Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
+// ── from main: full 55-level vowel map ────────────────────────────────────────
 const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
   1: { vowel: "A", name: "Apple" },
   2: { vowel: "E", name: "Egg" },
   3: { vowel: "I", name: "Igloo" },
   4: { vowel: "O", name: "Octopus" },
   5: { vowel: "U", name: "Umbrella" },
+  6: { vowel: "A", name: "Apple" },
+  7: { vowel: "A", name: "Ant" },
+  8: { vowel: "A", name: "Axe" },
+  9: { vowel: "A", name: "Alligator" },
+  10: { vowel: "A", name: "Astronaut" },
+  11: { vowel: "A", name: "Anchor" },
+  12: { vowel: "A", name: "Arrow" },
+  13: { vowel: "A", name: "Acorn" },
+  14: { vowel: "A", name: "Apron" },
+  15: { vowel: "A", name: "Album" },
+  16: { vowel: "E", name: "Egg" },
+  17: { vowel: "E", name: "Elephant" },
+  18: { vowel: "E", name: "Elbow" },
+  19: { vowel: "E", name: "Engine" },
+  20: { vowel: "E", name: "Envelope" },
+  21: { vowel: "E", name: "Exit" },
+  22: { vowel: "E", name: "Echo" },
+  23: { vowel: "E", name: "Emerald" },
+  24: { vowel: "E", name: "Eskimo" },
+  25: { vowel: "E", name: "Exercise" },
+  26: { vowel: "I", name: "Igloo" },
+  27: { vowel: "I", name: "Insect" },
+  28: { vowel: "I", name: "Ink" },
+  29: { vowel: "I", name: "Island" },
+  30: { vowel: "I", name: "Invitation" },
+  31: { vowel: "I", name: "Iguana" },
+  32: { vowel: "I", name: "Idea" },
+  33: { vowel: "I", name: "Ice" },
+  34: { vowel: "I", name: "Iron" },
+  35: { vowel: "I", name: "Inside" },
+  36: { vowel: "O", name: "Octopus" },
+  37: { vowel: "O", name: "Orange" },
+  38: { vowel: "O", name: "Ostrich" },
+  39: { vowel: "O", name: "Otter" },
+  40: { vowel: "O", name: "Owl" },
+  41: { vowel: "O", name: "Ocean" },
+  42: { vowel: "O", name: "Olive" },
+  43: { vowel: "O", name: "Oven" },
+  44: { vowel: "O", name: "Office" },
+  45: { vowel: "O", name: "Orbit" },
+  46: { vowel: "U", name: "Umbrella" },
+  47: { vowel: "U", name: "Unicorn" },
+  48: { vowel: "U", name: "Up" },
+  49: { vowel: "U", name: "Under" },
+  50: { vowel: "U", name: "Uniform" },
+  51: { vowel: "U", name: "Ukulele" },
+  52: { vowel: "U", name: "Uncle" },
+  53: { vowel: "U", name: "Utensil" },
+  54: { vowel: "U", name: "Urn" },
+  55: { vowel: "U", name: "Us" },
 };
 
 // Blending mapping for stage 2
@@ -73,7 +123,7 @@ const BLENDING_MAP: Record<number, { consonant: string; vowel: string; name: str
   8: { consonant: "D", vowel: "A", name: "DA" },
 };
 
-// CVC Word mapping for stage 3
+// ── from feature/Chapter3Audio: CVC Word mapping for stage 3 ──────────────────
 const CVC_MAP: Record<number, { word: string }> = {
   1: { word: "CAT" },
   2: { word: "MAN" },
@@ -200,35 +250,39 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
 }
 
 function AppContent() {
+  // ── from feature/Chapter3Audio: isLoading exposed from useAuth ───────────────
   const { isAuthenticated, user, token, isLoading: isAuthLoading, logout } = useAuth();
   const initialRoute = parseAppPath(window.location.pathname);
   const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
   const [selectedStage, setSelectedStage] = useState<number>(initialRoute.stageId ?? 1);
   const [selectedLevel, setSelectedLevel] = useState<number>(initialRoute.levelId ?? 1);
+  // ── from feature/Chapter3Audio: clean initial state; synced via useEffect ────
   const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ ...DEFAULT_PROGRESS });
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+  // ── from feature/Chapter3Audio: prevents redundant profile API calls ─────────
   const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
   const publicScreens: Screen[] = ["landing", "auth"];
   const isPublicScreen = publicScreens.includes(currentScreen);
 
+  // ── from feature/Chapter3Audio: load per-user progress on auth change ────────
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner") {
       setCompletedByStage(readProgressFromStorage(user.id));
       return;
     }
-
     if (!isAuthenticated) {
       setCompletedByStage({ ...DEFAULT_PROGRESS });
     }
   }, [isAuthenticated, user]);
 
+  // Handle browser back/forward navigation
   useEffect(() => {
     const handlePopState = () => {
       const route = parseAppPath(window.location.pathname);
@@ -247,6 +301,7 @@ function AppContent() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [isLevelJustCompleted]);
 
+  // Sync URL with current screen state
   useEffect(() => {
     const nextPath = buildAppPath(currentScreen, selectedStage, selectedLevel, authMode);
     if (window.location.pathname !== nextPath) {
@@ -254,12 +309,14 @@ function AppContent() {
     }
   }, [currentScreen, selectedStage, selectedLevel, authMode]);
 
+  // ── from feature/Chapter3Audio: redirect unauthenticated users ───────────────
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated && !isPublicScreen) {
       setCurrentScreen("landing");
     }
   }, [isAuthLoading, isAuthenticated, isPublicScreen]);
 
+  // Protect celebration screen from direct URL access
   useEffect(() => {
     const route = parseAppPath(window.location.pathname);
     if (route.screen === "chapter-celebration" && !isLevelJustCompleted) {
@@ -267,29 +324,30 @@ function AppContent() {
     }
   }, []);
 
+  // Auto-navigate authenticated users away from public screens
   useEffect(() => {
     if (isAuthenticated && user && (currentScreen === "landing" || currentScreen === "auth")) {
       setCurrentScreen("learner-profile");
     }
   }, [isAuthenticated, user, currentScreen]);
 
+  // ── from feature/Chapter3Audio: reset check flag on logout ───────────────────
   useEffect(() => {
     if (!isAuthenticated) {
       setHasCheckedLearnerProfile(false);
     }
   }, [isAuthenticated]);
 
+  // ── from feature/Chapter3Audio: smarter profile check (not screen-gated) ─────
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
       setIsCheckingProfile(true);
-      
+
       const checkProfile = async () => {
         try {
           const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
           const response = await fetch(`${API_URL}/learner/user/${user.id}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
+            headers: { 'Authorization': `Bearer ${token}` },
           });
 
           if (response.ok) {
@@ -318,32 +376,32 @@ function AppContent() {
     }
   }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
 
+  // Fetch progress from backend when learner ID is resolved
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && token && learnerId) {
       setIsSyncingProgress(true);
-      
+
       const fetchProgress = async () => {
         try {
           const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
           const response = await fetch(`${API_URL}/progress/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
+            headers: { 'Authorization': `Bearer ${token}` },
           });
 
           if (response.ok) {
             const progressData = await response.json();
+            // ── from feature/Chapter3Audio: handles both array and {stages:[]} shapes
             const stages = Array.isArray(progressData)
               ? progressData
               : Array.isArray(progressData.stages)
                 ? progressData.stages
                 : [];
             const newCompletedByStage: Record<number, number> = { ...DEFAULT_PROGRESS };
-            
+
             stages.forEach((progress: { stage_id: number; completed_levels: number }) => {
               newCompletedByStage[progress.stage_id] = progress.completed_levels;
             });
-            
+
             setCompletedByStage(newCompletedByStage);
             saveProgressToStorage(user.id, newCompletedByStage);
           }
@@ -370,6 +428,7 @@ function AppContent() {
 
   const handleAuthSuccess = () => {};
 
+  // ── from feature/Chapter3Audio: accepts optional newLearnerId ─────────────────
   const handleProfileComplete = (name: string, avatar: string, newLearnerId?: number) => {
     setLearnerName(name);
     setLearnerAvatar(avatar);
@@ -399,7 +458,8 @@ function AppContent() {
 
   const handleLevelComplete = async () => {
     const newProgress = Math.max(completedByStage[selectedStage] ?? 0, selectedLevel);
-    
+
+    // ── from feature/Chapter3Audio: atomic update + persist to per-user key ─────
     const nextProgress = {
       ...completedByStage,
       [selectedStage]: newProgress,
@@ -411,7 +471,7 @@ function AppContent() {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
         const stageConfig = STAGE_CONFIG[selectedStage];
-        
+
         await fetch(`${API_URL}/progress/learners/${learnerId}/stages/${selectedStage}`, {
           method: 'PUT',
           headers: {
@@ -435,10 +495,24 @@ function AppContent() {
   const handleContinueToNextStory = () => {
     const nextLevel = selectedLevel + 1;
     const stageConfig = STAGE_CONFIG[selectedStage];
-    
+
     setIsLevelJustCompleted(false);
-    
+
     if (stageConfig && nextLevel <= stageConfig.totalLevels) {
+      // ── from main: Stage 1 has a bridge only for the five intro vowel doors ───
+      if (selectedStage === 1) {
+        if (nextLevel <= 5) {
+          setSelectedLevel(nextLevel);
+          setCurrentScreen("chapter-bridge");
+          return;
+        }
+        // After the five doors, return to the unlocked Valley map.
+        setSelectedLevel(nextLevel);
+        setCurrentScreen("level-map");
+        return;
+      }
+
+      // All other stages get a chapter bridge before each level
       setSelectedLevel(nextLevel);
       setCurrentScreen("chapter-bridge");
     } else if (stageConfig?.nextStageId) {
@@ -506,15 +580,21 @@ function AppContent() {
     setLearnerName("");
     setLearnerAvatar("🦊");
     setLearnerId(null);
+    // ── from feature/Chapter3Audio: reset profile check flag on logout ──────────
     setHasCheckedLearnerProfile(false);
     setCompletedByStage({ ...DEFAULT_PROGRESS });
   };
 
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
-  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "level-complete"];
+  // ── from feature/Chapter3Audio: hides nav on immersive screens ───────────────
+  const noHeaderScreens = [
+    "landing", "auth", "learner-profile", "welcome",
+    "story-scene", "chapter-bridge", "level-map", "game", "level-complete",
+  ];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
 
+  // Landing and Auth render before auth guards so they are always accessible
   if (currentScreen === "landing") {
     return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
@@ -528,6 +608,7 @@ function AppContent() {
     );
   }
 
+  // ── from feature/Chapter3Audio: spinner while token is being validated ────────
   if (isAuthLoading && token && !user && !isPublicScreen) {
     return (
       <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
@@ -536,6 +617,7 @@ function AppContent() {
     );
   }
 
+  // ── from feature/Chapter3Audio: hard guard for unauthenticated access ─────────
   if (!isAuthenticated && !isPublicScreen) {
     return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
@@ -544,6 +626,7 @@ function AppContent() {
     <div className="size-full flex flex-col">
       {showLearnerHeader && (
         <NavigationHeader
+          // ── from feature/Chapter3Audio: fallback chain for display name ────────
           userName={learnerName || user?.name || "Reader"}
           userAvatar={learnerAvatar}
           currentScreen={currentScreen}
@@ -584,17 +667,17 @@ function AppContent() {
           <ChapterBridge
             stageName={STAGE_CONFIG[selectedStage]?.title ?? "Chapter"}
             currentLevel={selectedLevel}
-            // Dynamically resolves target word shapes based on whether it is a Vowel, Blend, or CVC Word
+            // ── from feature/Chapter3Audio: resolves vowel/blend/CVC per stage ───
             vowel={
-              selectedStage === 1 
-                ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" 
+              selectedStage === 1
+                ? VOWEL_MAP[selectedLevel]?.vowel ?? "A"
                 : selectedStage === 2
                 ? BLENDING_MAP[selectedLevel]?.vowel ?? "A"
                 : CVC_MAP[selectedLevel]?.word ?? "CAT"
             }
             vowelName={
-              selectedStage === 1 
-                ? VOWEL_MAP[selectedLevel]?.name ?? "Apple" 
+              selectedStage === 1
+                ? VOWEL_MAP[selectedLevel]?.name ?? "Apple"
                 : selectedStage === 3
                 ? CVC_MAP[selectedLevel]?.word ?? "CAT"
                 : ""
@@ -602,7 +685,7 @@ function AppContent() {
             stageId={selectedStage}
             blendingPair={selectedStage === 2 ? {
               consonant: BLENDING_MAP[selectedLevel]?.consonant ?? "M",
-              vowel: BLENDING_MAP[selectedLevel]?.vowel ?? "A"
+              vowel: BLENDING_MAP[selectedLevel]?.vowel ?? "A",
             } : undefined}
             onBeginChapter={handleBeginChapterFromBridge}
             onBack={handleBackFromBridge}
@@ -660,10 +743,12 @@ function AppContent() {
         )}
 
         {currentScreen === "sticker-book" && (
-          <StickerBook onBack={handleBackToStages} />
+          // ── from main: passes completedByStage to StickerBook ─────────────────
+          <StickerBook onBack={handleBackToStages} completedByStage={completedByStage} />
         )}
 
         {currentScreen === "dashboard" && (
+          // ── from feature/Chapter3Audio: passes completedByStage to Dashboard ───
           <UnifiedDashboard
             userName={learnerName || user?.name}
             completedByStage={completedByStage}
