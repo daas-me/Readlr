@@ -94,7 +94,7 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
 
 export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
-  const { stopAudio } = useAudioManager();
+  const { playAudio, stopAudio, stopAllAudio } = useAudioManager();
 
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
   const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
@@ -104,23 +104,26 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
 
   // Cleanup audio when the user leaves the level completely
   useEffect(() => {
-    return () => stopAudio();
-  }, [stopAudio]);
+    return () => {
+      stopAllAudio();
+    };
+  }, [stopAllAudio]);
 
   const speakPhoneme = useCallback(() => {
     stopAudio();
     setCharacterState("speaking");
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
-    const sound = new Audio(challenge.audioPath);
-    sound.play().catch(err => console.error("Audio error:", err));
-
-    // Ties the character state directly to the length of the audio file!
-    sound.onended = () => {
-      setCharacterState("idle");
-      setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
-    };
-  }, [challenge, isBlendingMode, stopAudio]);
+    const sound = playAudio(challenge.audioPath);
+    
+    if (sound) {
+      // Ties the character state directly to the length of the audio file!
+      sound.onended = () => {
+        setCharacterState("idle");
+        setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
+      };
+    }
+  }, [challenge, isBlendingMode, playAudio, stopAudio]);
 
   useEffect(() => {
     // 1000ms delay before autoplaying the word/phoneme when the component mounts
@@ -141,15 +144,19 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       setCharacterState("celebrating");
       setBubbleMessage(`Great! You said "${challenge.targetWord || challenge.word}"!`);
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-      const feedbackAudio = new Audio("/audio/common/GreatJob.wav");
-      feedbackAudio.play();
-      feedbackAudio.onended = onComplete;
+      const feedbackAudio = playAudio("/audio/common/GreatJob.wav");
+      if (feedbackAudio) {
+        feedbackAudio.onended = onComplete;
+      } else {
+        onComplete();
+      }
     } else {
       setCharacterState("encouraging");
       setBubbleMessage(outcome === "silent" ? "Oops! Let's try again." : "Not quite, try saying the word clearly.");
-      const retryAudio = new Audio(outcome === "silent" ? "/audio/common/TryAgain.wav" : "/audio/common/IncorrectWord.wav");
-      retryAudio.play();
-      retryAudio.onended = () => setCharacterState("idle");
+      const retryAudio = playAudio(outcome === "silent" ? "/audio/common/TryAgain.wav" : "/audio/common/IncorrectWord.wav");
+      if (retryAudio) {
+        retryAudio.onended = () => setCharacterState("idle");
+      }
     }
   };
 
@@ -182,47 +189,55 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   };
 
   return (
-    <div className="size-full bg-[#FAF7F2] overflow-auto relative">
-      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-60" style={{ background: tint }} />
-      <div className="relative z-10 min-h-full flex flex-col px-6 py-6 items-center justify-center">
-        <button onClick={onBack} className="absolute top-6 left-6 px-3 py-2 rounded-xl bg-white border text-sm">
+    <div className="size-full bg-[#FAF7F2] overflow-hidden relative flex flex-col">
+      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-60 pointer-events-none" style={{ background: tint }} />
+      <div className="relative z-10 flex-1 flex flex-col px-4 sm:px-6 py-4 sm:py-6 items-center justify-center gap-4">
+        <button onClick={onBack} className="absolute top-6 left-6 px-3 py-2 rounded-xl bg-white border text-sm hover:bg-gray-50 transition-colors">
           <ArrowLeft className="w-4 h-4 inline mr-1" /> Back
         </button>
-        <motion.div className="bg-white rounded-2xl px-8 py-4 mb-6 shadow-lg text-center">
-          <p className="text-xl font-bold text-[#1F2430]">{bubbleMessage}</p>
+        
+        <motion.div className="bg-white rounded-2xl px-6 sm:px-8 py-4 shadow-lg text-center max-w-md w-full">
+          <p className="text-lg sm:text-xl font-bold text-[#1F2430]">{bubbleMessage}</p>
         </motion.div>
         
-        <CharacterCompanion state={characterState} phoneme={challenge.phoneme || challenge.vowel || ""} size={260} />
+        <motion.div 
+          className="flex-shrink-0"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+        >
+          <CharacterCompanion state={characterState} phoneme={challenge.phoneme || challenge.vowel || ""} size={260} />
+        </motion.div>
 
-        <motion.div className="mt-8 bg-white px-12 py-6 rounded-3xl border-4 text-center" style={{ borderColor: accent }}>
+        <motion.div className="bg-white px-6 sm:px-12 py-4 sm:py-6 rounded-3xl border-4 text-center max-w-2xl w-full" style={{ borderColor: accent }}>
           {isBlendingMode ? (
             <div className="flex flex-col items-center">
-              <h2 className="text-sm uppercase tracking-widest text-gray-400 mb-2">Blend the sounds:</h2>
-              <div className="flex items-center gap-4 text-6xl font-bold" style={{ color: accent }}>
-                <span>{challenge.consonant}</span>
-                <span className="text-gray-300">+</span>
-                <span>{challenge.vowel}</span>
-                <span className="text-gray-300">=</span>
-                <span className="uppercase">{challenge.targetWord}</span>
+              <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Blend the sounds:</h2>
+              <div className="flex items-center gap-2 sm:gap-4 font-bold justify-center flex-wrap" style={{ color: accent }}>
+                <span className="text-4xl sm:text-6xl">{challenge.consonant}</span>
+                <span className="text-2xl sm:text-3xl text-gray-300">+</span>
+                <span className="text-4xl sm:text-6xl">{challenge.vowel}</span>
+                <span className="text-2xl sm:text-3xl text-gray-300">=</span>
+                <span className="text-4xl sm:text-6xl uppercase">{challenge.targetWord}</span>
               </div>
             </div>
           ) : (
             <>
-              <h2 className="text-sm uppercase tracking-widest text-gray-400">Say the word:</h2>
-              <span className="text-7xl font-bold" style={{ color: accent }}>{challenge.word}</span>
+              <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Say the word:</h2>
+              <span className="text-5xl sm:text-7xl font-bold inline-block" style={{ color: accent }}>{challenge.word}</span>
             </>
           )}
         </motion.div>
 
-        <div className="flex gap-4 mt-8">
-          <button onClick={speakPhoneme} className="px-6 py-4 rounded-2xl bg-white border flex items-center gap-2">
-            <Volume2 className="w-4 h-4" /> Listen
+        <div className="flex flex-col sm:flex-row gap-3 max-w-sm sm:max-w-md sm:gap-4 justify-center">
+          <button onClick={speakPhoneme} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
+            <Volume2 className="w-4 h-4 flex-shrink-0" /> Listen
           </button>
-          <button onClick={handleListen} className="px-10 py-4 rounded-2xl text-white font-bold flex items-center gap-2" style={{ background: accent }}>
-            <Mic className="w-4 h-4" /> Tap to Speak
+          <button onClick={handleListen} className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm sm:text-base" style={{ background: accent }}>
+            <Mic className="w-4 h-4 flex-shrink-0" /> Tap to Speak
           </button>
         </div>
-        <p className="mt-4 text-gray-500">{challenge.storyContext}</p>
+        
+        <p className="mt-2 sm:mt-4 text-gray-500 text-xs sm:text-sm text-center max-w-md">{challenge.storyContext}</p>
       </div>
     </div>
   );

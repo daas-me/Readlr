@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, Volume2, BookOpen } from "lucide-react";
+import { useAudioManager } from "../../hooks/useAudioManager";
 
 interface PhonemeBankProps {
   onBack: () => void;
@@ -17,6 +18,7 @@ interface PhonemeEntry {
 
 export function PhonemeBank({ onBack }: PhonemeBankProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("vowels");
+  const { speakText } = useAudioManager();
 
   const phonemes: PhonemeEntry[] = [
     { id: 1, category: "vowels", phoneme: "A", example: "/a/", exampleWord: "apple", stage: "Valley of Vowels" },
@@ -46,9 +48,7 @@ export function PhonemeBank({ onBack }: PhonemeBankProps) {
   const filtered = phonemes.filter((p) => p.category === selectedCategory);
 
   const handlePlaySound = (text: string) => {
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.6;
-    window.speechSynthesis.speak(u);
+    speakText(text, 0.6);
   };
 
   return (
