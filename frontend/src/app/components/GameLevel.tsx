@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Volume2, Mic, ArrowLeft, RotateCcw, MicOff } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { motion } from "motion/react";
+import { Volume2, Mic, ArrowLeft } from "lucide-react";
 import confetti from "canvas-confetti";
 import { CharacterCompanion, CharacterState } from "./CharacterCompanion";
 import { useAudioManager } from "../../hooks/useAudioManager";
@@ -14,14 +14,17 @@ interface GameLevelProps {
 
 interface Challenge {
   id: number;
-  phoneme: string;
+  word: string;        // The result (e.g., "Apple" or "MA")
+  phoneme?: string;    // Used for Stage 1 character display
+  consonant?: string;  // Used for blending
+  vowel?: string;      // Used for blending/phoneme
+  targetWord?: string; // The full word for blending (e.g., "Mama")
   audioPath: string;
   acceptedTranscripts: string[];
-  prompt: string;
   storyContext: string;
 }
 
-type Outcome = "success" | "lowConfidence" | "silent";
+type Outcome = "success" | "incorrect" | "silent";
 
 const STAGE_ACCENTS: Record<number, { accent: string; tint: string }> = {
   1: { accent: "#F59E0B", tint: "#FFF7ED" },
@@ -29,376 +32,197 @@ const STAGE_ACCENTS: Record<number, { accent: string; tint: string }> = {
   3: { accent: "#10B981", tint: "#D1FAE5" },
 };
 
-// All challenges mapped by stage and level
 const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
   1: {
-    1: { id: 1, phoneme: "A", audioPath: "/audio/stage1/A.wav", acceptedTranscripts: ["a", "ah", "uh", "aw", "aaa", "ahhhhh", "ahhhh", "ahhh", "apple"], prompt: "Say the sound: Ahhh", storyContext: "Help Sinta open the first magic door!" },
-    2: { id: 2, phoneme: "E", audioPath: "/audio/stage1/E.wav", acceptedTranscripts: ["e", "eh", "a", "hey", "ed", "end", "any", "egg", "it"], prompt: "Say the sound: Ehhh", storyContext: "A little bird flies through when you say 'E'!" },
-    3: { id: 3, phoneme: "I", audioPath: "/audio/stage1/I.wav", acceptedTranscripts: ["i", "ee", "ih", "it", "is", "in", "eat", "eye", "e", "if"], prompt: "Say the sound: Iii", storyContext: "The hidden treasure chest unlocks!" },
-    4: { id: 4, phoneme: "O", audioPath: "/audio/stage1/O.wav", acceptedTranscripts: ["o", "oh", "aw", "off", "on", "or", "owe", "ohh", "out"], prompt: "Say the sound: Ohhh", storyContext: "A friendly owl wakes up to greet you!" },
-    5: { id: 5, phoneme: "U", audioPath: "/audio/stage1/U.wav", acceptedTranscripts: ["u", "uh", "oo", "you", "up", "of", "oh", "ooh", "us"], prompt: "Say the sound: Uhhh", storyContext: "The final door opens to the valley!" },
+    1: { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to open the door!" },
+    2: { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to help the bird hatch!" },
+    3: { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to unlock the chest!" },
+    4: { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to wake up the octopus!" },
+    5: { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to move the boulder!" },
+  },
+  2: { // Chapter 2: Blending Bridges
+    1: { 
+      id: 1, word: "MA", consonant: "M", vowel: "A", targetWord: "Mama",
+      audioPath: "/audio/stage2/MA.wav", 
+      acceptedTranscripts: ["ma", "mama", "mah", "maa", "m a", "momma", "mamma"], 
+      storyContext: "Blend M and A to say 'MA', then say 'Mama'!" 
+    },
+    2: { 
+      id: 2, word: "BA", consonant: "B", vowel: "A", targetWord: "Baba",
+      audioPath: "/audio/stage2/BA.wav", 
+      acceptedTranscripts: ["ba", "baba", "bah", "baa", "b a", "bubba", "bub"], 
+      storyContext: "Blend B and A to say 'BA', then say 'Baba'!" 
+    },
+    3: { 
+      id: 3, word: "TA", consonant: "T", vowel: "A", targetWord: "Tata",
+      audioPath: "/audio/stage2/TA.wav", 
+      acceptedTranscripts: ["ta", "tata", "tah", "taa", "t a", "tada"], 
+      storyContext: "Blend T and A to say 'TA', then say 'Tata'!" 
+    },
+    4: { 
+      id: 4, word: "SA", consonant: "S", vowel: "A", targetWord: "Sasa",
+      audioPath: "/audio/stage2/SA.wav", 
+      acceptedTranscripts: ["sa", "sasa", "sah", "saa", "s a", "saw"], 
+      storyContext: "Blend S and A to say 'SA', then say 'Sasa'!" 
+    },
+    5: { 
+      id: 5, word: "LA", consonant: "L", vowel: "A", targetWord: "Lala",
+      audioPath: "/audio/stage2/LA.wav", 
+      acceptedTranscripts: ["la", "lala", "lah", "laa", "l a", "law", "lola"], 
+      storyContext: "Blend L and A to say 'LA', then say 'Lala'!" 
+    },
+    6: { 
+      id: 6, word: "PA", consonant: "P", vowel: "A", targetWord: "Papa",
+      audioPath: "/audio/stage2/PA.wav", 
+      acceptedTranscripts: ["pa", "papa", "pah", "paa", "p a", "paw", "poppa"], 
+      storyContext: "Blend P and A to say 'PA', then say 'Papa'!" 
+    },
+    7: { 
+      id: 7, word: "NA", consonant: "N", vowel: "A", targetWord: "Nana",
+      audioPath: "/audio/stage2/NA.wav", 
+      acceptedTranscripts: ["na", "nana", "nah", "naa", "n a", "naw", "nonna"], 
+      storyContext: "Blend N and A to say 'NA', then say 'Nana'!" 
+    },
+    8: { 
+      id: 8, word: "DA", consonant: "D", vowel: "A", targetWord: "Dada",
+      audioPath: "/audio/stage2/DA.wav", 
+      acceptedTranscripts: ["da", "dada", "dah", "daa", "d a", "dad"], 
+      storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
+    },
   },
 };
 
 export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
-  const { playAudio, stopAudio } = useAudioManager();
+  const { stopAudio } = useAudioManager();
 
-  const [currentChallenge, setCurrentChallenge] = useState(0);
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
-  const [attempts, setAttempts] = useState(0);
-  const [score, setScore] = useState(0);
-  const [bubbleMessage, setBubbleMessage] = useState<string>(
-    "Hi! Let's read together!"
-  );
-  const [lastOutcome, setLastOutcome] = useState<Outcome | null>(null);
-  const silenceTimer = useRef<number | null>(null);
+  const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
+  
+  const challenge = ALL_CHALLENGES[stageId]?.[levelId];
+  const isBlendingMode = stageId === 2;
 
-  // Get only the challenge for this level
-  const selectedChallenge = ALL_CHALLENGES[stageId]?.[levelId];
-  const challenges: Challenge[] = selectedChallenge ? [selectedChallenge] : [];
-
-  const challenge = challenges[currentChallenge];
-
+  // Cleanup audio when the user leaves the level completely
   useEffect(() => {
-    return () => {
-      if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
-      stopAudio();
-    };
+    return () => stopAudio();
   }, [stopAudio]);
 
-  // Auto-play the phoneme audio when the challenge loads
-  useEffect(() => {
-    if (challenge && challenge.audioPath) {
-      // Add a small delay so the UI renders first
-      const timer = setTimeout(() => {
-        playAudio(challenge.audioPath);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [challenge, currentChallenge, playAudio]);
-
-  const speakPhoneme = () => {
+  const speakPhoneme = useCallback(() => {
+    stopAudio();
     setCharacterState("speaking");
-    setBubbleMessage(`Listen: "${challenge.phoneme}"`);
-    
-    playAudio(challenge.audioPath);
-    
-    // Reset character state after a reasonable time
-    setTimeout(() => {
-      setCharacterState("idle");
-    }, 2000);
-  };
+    setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
-  // Play try again feedback sound
-  const playTryAgainSound = () => {
-    playAudio("/audio/common/TryAgain.wav");
-  };
+    const sound = new Audio(challenge.audioPath);
+    sound.play().catch(err => console.error("Audio error:", err));
+
+    // Ties the character state directly to the length of the audio file!
+    sound.onended = () => {
+      setCharacterState("idle");
+      setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
+    };
+  }, [challenge, isBlendingMode, stopAudio]);
+
+  useEffect(() => {
+    // 1000ms delay before autoplaying the word/phoneme when the component mounts
+    const autoplayTimer = setTimeout(() => {
+      speakPhoneme();
+    }, 1000);
+
+    return () => {
+      clearTimeout(autoplayTimer);
+    };
+    // By only tracking stageId and levelId, we stop the infinite rendering loop!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageId, levelId]); 
 
   const handleSpeechResult = (outcome: Outcome) => {
-    setAttempts((a) => a + 1);
-
+    stopAudio();
     if (outcome === "success") {
-      setLastOutcome("success");
       setCharacterState("celebrating");
-      setBubbleMessage("Great job! You did it!");
-      setScore((s) => s + 100);
+      setBubbleMessage(`Great! You said "${challenge.targetWord || challenge.word}"!`);
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-
-      setTimeout(() => {
-        if (currentChallenge < challenges.length - 1) {
-          setCurrentChallenge((c) => c + 1);
-          setAttempts(0);
-          setLastOutcome(null);
-          setCharacterState("idle");
-          setBubbleMessage("Next one! Ready?");
-        } else {
-          onComplete();
-        }
-      }, 2000);
-    } else if (outcome === "lowConfidence") {
-      setLastOutcome("lowConfidence");
-      setCharacterState("encouraging");
-      setBubbleMessage(
-        attempts >= 1
-          ? "Almost! Watch my mouth, then tap Retry."
-          : "Hmm, not quite. Want to try again?"
-      );
-      
-      // Play your custom TryAgain.wav file
-      playTryAgainSound();
-      
-      setTimeout(() => {
-        setCharacterState("speaking");
-        setTimeout(() => setCharacterState("idle"), 1500);
-      }, 1200);
+      const feedbackAudio = new Audio("/audio/common/GreatJob.wav");
+      feedbackAudio.play();
+      feedbackAudio.onended = onComplete;
     } else {
-      setLastOutcome("silent");
       setCharacterState("encouraging");
-      setBubbleMessage("You took too long! Tap the mic to try again.");
-      
-      // Play your custom TryAgain.wav file
-      playTryAgainSound(); 
-      
-      setTimeout(() => setCharacterState("idle"), 1500);
+      setBubbleMessage(outcome === "silent" ? "Oops! Let's try again." : "Not quite, try saying the word clearly.");
+      const retryAudio = new Audio(outcome === "silent" ? "/audio/common/TryAgain.wav" : "/audio/common/IncorrectWord.wav");
+      retryAudio.play();
+      retryAudio.onended = () => setCharacterState("idle");
     }
   };
 
   const handleListen = () => {
+    stopAudio();
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Microphone not supported in this browser. Please use Chrome!");
-      return;
-    }
+    if (!SpeechRecognition) { alert("Use Chrome!"); return; }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true;   
-    recognition.interimResults = true; 
     recognition.lang = 'en-US';
-
+    recognition.interimResults = true;
     setCharacterState("listening");
-    setBubbleMessage("I'm listening...");
-    setLastOutcome(null);
-
-    let hasMatched = false; 
-
-    if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
-
-    silenceTimer.current = window.setTimeout(() => {
-      recognition.stop();
-      if (!hasMatched) handleSpeechResult("silent");
-    }, 8000); 
-
-    recognition.onaudiostart = () => console.log("🎤 Mic is hot!");
+    setBubbleMessage(`Listening...`);
 
     recognition.onresult = (event: any) => {
-      if (hasMatched) return; 
-      if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript.toLowerCase().trim();
-        console.log("🎤 Chrome's rough draft:", transcript); 
-
-        const isMatch = challenge.acceptedTranscripts.some((acceptedWord) => {
-          const spokenWords = transcript.split(/\s+/); 
-          return spokenWords.includes(acceptedWord);
-        });
-
-        if (isMatch) {
-          hasMatched = true; 
-          recognition.stop(); 
+      if (event.results[event.results.length - 1].isFinal) {
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+        const targetWords = new Set(challenge.acceptedTranscripts);
+        if (transcript.split(/\s+/).some(word => targetWords.has(word))) {
+          recognition.stop();
           handleSpeechResult("success");
-          return; 
+        } else {
+          recognition.stop();
+          handleSpeechResult("incorrect");
         }
       }
     };
-
-    recognition.onend = () => {
-      if (!hasMatched && lastOutcome !== "silent") {
-        handleSpeechResult("lowConfidence");
-      }
-    };
-
-    recognition.onerror = (event: any) => {
-      if (hasMatched) return;
-      if (silenceTimer.current) window.clearTimeout(silenceTimer.current);
-      console.error("🎤 Mic error:", event.error);
-      
-      if (event.error === 'no-speech') {
-        handleSpeechResult("silent");
-      }
-    };
-
-    try {
-      recognition.start();
-    } catch (e) {
-      console.error("Microphone is already listening", e);
-    }
-  };
-
-  const handleRetry = () => {
-    setLastOutcome(null);
-    setBubbleMessage("Take a breath — say it when you're ready.");
-    setCharacterState("idle");
+    recognition.onerror = (e: any) => handleSpeechResult(e.error === 'no-speech' ? "silent" : "incorrect");
+    recognition.start();
   };
 
   return (
     <div className="size-full bg-[#FAF7F2] overflow-auto relative">
-      <div
-        className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-60"
-        style={{ background: tint }}
-      />
-      <div className="absolute -bottom-32 -left-20 w-[28rem] h-[28rem] rounded-full bg-[#EEF2FF] opacity-50" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-60" style={{ background: tint }} />
+      <div className="relative z-10 min-h-full flex flex-col px-6 py-6 items-center justify-center">
+        <button onClick={onBack} className="absolute top-6 left-6 px-3 py-2 rounded-xl bg-white border text-sm">
+          <ArrowLeft className="w-4 h-4 inline mr-1" /> Back
+        </button>
+        <motion.div className="bg-white rounded-2xl px-8 py-4 mb-6 shadow-lg text-center">
+          <p className="text-xl font-bold text-[#1F2430]">{bubbleMessage}</p>
+        </motion.div>
+        
+        <CharacterCompanion state={characterState} phoneme={challenge.phoneme || challenge.vowel || ""} size={260} />
 
-      <div className="relative z-10 min-h-full flex flex-col px-6 md:px-10 py-6">
-        <div className="flex items-center justify-between max-w-5xl w-full mx-auto mb-6">
-          <button
-            onClick={onBack}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
-
-          {challenges.length > 1 && (
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2">
-                {challenges.map((_, i) => (
-                  <motion.span
-                    key={i}
-                    animate={{ scale: i === currentChallenge ? 1.2 : 1 }}
-                    className={`h-1.5 rounded-full transition-all ${
-                      i < currentChallenge ? "w-2" : i === currentChallenge ? "w-8" : "w-2 bg-[#1F243014]"
-                    }`}
-                    style={{
-                      background:
-                        i < currentChallenge
-                          ? accent
-                          : i === currentChallenge
-                          ? accent
-                          : undefined,
-                    }}
-                  />
-                ))}
+        <motion.div className="mt-8 bg-white px-12 py-6 rounded-3xl border-4 text-center" style={{ borderColor: accent }}>
+          {isBlendingMode ? (
+            <div className="flex flex-col items-center">
+              <h2 className="text-sm uppercase tracking-widest text-gray-400 mb-2">Blend the sounds:</h2>
+              <div className="flex items-center gap-4 text-6xl font-bold" style={{ color: accent }}>
+                <span>{challenge.consonant}</span>
+                <span className="text-gray-300">+</span>
+                <span>{challenge.vowel}</span>
+                <span className="text-gray-300">=</span>
+                <span className="uppercase">{challenge.targetWord}</span>
               </div>
-              <span className="text-xs text-[#8A91A3] uppercase tracking-wider">
-                {currentChallenge + 1} / {challenges.length}
-              </span>
             </div>
+          ) : (
+            <>
+              <h2 className="text-sm uppercase tracking-widest text-gray-400">Say the word:</h2>
+              <span className="text-7xl font-bold" style={{ color: accent }}>{challenge.word}</span>
+            </>
           )}
+        </motion.div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[#1F243014]">
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: accent }} />
-            <span className="text-sm text-[#1F2430]">{score}</span>
-            <span className="text-xs text-[#8A91A3] uppercase tracking-wider">pts</span>
-          </div>
+        <div className="flex gap-4 mt-8">
+          <button onClick={speakPhoneme} className="px-6 py-4 rounded-2xl bg-white border flex items-center gap-2">
+            <Volume2 className="w-4 h-4" /> Listen
+          </button>
+          <button onClick={handleListen} className="px-10 py-4 rounded-2xl text-white font-bold flex items-center gap-2" style={{ background: accent }}>
+            <Mic className="w-4 h-4" /> Tap to Speak
+          </button>
         </div>
-
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto w-full">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={bubbleMessage}
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -6, opacity: 0 }}
-              className="relative bg-white rounded-2xl px-5 py-3 border border-[#1F243014] shadow-[0_8px_24px_-12px_rgba(31,36,48,0.15)] max-w-md"
-            >
-              <p className="text-[#1F2430] text-center">{bubbleMessage}</p>
-              <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-[#1F243014] rotate-45" />
-            </motion.div>
-          </AnimatePresence>
-
-          <CharacterCompanion state={characterState} phoneme={challenge.phoneme} size={260} />
-
-          <motion.div
-            key={challenge.phoneme}
-            initial={{ y: 8, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="bg-white rounded-2xl px-12 py-3 border-2"
-            style={{ borderColor: accent, background: tint }}
-          >
-            <span className="text-6xl tracking-tight" style={{ color: accent }}>
-              {challenge.phoneme}
-            </span>
-          </motion.div>
-
-          <AnimatePresence>
-            {(lastOutcome === "silent" || lastOutcome === "lowConfidence") && (
-              <motion.div
-                initial={{ y: 6, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="w-full max-w-md flex items-start gap-3 p-4 rounded-2xl bg-white border border-[#1F243014]"
-              >
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: tint }}
-                >
-                  {lastOutcome === "silent" ? (
-                    <MicOff className="w-4 h-4" style={{ color: accent }} />
-                  ) : (
-                    <RotateCcw className="w-4 h-4" style={{ color: accent }} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[#1F2430]">
-                    {lastOutcome === "silent"
-                      ? "Too quiet!"
-                      : "We didn't quite catch that"}
-                  </p>
-                  <p className="text-xs text-[#8A91A3] mt-0.5">
-                    {lastOutcome === "silent"
-                      ? "You took too long. Tap the mic and try again."
-                      : "Listen to Sinta once more, then retry."}
-                  </p>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button
-                    onClick={speakPhoneme}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
-                  >
-                    <Volume2 className="w-3.5 h-3.5" />
-                    Hear it
-                  </button>
-                  <button
-                    onClick={handleRetry}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm"
-                    style={{ background: accent, boxShadow: `0 8px 24px -12px ${accent}99` }}
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    Retry
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="flex gap-3 w-full max-w-md">
-            <motion.button
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={speakPhoneme}
-              disabled={characterState === "listening"}
-              className="flex-1 bg-white text-[#1F2430] px-5 py-4 rounded-2xl border border-[#1F243014] flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <Volume2 className="w-5 h-5" style={{ color: accent }} />
-              <span>Listen</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleListen}
-              disabled={characterState === "listening"}
-              animate={characterState === "listening" ? { scale: [1, 1.04, 1] } : { scale: 1 }}
-              transition={{ repeat: characterState === "listening" ? Infinity : 0, duration: 1 }}
-              className="px-6 py-4 rounded-2xl text-white flex items-center justify-center gap-2"
-              style={{
-                flex: 2,
-                background: accent,
-                boxShadow: `0 10px 28px -14px ${accent}aa`,
-              }}
-            >
-              <Mic className="w-5 h-5" />
-              <span>{characterState === "listening" ? "Listening…" : "Tap to speak"}</span>
-            </motion.button>
-          </div>
-
-          <AnimatePresence>
-            {characterState === "idle" && attempts === 0 && !lastOutcome && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-xs text-[#8A91A3] text-center"
-              >
-                {challenge.storyContext}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
+        <p className="mt-4 text-gray-500">{challenge.storyContext}</p>
       </div>
     </div>
   );
