@@ -184,10 +184,17 @@ function AppContent() {
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
+  const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
       const route = parseAppPath(window.location.pathname);
+      // Prevent direct access to celebration screen via URL - redirect to level map
+      if (route.screen === "chapter-celebration" && !isLevelJustCompleted) {
+        setCurrentScreen("level-map");
+        setIsLevelJustCompleted(false);
+        return;
+      }
       setCurrentScreen(route.screen);
       if (route.authMode) setAuthMode(route.authMode);
       if (route.stageId) setSelectedStage(route.stageId);
@@ -196,7 +203,7 @@ function AppContent() {
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [isLevelJustCompleted]);
 
   useEffect(() => {
     const nextPath = buildAppPath(currentScreen, selectedStage, selectedLevel, authMode);
@@ -204,6 +211,15 @@ function AppContent() {
       window.history.pushState({}, "", nextPath);
     }
   }, [currentScreen, selectedStage, selectedLevel, authMode]);
+
+  // Protect celebration screen from direct URL access
+  useEffect(() => {
+    const route = parseAppPath(window.location.pathname);
+    if (route.screen === "chapter-celebration" && !isLevelJustCompleted) {
+      // Redirect to level map if someone tries to access celebration URL directly
+      setCurrentScreen("level-map");
+    }
+  }, []);
 
   // Auto-navigate authenticated users
   useEffect(() => {
@@ -356,20 +372,24 @@ function AppContent() {
       }
     }
 
+    // Mark level as legitimately completed before showing celebration screen
+    setIsLevelJustCompleted(true);
     setCurrentScreen("chapter-celebration");
   };
 
   const handleContinueToNextStory = () => {
-    // Move to next level
     const nextLevel = selectedLevel + 1;
     const stageConfig = STAGE_CONFIG[selectedStage];
     
+    // Reset completion flag when leaving celebration screen
+    setIsLevelJustCompleted(false);
+    
     if (stageConfig && nextLevel <= stageConfig.totalLevels) {
-      // More levels in this stage - show chapter bridge and then start next level
+      // More levels in this stage - show chapter bridge intro for next level
       setSelectedLevel(nextLevel);
       setCurrentScreen("chapter-bridge");
     } else if (stageConfig?.nextStageId) {
-      // All levels complete, move to next stage - show full story scene
+      // All levels complete in this stage, move to next stage
       setSelectedStage(stageConfig.nextStageId);
       setSelectedLevel(1);
       setCurrentScreen("story-scene");
@@ -380,11 +400,18 @@ function AppContent() {
   };
 
   const handleBeginChapterFromBridge = () => {
-    // Transition from chapter bridge to level map
+    // Go directly to the game level challenge
+    setCurrentScreen("game");
+  };
+
+  const handleBackFromBridge = () => {
+    // Go back to level map
     setCurrentScreen("level-map");
   };
 
   const handleBackFromCelebration = () => {
+    // Reset completion flag when leaving celebration screen
+    setIsLevelJustCompleted(false);
     setCurrentScreen("level-map");
   };
 
@@ -509,6 +536,7 @@ function AppContent() {
               vowel: BLENDING_MAP[selectedLevel]?.vowel ?? "A"
             } : undefined}
             onBeginChapter={handleBeginChapterFromBridge}
+            onBack={handleBackFromBridge}
           />
         )}
 
