@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Pencil, Check, X, Star, Trophy, Flame } from "lucide-react";
+import { ArrowLeft, Pencil, Check, X, Star, Trophy, Flame, Upload, Camera, Smile } from "lucide-react";
 import { useAuth } from "../../modules/auth/auth.context";
 import { toast } from "sonner";
 import {
@@ -20,9 +20,12 @@ const AVATAR_OPTIONS = [
   "🐳", "🦕", "🐢", "🐬",
 ];
 
+const BASE_URL = "http://localhost:3000";
+
 interface ProfilePageProps {
   onBack: () => void;
   onAvatarUpdate: (avatar: string) => void;
+  onAvatarUrlUpdate: (url: string | null) => void;
   onNameUpdate: (name: string) => void;
 }
 
@@ -30,6 +33,7 @@ interface LearnerProfile {
   id: number;
   name: string;
   avatar: string;
+  avatar_url: string | null;
   grade: number;
 }
 
@@ -45,7 +49,34 @@ interface ProgressSummary {
   overall_completion_percentage: number;
 }
 
-export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePageProps) {
+// Shows photo if available, emoji otherwise
+function AvatarDisplay({
+  avatar,
+  avatarUrl,
+  size = "md",
+}: {
+  avatar: string;
+  avatarUrl: string | null;
+  size?: "md" | "lg";
+}) {
+  const dim = size === "lg" ? "w-24 h-24 text-5xl" : "w-20 h-20 text-4xl";
+  if (avatarUrl) {
+    return (
+      <img
+        src={`${BASE_URL}${avatarUrl}`}
+        alt="Your avatar"
+        className={`${dim} rounded-full object-cover border-2 border-[#1F243014]`}
+      />
+    );
+  }
+  return (
+    <div className={`${dim} bg-[#F2EEE6] rounded-full flex items-center justify-center border-2 border-[#1F243014]`}>
+      {avatar}
+    </div>
+  );
+}
+
+export function ProfilePage({ onBack, onAvatarUpdate, onAvatarUrlUpdate, onNameUpdate }: ProfilePageProps) {
   const { user, token } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -53,15 +84,18 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
   const [progress, setProgress] = useState<ProgressSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isPickingAvatar, setIsPickingAvatar] = useState(false);
+  // "emoji" | "photo" — which picker tab is open
+  const [avatarPickerTab, setAvatarPickerTab] = useState<"emoji" | "photo" | null>(null);
   const [editedName, setEditedName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Confirmation dialog state
   const [pendingName, setPendingName] = useState("");
   const [pendingAvatar, setPendingAvatar] = useState("");
   const [showNameConfirm, setShowNameConfirm] = useState(false);
   const [showAvatarConfirm, setShowAvatarConfirm] = useState(false);
+  const [showRemovePhotoConfirm, setShowRemovePhotoConfirm] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -106,7 +140,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
       });
       if (response.ok) {
         const data = await response.json();
-        setProfile(data.learner);
+        setProfile((prev) => prev ? { ...prev, ...data.learner } : data.learner);
         if (updates.name) {
           onNameUpdate(data.learner.name);
           toast.success("Name updated!", {
@@ -129,7 +163,70 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
     }
   };
 
-  // Name flow: pencil → edit → checkmark → confirm dialog → save
+  // Upload photo to backend
+  const handlePhotoUpload = async (file: File) => {
+    if (!user) return;
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await fetch(`${API_URL}/upload/avatar`, {
+        method: "POST",
+        headers: {
+          "x-user-id": String(user.id),
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProfile((prev) => prev ? { ...prev, avatar_url: data.avatarUrl } : prev);
+        onAvatarUrlUpdate(data.avatarUrl);
+        setAvatarPickerTab(null);
+        toast.success("Photo uploaded! 📸", {
+          description: "Your profile photo is now showing.",
+        });
+      } else {
+        toast.error("Upload failed. Try again!");
+      }
+    } catch {
+      toast.error("Something went wrong!");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Remove uploaded photo, revert to emoji
+  const handleRemovePhoto = async () => {
+    if (!user) return;
+    setIsUploading(true);
+    try {
+      const response = await fetch(`${API_URL}/upload/avatar`, {
+        method: "DELETE",
+        headers: {
+          "x-user-id": String(user.id),
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        setProfile((prev) => prev ? { ...prev, avatar_url: null } : prev);
+        onAvatarUrlUpdate(null);
+        setShowRemovePhotoConfirm(false);
+        toast.success("Photo removed!", {
+          description: "Back to your emoji avatar 🦊",
+        });
+      } else {
+        toast.error("Could not remove photo. Try again!");
+      }
+    } catch {
+      toast.error("Something went wrong!");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSaveName = () => {
     if (!editedName.trim() || editedName.trim() === profile?.name) {
       setIsEditingName(false);
@@ -150,19 +247,22 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
     setShowNameConfirm(false);
   };
 
-  // Avatar flow: pencil → picker → click emoji → confirm dialog → save
-  const handlePickAvatar = (emoji: string) => {
+  const handlePickEmoji = (emoji: string) => {
     if (emoji === profile?.avatar) {
-      setIsPickingAvatar(false);
+      setAvatarPickerTab(null);
       return;
     }
     setPendingAvatar(emoji);
-    setIsPickingAvatar(false);
+    setAvatarPickerTab(null);
     setShowAvatarConfirm(true);
   };
 
   const handleConfirmAvatar = () => {
+    // When switching to emoji, also clear photo
     saveChanges({ avatar: pendingAvatar });
+    if (profile?.avatar_url) {
+      handleRemovePhoto();
+    }
     setShowAvatarConfirm(false);
   };
 
@@ -191,6 +291,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
 
   const displayName = profile?.name || user?.name || "Friend";
   const displayAvatar = profile?.avatar || "🦊";
+  const displayAvatarUrl = profile?.avatar_url ?? null;
   const displayGrade = profile?.grade || 1;
 
   return (
@@ -227,13 +328,14 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
             className="bg-white rounded-2xl p-6 border border-[#1F243014] mb-4"
           >
             <div className="flex items-center gap-5">
-              {/* Avatar */}
+              {/* Avatar display with edit button */}
               <div className="relative">
-                <div className="w-20 h-20 bg-[#F2EEE6] rounded-full flex items-center justify-center text-4xl border-2 border-[#1F243014]">
-                  {displayAvatar}
-                </div>
+                <AvatarDisplay
+                  avatar={displayAvatar}
+                  avatarUrl={displayAvatarUrl}
+                />
                 <button
-                  onClick={() => setIsPickingAvatar(true)}
+                  onClick={() => setAvatarPickerTab(avatarPickerTab ? null : "emoji")}
                   className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#4F46E5] rounded-full flex items-center justify-center shadow-sm hover:bg-[#4338CA] transition-colors"
                 >
                   <Pencil className="w-3 h-3 text-white" />
@@ -290,37 +392,131 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
             </div>
           </motion.div>
 
-          {/* Avatar picker */}
-          {isPickingAvatar && (
+          {/* Avatar picker panel */}
+          {avatarPickerTab && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-2xl p-6 border border-[#4F46E5]/30 mb-4"
             >
+              {/* Tab switcher */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[#1F2430]">Pick your avatar!</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setAvatarPickerTab("emoji")}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      avatarPickerTab === "emoji"
+                        ? "bg-[#EEF2FF] text-[#4F46E5]"
+                        : "text-[#8A91A3] hover:bg-[#FAF7F2]"
+                    }`}
+                  >
+                    <Smile className="w-4 h-4" />
+                    Animal Avatar
+                  </button>
+                  <button
+                    onClick={() => setAvatarPickerTab("photo")}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      avatarPickerTab === "photo"
+                        ? "bg-[#EEF2FF] text-[#4F46E5]"
+                        : "text-[#8A91A3] hover:bg-[#FAF7F2]"
+                    }`}
+                  >
+                    <Camera className="w-4 h-4" />
+                    My Photo
+                  </button>
+                </div>
                 <button
-                  onClick={() => setIsPickingAvatar(false)}
+                  onClick={() => setAvatarPickerTab(null)}
                   className="w-7 h-7 bg-[#FAF7F2] rounded-lg flex items-center justify-center hover:bg-[#F2EEE6] transition-colors"
                 >
                   <X className="w-4 h-4 text-[#4B5266]" />
                 </button>
               </div>
-              <div className="grid grid-cols-8 gap-2">
-                {AVATAR_OPTIONS.map((emoji) => (
+
+              {/* Emoji tab */}
+              {avatarPickerTab === "emoji" && (
+                <>
+                  <p className="text-sm text-[#8A91A3] mb-3">Pick your animal friend!</p>
+                  <div className="grid grid-cols-8 gap-2">
+                    {AVATAR_OPTIONS.map((emoji) => (
+                      <button
+                        key={emoji}
+                        onClick={() => handlePickEmoji(emoji)}
+                        className={`w-10 h-10 rounded-xl text-2xl flex items-center justify-center transition-all hover:scale-110 ${
+                          displayAvatar === emoji && !displayAvatarUrl
+                            ? "bg-[#EEF2FF] ring-2 ring-[#4F46E5]"
+                            : "bg-[#FAF7F2] hover:bg-[#F2EEE6]"
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Photo tab */}
+              {avatarPickerTab === "photo" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-[#8A91A3]">
+                    Upload a photo to use as your profile picture!
+                  </p>
+
+                  {/* Current photo preview */}
+                  {displayAvatarUrl && (
+                    <div className="flex items-center gap-4 p-4 bg-[#F2EEE6] rounded-xl">
+                      <img
+                        src={`${BASE_URL}${displayAvatarUrl}`}
+                        alt="Current photo"
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white"
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm text-[#1F2430] mb-1">Current photo</p>
+                        <button
+                          onClick={() => setShowRemovePhotoConfirm(true)}
+                          className="text-xs text-[#DC2626] hover:underline"
+                        >
+                          Remove photo
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upload button */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handlePhotoUpload(file);
+                    }}
+                  />
                   <button
-                    key={emoji}
-                    onClick={() => handlePickAvatar(emoji)}
-                    className={`w-10 h-10 rounded-xl text-2xl flex items-center justify-center transition-all hover:scale-110 ${
-                      displayAvatar === emoji
-                        ? "bg-[#EEF2FF] ring-2 ring-[#4F46E5]"
-                        : "bg-[#FAF7F2] hover:bg-[#F2EEE6]"
-                    }`}
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="w-full flex items-center justify-center gap-3 py-4 border-2 border-dashed border-[#4F46E5]/40 rounded-xl text-[#4F46E5] hover:bg-[#EEF2FF] transition-colors disabled:opacity-50"
                   >
-                    {emoji}
+                    {isUploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin" />
+                        <span className="text-sm">Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-5 h-5" />
+                        <span className="text-sm">
+                          {displayAvatarUrl ? "Upload a new photo" : "Choose a photo"}
+                        </span>
+                      </>
+                    )}
                   </button>
-                ))}
-              </div>
+                  <p className="text-xs text-[#8A91A3] text-center">
+                    JPG, PNG, GIF or WEBP — max 5MB
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -417,23 +613,17 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancelName}
-              className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]"
-            >
+            <AlertDialogCancel onClick={handleCancelName} className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]">
               Keep old name
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmName}
-              className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white"
-            >
+            <AlertDialogAction onClick={handleConfirmName} className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white">
               Yes, change it!
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Avatar confirmation dialog */}
+      {/* Emoji avatar confirmation dialog */}
       <AlertDialog open={showAvatarConfirm} onOpenChange={setShowAvatarConfirm}>
         <AlertDialogContent className="bg-white rounded-2xl border border-[#1F243014]">
           <AlertDialogHeader>
@@ -442,36 +632,52 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="text-[#4B5266]">
-                <p className="mb-3">Switch your avatar from</p>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-14 h-14 bg-[#F2EEE6] rounded-full flex items-center justify-center text-3xl">
-                    {displayAvatar}
-                  </div>
-                  <span className="text-[#8A91A3]">→</span>
+                <p className="mb-3">Switch your avatar to</p>
+                <div className="flex items-center justify-center">
                   <div className="w-14 h-14 bg-[#EEF2FF] rounded-full flex items-center justify-center text-3xl ring-2 ring-[#4F46E5]">
                     {pendingAvatar}
                   </div>
                 </div>
+                {displayAvatarUrl && (
+                  <p className="text-xs text-[#8A91A3] mt-3 text-center">
+                    This will also remove your current photo.
+                  </p>
+                )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancelAvatar}
-              className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]"
-            >
-              Keep old one
+            <AlertDialogCancel onClick={handleCancelAvatar} className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]">
+              Keep current
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmAvatar}
-              className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white"
-            >
+            <AlertDialogAction onClick={handleConfirmAvatar} className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white">
               Yes, switch it!
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Remove photo confirmation dialog */}
+      <AlertDialog open={showRemovePhotoConfirm} onOpenChange={setShowRemovePhotoConfirm}>
+        <AlertDialogContent className="bg-white rounded-2xl border border-[#1F243014]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#1F2430] text-xl">
+              Remove your photo? 🖼️
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-[#4B5266]">
+              Your photo will be removed and your animal avatar will show instead.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl border border-[#1F243014] text-[#4B5266] hover:bg-[#FAF7F2]">
+              Keep photo
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemovePhoto} className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white">
+              Yes, remove it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -68,7 +68,7 @@ export class AuthService {
   /**
    * Login user
    */
-  async login(email: string, password: string): Promise<{ id: number; email: string; role: string; name: string }> {
+  async login(email: string, password: string): Promise<{ id: number; email: string; role: string; name: string; avatar: string; avatarUrl: string | null }> {
     const user = await this.db.get('SELECT * FROM users WHERE email = ?', [email]);
 
     if (!user) {
@@ -81,24 +81,31 @@ export class AuthService {
       throw new Error('Invalid email or password');
     }
 
-    // Get name based on role
-    let name = email.split('@')[0]; // Default fallback
+        // In login()
+    let name = user.email.split('@')[0];
+    let avatar = '🦊';
+    let avatarUrl: string | null = null;
+
     if (user.role === 'learner') {
-      const learnerProfile = await this.db.get(
-        'SELECT name FROM learner_profiles WHERE user_id = ?',
-        [user.id]
-      );
-      if (learnerProfile) {
-        name = learnerProfile.name;
-      }
+    const learnerProfile = await this.db.get(
+      'SELECT name, avatar, avatar_url FROM learner_profiles WHERE user_id = ?',
+      [user.id]
+    );
+    if (learnerProfile) {
+      name = learnerProfile.name;
+      avatar = learnerProfile.avatar ?? '🦊';
+      avatarUrl = learnerProfile.avatar_url ?? null;
+    }
     }
 
     return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      name,
-    };
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    name,
+    avatar,
+    avatarUrl,
+    };  
   }
 
   /**
@@ -138,14 +145,20 @@ export class AuthService {
     }
 
     // Get name based on role
-    let name = user.email.split('@')[0]; // Default fallback
+    // In getUserById()
+    let name = user.email.split('@')[0];
+    let avatar = '🦊';
+    let avatarUrl: string | null = null;
+
     if (user.role === 'learner') {
       const learnerProfile = await this.db.get(
-        'SELECT name FROM learner_profiles WHERE user_id = ?',
+        'SELECT name, avatar, avatar_url FROM learner_profiles WHERE user_id = ?',
         [userId]
       );
       if (learnerProfile) {
         name = learnerProfile.name;
+        avatar = learnerProfile.avatar ?? '🦊';
+        avatarUrl = learnerProfile.avatar_url ?? null;
       }
     }
 
@@ -154,6 +167,8 @@ export class AuthService {
       email: user.email,
       role: user.role,
       name,
+      avatar,
+      avatarUrl,
     };
   }
 }

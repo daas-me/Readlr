@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
+// Update the User interface
 export interface User {
   id: number;
   email: string;
   role: 'learner' | 'teacher';
   name: string;
+  avatar?: string;
+  avatarUrl?: string | null;
 }
 
 interface AuthContextType {

@@ -101,6 +101,7 @@ interface AppRouteState {
   levelId?: number;
 }
 
+
 const DEFAULT_ROUTE: AppRouteState = { screen: "landing" };
 
 function parseAppPath(pathname: string): AppRouteState {
@@ -196,6 +197,7 @@ function AppContent() {
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
+  const [learnerAvatarUrl, setLearnerAvatarUrl] = useState<string | null>(null);
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
   const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
@@ -286,6 +288,7 @@ function AppContent() {
           if (response.ok) {
             const data = await response.json();
             setLearnerName(data.name);
+            setLearnerAvatarUrl(data.avatar_url ?? null);
             setLearnerAvatar(data.avatar);
             setLearnerId(data.id);
             if (currentScreen === "learner-profile") {
@@ -556,6 +559,7 @@ function AppContent() {
         <NavigationHeader
           userName={learnerName || user?.name || "Reader"}
           userAvatar={learnerAvatar}
+          userAvatarUrl={learnerAvatarUrl}
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
           onLogout={handleBackToRoleSelect}
@@ -681,6 +685,7 @@ function AppContent() {
           <Settings
             onNavigate={handleNavigate}
             onAvatarUpdate={(avatar) => setLearnerAvatar(avatar)}
+            onAvatarUrlUpdate={(url) => setLearnerAvatarUrl(url)}
           />
         )}
 
@@ -692,6 +697,7 @@ function AppContent() {
           <ProfilePage
             onBack={() => setCurrentScreen("stage-selection")}
             onAvatarUpdate={(avatar) => setLearnerAvatar(avatar)}
+            onAvatarUrlUpdate={(url) => setLearnerAvatarUrl(url)}
             onNameUpdate={(name) => setLearnerName(name)}
           />
         )}

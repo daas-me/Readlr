@@ -20,6 +20,8 @@ export interface AuthResponse {
     email: string;
     role: 'learner' | 'teacher';
     name: string;
+    avatar: string;        // ADD THIS
+    avatarUrl: string | null;
   };
 }
 

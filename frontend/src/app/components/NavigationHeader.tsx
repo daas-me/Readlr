@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Home, Settings, HelpCircle, User, LogOut, Menu, X, FileText } from "lucide-react";
+import { Home, Settings, HelpCircle, User, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -16,14 +16,39 @@ import {
 interface NavigationHeaderProps {
   userName?: string;
   userAvatar?: string;
+  userAvatarUrl?: string | null;   // NEW
   currentScreen: string;
   onNavigate: (screen: string) => void;
   onLogout?: () => void;
 }
 
+// Reusable avatar display — shows photo if available, emoji otherwise
+function AvatarDisplay({ avatar, avatarUrl, size = "sm" }: {
+  avatar?: string;
+  avatarUrl?: string | null;
+  size?: "sm" | "lg";
+}) {
+  const dim = size === "lg" ? "w-14 h-14 text-2xl" : "w-10 h-10 text-xl";
+  if (avatarUrl) {
+    return (
+      <img
+        src={`http://localhost:3000${avatarUrl}`}
+        alt="avatar"
+        className={`${dim} rounded-full object-cover border border-[#1F243014]`}
+      />
+    );
+  }
+  return (
+    <div className={`${dim} bg-white border border-[#1F243014] rounded-full flex items-center justify-center`}>
+      {avatar || "🦊"}
+    </div>
+  );
+}
+
 export function NavigationHeader({
   userName,
   userAvatar,
+  userAvatarUrl,
   currentScreen,
   onNavigate,
   onLogout,
@@ -92,10 +117,10 @@ export function NavigationHeader({
                 </div>
                 <button
                   onClick={() => onNavigate("profile")}
-                  className="w-10 h-10 bg-white border border-[#1F243014] rounded-full flex items-center justify-center text-xl hover:ring-2 hover:ring-[#4F46E5] transition-all"
+                  className="hover:ring-2 hover:ring-[#4F46E5] rounded-full transition-all"
                   title="My Profile"
                 >
-                  {userAvatar}
+                  <AvatarDisplay avatar={userAvatar} avatarUrl={userAvatarUrl} size="sm" />
                 </button>
                 {onLogout && (
                   <AlertDialog>
@@ -155,9 +180,7 @@ export function NavigationHeader({
           <div className="p-6 space-y-2">
             {userName && (
               <div className="flex items-center gap-3 pb-6 mb-2 border-b border-[#1F243014]">
-                <div className="w-14 h-14 bg-white border border-[#1F243014] rounded-full flex items-center justify-center text-2xl">
-                  {userAvatar}
-                </div>
+                <AvatarDisplay avatar={userAvatar} avatarUrl={userAvatarUrl} size="lg" />
                 <div>
                   <p className="text-lg text-[#1F2430]">{userName}</p>
                   <p className="text-xs uppercase tracking-wider text-[#8A91A3]">Grade 1 Learner</p>
@@ -171,10 +194,7 @@ export function NavigationHeader({
               return (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    onNavigate(item.id);
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => { onNavigate(item.id); setMenuOpen(false); }}
                   className={`w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left transition-colors ${
                     active
                       ? "bg-white border border-[#1F243014] text-[#4F46E5]"

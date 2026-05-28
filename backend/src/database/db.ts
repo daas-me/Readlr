@@ -244,8 +244,25 @@ export class Database {
       }
     }
 
+    await this.runMigrations();
     console.log('Database schema initialized');
   }
+
+  // In backend/src/database/db.ts
+// Add this method inside the Database class
+
+async runMigrations(): Promise<void> {
+  // Migration: add avatar_url to learner_profiles if it doesn't exist
+  const columns = await this.all(`PRAGMA table_info(learner_profiles)`);
+  const hasAvatarUrl = columns.some((col: any) => col.name === 'avatar_url');
+
+  if (!hasAvatarUrl) {
+    await this.run(
+      `ALTER TABLE learner_profiles ADD COLUMN avatar_url TEXT DEFAULT NULL`
+    );
+    console.log('Migration: added avatar_url to learner_profiles');
+  }
+}
 
   close(): void {
     this.db.close();
