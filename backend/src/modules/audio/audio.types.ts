@@ -5,10 +5,13 @@ export interface AudioResult {
   detectedPhoneme: string;
   targetPhoneme: string;
   feedback: string;
+  confidence: number;
+  durationMs: number;
 }
 
 export interface AudioProcessRequest {
   targetPhoneme: string;
+  acceptedTranscripts?: string[];
   childId?: string;
 }
 
