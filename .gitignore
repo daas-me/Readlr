@@ -36,3 +36,6 @@ lerna-debug.log*
 # MD Files (except README)
 !README.md
 *.md
+
+#Database
+readlr.db
