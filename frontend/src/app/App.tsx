@@ -51,15 +51,17 @@ function saveProgressToStorage(userId: number | undefined, progress: Record<numb
   if (!storageKey) return;
   localStorage.setItem(storageKey, JSON.stringify(progress));
 }
+
 // Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
 const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
-  1: { vowel: "A", name: "" },
-  2: { vowel: "E", name: "" },
-  3: { vowel: "I", name: "" },
-  4: { vowel: "O", name: "" },
-  5: { vowel: "U", name: "" },
+  1: { vowel: "A", name: "Apple" },
+  2: { vowel: "E", name: "Egg" },
+  3: { vowel: "I", name: "Igloo" },
+  4: { vowel: "O", name: "Octopus" },
+  5: { vowel: "U", name: "Umbrella" },
 };
 
+// Blending mapping for stage 2
 const BLENDING_MAP: Record<number, { consonant: string; vowel: string; name: string }> = {
   1: { consonant: "M", vowel: "A", name: "MA" },
   2: { consonant: "B", vowel: "A", name: "BA" },
@@ -71,7 +73,19 @@ const BLENDING_MAP: Record<number, { consonant: string; vowel: string; name: str
   8: { consonant: "D", vowel: "A", name: "DA" },
 };
 
-
+// CVC Word mapping for stage 3
+const CVC_MAP: Record<number, { word: string }> = {
+  1: { word: "CAT" },
+  2: { word: "MAN" },
+  3: { word: "HAT" },
+  4: { word: "PIG" },
+  5: { word: "DOG" },
+  6: { word: "SUN" },
+  7: { word: "BED" },
+  8: { word: "CUP" },
+  9: { word: "BUS" },
+  10: { word: "TOP" },
+};
 
 type Screen =
   | "landing"
@@ -214,10 +228,10 @@ function AppContent() {
       setCompletedByStage({ ...DEFAULT_PROGRESS });
     }
   }, [isAuthenticated, user]);
+
   useEffect(() => {
     const handlePopState = () => {
       const route = parseAppPath(window.location.pathname);
-      // Prevent direct access to celebration screen via URL - redirect to level map
       if (route.screen === "chapter-celebration" && !isLevelJustCompleted) {
         setCurrentScreen("level-map");
         setIsLevelJustCompleted(false);
@@ -246,19 +260,15 @@ function AppContent() {
     }
   }, [isAuthLoading, isAuthenticated, isPublicScreen]);
 
-  // Protect celebration screen from direct URL access
   useEffect(() => {
     const route = parseAppPath(window.location.pathname);
     if (route.screen === "chapter-celebration" && !isLevelJustCompleted) {
-      // Redirect to level map if someone tries to access celebration URL directly
       setCurrentScreen("level-map");
     }
   }, []);
 
-  // Auto-navigate authenticated users
   useEffect(() => {
     if (isAuthenticated && user && (currentScreen === "landing" || currentScreen === "auth")) {
-      // User just logged in, go to learner profile setup
       setCurrentScreen("learner-profile");
     }
   }, [isAuthenticated, user, currentScreen]);
@@ -269,7 +279,6 @@ function AppContent() {
     }
   }, [isAuthenticated]);
 
-  // Check if learner profile exists and keep the header identity stable after refresh/navigation.
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
       setIsCheckingProfile(true);
@@ -295,7 +304,6 @@ function AppContent() {
             setCurrentScreen("learner-profile");
           }
         } catch (error) {
-          // Profile doesn't exist, show profile setup
           console.log('No existing profile found, showing setup screen');
           if (currentScreen !== "learner-profile") {
             setCurrentScreen("learner-profile");
@@ -310,7 +318,6 @@ function AppContent() {
     }
   }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
 
-  // Fetch progress from backend when user authenticates
   useEffect(() => {
     if (isAuthenticated && user?.role === "learner" && token && learnerId) {
       setIsSyncingProgress(true);
@@ -342,7 +349,6 @@ function AppContent() {
           }
         } catch (error) {
           console.error('Failed to fetch progress from backend:', error);
-          // Fallback to initialized state
         } finally {
           setIsSyncingProgress(false);
         }
@@ -362,9 +368,7 @@ function AppContent() {
     setCurrentScreen("auth");
   };
 
-  const handleAuthSuccess = () => {
-    // After auth, learner-profile will be shown (auto-navigate via useEffect)
-  };
+  const handleAuthSuccess = () => {};
 
   const handleProfileComplete = (name: string, avatar: string, newLearnerId?: number) => {
     setLearnerName(name);
@@ -396,7 +400,6 @@ function AppContent() {
   const handleLevelComplete = async () => {
     const newProgress = Math.max(completedByStage[selectedStage] ?? 0, selectedLevel);
     
-    // Update local state and the per-user fallback cache.
     const nextProgress = {
       ...completedByStage,
       [selectedStage]: newProgress,
@@ -404,7 +407,6 @@ function AppContent() {
     setCompletedByStage(nextProgress);
     saveProgressToStorage(user?.id, nextProgress);
 
-    // Save to backend
     if (learnerId && token) {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -423,11 +425,9 @@ function AppContent() {
         });
       } catch (error) {
         console.error('Failed to save progress to backend:', error);
-        // Progress is still saved locally, so app continues to work
       }
     }
 
-    // Mark level as legitimately completed before showing celebration screen
     setIsLevelJustCompleted(true);
     setCurrentScreen("chapter-celebration");
   };
@@ -436,36 +436,29 @@ function AppContent() {
     const nextLevel = selectedLevel + 1;
     const stageConfig = STAGE_CONFIG[selectedStage];
     
-    // Reset completion flag when leaving celebration screen
     setIsLevelJustCompleted(false);
     
     if (stageConfig && nextLevel <= stageConfig.totalLevels) {
-      // More levels in this stage - show chapter bridge intro for next level
       setSelectedLevel(nextLevel);
       setCurrentScreen("chapter-bridge");
     } else if (stageConfig?.nextStageId) {
-      // All levels complete in this stage, move to next stage
       setSelectedStage(stageConfig.nextStageId);
       setSelectedLevel(1);
       setCurrentScreen("story-scene");
     } else {
-      // All stages complete, go back to stage selection
       setCurrentScreen("stage-selection");
     }
   };
 
   const handleBeginChapterFromBridge = () => {
-    // Go directly to the game level challenge
     setCurrentScreen("game");
   };
 
   const handleBackFromBridge = () => {
-    // Go back to level map
     setCurrentScreen("level-map");
   };
 
   const handleBackFromCelebration = () => {
-    // Reset completion flag when leaving celebration screen
     setIsLevelJustCompleted(false);
     setCurrentScreen("level-map");
   };
@@ -519,16 +512,13 @@ function AppContent() {
 
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
-  // Screens that shouldn't show navigation header
   const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "level-complete"];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
 
-  // Landing Screen
   if (currentScreen === "landing") {
     return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
 
-  // Auth Screen
   if (currentScreen === "auth") {
     return (
       <AuthScreen
@@ -594,11 +584,22 @@ function AppContent() {
           <ChapterBridge
             stageName={STAGE_CONFIG[selectedStage]?.title ?? "Chapter"}
             currentLevel={selectedLevel}
-            // For Stage 1, use VOWEL_MAP. For Stage 2, pass empty strings or use the first letter of the blend
-            vowel={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" : BLENDING_MAP[selectedLevel]?.vowel ?? "A"}
-            vowelName={selectedStage === 1 ? VOWEL_MAP[selectedLevel]?.name ?? "Apple" : ""}
+            // Dynamically resolves target word shapes based on whether it is a Vowel, Blend, or CVC Word
+            vowel={
+              selectedStage === 1 
+                ? VOWEL_MAP[selectedLevel]?.vowel ?? "A" 
+                : selectedStage === 2
+                ? BLENDING_MAP[selectedLevel]?.vowel ?? "A"
+                : CVC_MAP[selectedLevel]?.word ?? "CAT"
+            }
+            vowelName={
+              selectedStage === 1 
+                ? VOWEL_MAP[selectedLevel]?.name ?? "Apple" 
+                : selectedStage === 3
+                ? CVC_MAP[selectedLevel]?.word ?? "CAT"
+                : ""
+            }
             stageId={selectedStage}
-            // Pass the blending pair only if we are in Stage 2
             blendingPair={selectedStage === 2 ? {
               consonant: BLENDING_MAP[selectedLevel]?.consonant ?? "M",
               vowel: BLENDING_MAP[selectedLevel]?.vowel ?? "A"

@@ -18,7 +18,8 @@ interface ChapterBridgeProps {
 
 const STAGE_THEMES = {
   1: { from: "from-[#FFF7ED]", to: "to-[#FAF7F2]", border: "border-[#F59E0B]/30", text: "text-[#F59E0B]", bg: "bg-[#F59E0B]" },
-  2: { from: "from-[#EEF2FF]", to: "to-[#E0E7FF]", border: "border-[#4F46E5]/30", text: "text-[#4F46E5]", bg: "bg-[#4F46E5]" }
+  2: { from: "from-[#EEF2FF]", to: "to-[#E0E7FF]", border: "border-[#4F46E5]/30", text: "text-[#4F46E5]", bg: "bg-[#4F46E5]" },
+  3: { from: "from-[#D1FAE5]/60", to: "to-[#FAF7F2]", border: "border-[#10B981]/30", text: "text-[#10B981]", bg: "bg-[#10B981]" }
 };
 
 const VOWEL_STORIES: Record<number, { message: string; doorCount: string }> = {
@@ -39,6 +40,19 @@ const BLENDING_STORIES: Record<number, { message: string; doorCount: string }> =
   8: { message: "Fantastic! The final 'D' and 'A' blend to make 'DA'. You've built the whole bridge and crossed the gap! You're a master builder!", doorCount: "Bridge Piece 8" },
 };
 
+const CVC_STORIES: Record<number, { message: string; doorCount: string }> = {
+  1: { message: "Awesome! You found the fuzzy CAT sleeping on the wall. Ready to help the baker next?", doorCount: "1 Word Found" },
+  2: { message: "Great job! The friendly baker is so happy you read MAN. Let's go look for the scarecrow's hat!", doorCount: "2 Words Found" },
+  3: { message: "Wonderful! The scarecrow looks magnificent in his magical HAT. Let's find the little pink piggy next!", doorCount: "3 Words Found" },
+  4: { message: "Amazing! The pink PIG is awake and playing. Can we go find the puppy now?", doorCount: "4 Words Found" },
+  5: { message: "Fantastic! The happy puppy loves his new DOG block. Let's clear the clouds and look for the sun!", doorCount: "5 Words Found" },
+  6: { message: "Incredible! The bright SUN is out. Let's help Milo find a cozy bed to rest his head!", doorCount: "6 Words Found" },
+  7: { message: "Wonderful! The BED looks so soft and inviting. Let's track down a sweet drink in a magical cup!", doorCount: "7 Words Found" },
+  8: { message: "Fantastic! The CUP is filled with cold juice. Let's head over to open the doors for the school bus!", doorCount: "8 Words Found" },
+  9: { message: "Incredible! Everyone is safely riding on the BUS. Let's discover our final spinning toy!", doorCount: "9 Words Found" },
+  10: { message: "Superb! The colorful TOP is spinning round and round. You've uncovered all the secrets of the kingdom!", doorCount: "10 Words Found" },
+};
+
 export function ChapterBridge({ 
   stageName, 
   currentLevel, 
@@ -52,21 +66,16 @@ export function ChapterBridge({
 }: ChapterBridgeProps) {
   const theme = STAGE_THEMES[stageId as keyof typeof STAGE_THEMES] || STAGE_THEMES[1];
   
-  // Apply the -1 logic to fetch the story and audio for the level just completed.
-  // Math.max ensures it doesn't drop below 1 if the user is on the very first level.
   const storyLevel = Math.max(1, currentLevel - 1);
-  const storySet = stageId === 2 ? BLENDING_STORIES : VOWEL_STORIES;
+  const storySet = stageId === 3 ? CVC_STORIES : stageId === 2 ? BLENDING_STORIES : VOWEL_STORIES;
   const story = storySet[storyLevel] || Object.values(storySet)[0];
 
   const { playAudio, stopAudio } = useAudioManager();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Both Stage 1 and Stage 2 use the "MiloCompletedLevelX.wav" naming convention for stories
-    // This will now properly play the audio for the (currentLevel - 1)
     const fileName = `MiloCompletedLevel${storyLevel}`;
     
-    // Delay autoplay to allow page to render first
     const timer = setTimeout(() => {
       const audio = playAudio(`/audio/stage${stageId}/${fileName}.wav`);
       audioRef.current = audio || null;
@@ -79,7 +88,6 @@ export function ChapterBridge({
   }, [stageId, storyLevel, playAudio, stopAudio]);
 
   const handleRepeatStory = () => {
-    // Stop any other audio and replay the story
     stopAudio();
     const fileName = `MiloCompletedLevel${storyLevel}`;
     const audio = playAudio(`/audio/stage${stageId}/${fileName}.wav`);
@@ -87,13 +95,15 @@ export function ChapterBridge({
   };
 
   const handleListen = () => {
-    // Stop any other audio first
+    // Stop any other playing audio first
     stopAudio();
     
-    // Stage 1 looks for pure vowels (E.wav), Stage 2 looks for Pronunciation (PronounceMA.wav)
-    const audioPath = stageId === 2 
-      ? `/audio/stage${stageId}/Pronounce${blendingPair?.consonant}${blendingPair?.vowel}.wav` 
-      : `/audio/stage${stageId}/${vowel.toUpperCase()}.wav`;
+    // Dynamically resolve the audio path depending on the Stage
+    const audioPath = stageId === 3
+      ? `/audio/stage3/Pronounce${vowel.toUpperCase()}.wav`                  // Stage 3: Full words (e.g., PronounceCAT.wav)
+      : stageId === 2 
+      ? `/audio/stage2/Pronounce${blendingPair?.consonant}${blendingPair?.vowel}.wav` // Stage 2: Blends (e.g., PronounceMA.wav)
+      : `/audio/stage1/${vowel.toUpperCase()}.wav`;                           // Stage 1: Pure vowels (e.g., A.wav)
       
     playAudio(audioPath);
   };
@@ -107,7 +117,6 @@ export function ChapterBridge({
             <span className="text-xs sm:text-sm font-medium text-[#8A91A3]">
               <span className={theme.text}>{story.doorCount}</span> - {stageName}
             </span>
-            {/* The level indicator still shows the current active level they are about to play */}
             <span className="text-xs uppercase tracking-wider text-[#8A91A3]">Level {currentLevel}</span>
           </motion.div>
 
@@ -120,13 +129,15 @@ export function ChapterBridge({
                   <Volume2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Repeat
                 </button>
 
-                {/* This will now show the -1 story message */}
                 <p className="text-center text-sm sm:text-base md:text-lg text-[#1F2430] leading-relaxed mb-4 sm:mb-6 mt-3 sm:mt-4">{story.message}</p>
                 
                 <div className="bg-gradient-to-br from-[#FFF7ED] to-[#FEF3C7] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
-                  <p className="text-[9px] sm:text-xs uppercase tracking-widest text-[#8A91A3] text-center mb-2 sm:mb-3 font-medium">THE SOUND</p>
+                  {/* Dynamically toggle between displaying THE WORD or THE SOUND text headings */}
+                  <p className="text-[9px] sm:text-xs uppercase tracking-widest text-[#8A91A3] text-center mb-2 sm:mb-3 font-medium">
+                    {stageId === 3 ? "THE WORD" : "THE SOUND"}
+                  </p>
                   <div className="text-center flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
-                    <div className={`text-2xl sm:text-3xl md:text-5xl font-bold ${theme.text}`}>
+                    <div className={`text-2xl sm:text-3xl md:text-5xl font-bold ${theme.text} uppercase`}>
                       {blendingPair ? `${blendingPair.consonant} + ${blendingPair.vowel}` : vowel}
                     </div>
                     <button onClick={handleListen} className={`p-2 sm:p-3 md:p-4 rounded-full bg-current/10 hover:bg-current/20 transition-colors ${theme.text}`}>

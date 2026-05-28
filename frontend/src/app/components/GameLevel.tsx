@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "motion/react";
 import { Volume2, Mic, ArrowLeft } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -90,56 +90,56 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
       storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
     },
   },
-  3: { // Chapter 3: CVC Kingdom (still needs audio "audioPath" and story contexts ""storyContext")
+  3: { // Chapter 3: CVC Kingdom
     1: {
-      id: 1, word: "CAT", audioPath: undefined,
+      id: 1, word: "CAT", audioPath: "/audio/stage3/CAT.wav",
       acceptedTranscripts: ["cat", "c a t", "see a tee"],
-      storyContext: "Read the whole word: CAT!"
+      storyContext: "Say 'CAT' to greet the fuzzy kitty sleeping on the wall!"
     },
     2: {
-      id: 2, word: "MAN", audioPath: undefined,
+      id: 2, word: "MAN", audioPath: "/audio/stage3/MAN.wav",
       acceptedTranscripts: ["man", "m a n", "em a en"],
-      storyContext: "Read the whole word: MAN!"
+      storyContext: "Say 'MAN' to help the friendly baker carry his tray of bread!"
     },
     3: {
-      id: 3, word: "HAT", audioPath: undefined,
+      id: 3, word: "HAT", audioPath: "/audio/stage3/HAT.wav",
       acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
-      storyContext: "Read the whole word: HAT!"
+      storyContext: "Say 'HAT' to give the lonely scarecrow his magical cap!"
     },
     4: {
-      id: 4, word: "PIG", audioPath: undefined,
+      id: 4, word: "PIG", audioPath: "/audio/stage3/PIG.wav",
       acceptedTranscripts: ["pig", "p i g", "pee i gee"],
-      storyContext: "Read the whole word: PIG!"
+      storyContext: "Say 'PIG' to wake up the little pink piggy playing in the mud!"
     },
     5: {
-      id: 5, word: "DOG", audioPath: undefined,
+      id: 5, word: "DOG", audioPath: "/audio/stage3/DOG.wav",
       acceptedTranscripts: ["dog", "d o g", "dee o gee"],
-      storyContext: "Read the whole word: DOG!"
+      storyContext: "Say 'DOG' to play a happy game of fetch with the puppy!"
     },
     6: {
-      id: 6, word: "SUN", audioPath: undefined,
+      id: 6, word: "SUN", audioPath: "/audio/stage3/SUN.wav",
       acceptedTranscripts: ["sun", "s u n", "ess u en"],
-      storyContext: "Read the whole word: SUN!"
+      storyContext: "Say 'SUN' to clear away the dark clouds and make the morning bright!"
     },
     7: {
-      id: 7, word: "BED", audioPath: undefined,
+      id: 7, word: "BED", audioPath: "/audio/stage3/BED.wav",
       acceptedTranscripts: ["bed", "b e d", "bee e dee"],
-      storyContext: "Read the whole word: BED!"
+      storyContext: "Say 'BED' to help Milo tuck under the cozy blankets for a rest!"
     },
     8: {
-      id: 8, word: "CUP", audioPath: undefined,
+      id: 8, word: "CUP", audioPath: "/audio/stage3/CUP.wav",
       acceptedTranscripts: ["cup", "c u p", "see u pee"],
-      storyContext: "Read the whole word: CUP!"
+      storyContext: "Say 'CUP' to fill the magical glass with sweet, cold juice!"
     },
     9: {
-      id: 9, word: "BUS", audioPath: undefined,
+      id: 9, word: "BUS", audioPath: "/audio/stage3/BUS.wav",
       acceptedTranscripts: ["bus", "b u s", "bee u ess"],
-      storyContext: "Read the whole word: BUS!"
+      storyContext: "Say 'BUS' to open the doors so everyone can ride to school!"
     },
     10: {
-      id: 10, word: "TOP", audioPath: undefined,
+      id: 10, word: "TOP", audioPath: "/audio/stage3/TOP.wav",
       acceptedTranscripts: ["top", "t o p", "tee o pee"],
-      storyContext: "Read the whole word: TOP!"
+      storyContext: "Say 'TOP' to spin the colorful toy round and round!"
     },
   },
 };
@@ -155,14 +155,33 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   const isBlendingMode = stageId === 2;
   const isCvcMode = stageId === 3;
 
-  // Cleanup audio when the user leaves the level completely
+  // Trackers for active web speech instances and custom safety timers
+  const recognitionRef = useRef<any>(null);
+  const silenceTimeoutRef = useRef<any>(null);
+
+  // Cleanup all audio threads and background timers when leaving the scene
   useEffect(() => {
     return () => {
       stopAllAudio();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (e) {}
+      }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+      }
     };
   }, [stopAllAudio]);
 
   const speakPhoneme = useCallback(() => {
+    // Wipe any running mic session or timers before audio playback starts
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch (e) {}
+      recognitionRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+    }
+
     stopAudio();
     setCharacterState("speaking");
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
@@ -185,7 +204,6 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
 
   useEffect(() => {
-    // 1000ms delay before autoplaying the word/phoneme when the component mounts
     const autoplayTimer = setTimeout(() => {
       speakPhoneme();
     }, 1000);
@@ -193,7 +211,6 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     return () => {
       clearTimeout(autoplayTimer);
     };
-    // By only tracking stageId and levelId, we stop the infinite rendering loop!
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stageId, levelId]); 
 
@@ -220,31 +237,72 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   };
 
   const handleListen = () => {
+    if (characterState === "listening") return;
+
     stopAudio();
+    
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch (e) {}
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) { alert("Use Chrome!"); return; }
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = true;
+    
+    recognitionRef.current = recognition;
+    let hasResponded = false;
+
     setCharacterState("listening");
     setBubbleMessage(`Listening...`);
 
     recognition.onresult = (event: any) => {
       if (event.results[event.results.length - 1].isFinal) {
+        if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+        
         const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
         const targetWords = new Set(challenge.acceptedTranscripts);
+        
+        hasResponded = true;
+        try { recognition.stop(); } catch(e) {}
+
         if (transcript.split(/\s+/).some((word: string) => targetWords.has(word))) {
-          recognition.stop();
           handleSpeechResult("success");
         } else {
-          recognition.stop();
           handleSpeechResult("incorrect");
         }
       }
     };
-    recognition.onerror = (e: any) => handleSpeechResult(e.error === 'no-speech' ? "silent" : "incorrect");
+
+    recognition.onerror = (e: any) => {
+      if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+      hasResponded = true;
+      handleSpeechResult(e.error === 'no-speech' ? "silent" : "incorrect");
+    };
+
+    recognition.onend = () => {
+      if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+      recognitionRef.current = null;
+      if (!hasResponded) {
+        handleSpeechResult("incorrect"); 
+      }
+    };
+
     recognition.start();
+
+    // Custom 5-second silence defense timeout
+    silenceTimeoutRef.current = setTimeout(() => {
+      if (!hasResponded) {
+        hasResponded = true;
+        try { recognition.abort(); } catch (e) {}
+        handleSpeechResult("silent");
+      }
+    }, 5000); // 5000 milliseconds = 5 seconds
   };
 
   return (
@@ -282,11 +340,18 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           ) : isCvcMode ? (
             <div className="flex flex-col items-center">
               <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Read the word:</h2>
-              <span className="text-5xl sm:text-7xl font-bold inline-block" style={{ color: accent }}>{challenge.word}</span>
+              <span className="text-5xl sm:text-7xl font-bold inline-block mb-2" style={{ color: accent }}>{challenge.word}</span>
               <div className="mt-4 flex items-center gap-2 sm:gap-3 justify-center" style={{ color: accent }}>
                 {challenge.word.split("").map((letter, index) => (
-                  <span key={`${letter}-${index}`} className="text-xl sm:text-2xl font-bold">
-                    {letter}
+                  <span key={`${letter}-${index}`} className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xl sm:text-2xl font-bold uppercase">
+                      {letter}
+                    </span>
+                    {index < challenge.word.length - 1 && (
+                      <span className="text-gray-300 text-xl sm:text-2xl font-bold">
+                        +
+                      </span>
+                    )}
                   </span>
                 ))}
               </div>
@@ -303,8 +368,14 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           <button onClick={speakPhoneme} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
             <Volume2 className="w-4 h-4 flex-shrink-0" /> Listen
           </button>
-          <button onClick={handleListen} className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm sm:text-base" style={{ background: accent }}>
-            <Mic className="w-4 h-4 flex-shrink-0" /> Tap to Speak
+          
+          <button 
+            disabled={characterState === "listening"}
+            onClick={handleListen} 
+            className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base" 
+            style={{ background: accent }}
+          >
+            <Mic className="w-4 h-4 flex-shrink-0" /> {characterState === "listening" ? "Listening..." : "Tap to Speak"}
           </button>
         </div>
         
