@@ -175,7 +175,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       if (event.results[event.results.length - 1].isFinal) {
         const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
         const targetWords = new Set(challenge.acceptedTranscripts);
-        if (transcript.split(/\s+/).some(word => targetWords.has(word))) {
+        if (transcript.split(/\s+/).some((word: string) => targetWords.has(word))) {
           recognition.stop();
           handleSpeechResult("success");
         } else {
