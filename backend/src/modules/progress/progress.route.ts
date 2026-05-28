@@ -17,8 +17,8 @@ const router = Router();
 router.get('/me', authMiddleware, handleGetMyProgress);
 
 // Routes by learner ID
-router.get('/learners/:learnerId', handleGetProgressSummary);
-router.get('/learners/:learnerId/stages/:stageId', handleGetStageProgress);
-router.put('/learners/:learnerId/stages/:stageId', handleUpdateProgress);
+router.get('/learners/:learnerId', authMiddleware, handleGetProgressSummary);
+router.get('/learners/:learnerId/stages/:stageId', authMiddleware, handleGetStageProgress);
+router.put('/learners/:learnerId/stages/:stageId', authMiddleware, handleUpdateProgress);
 
 export default router;
