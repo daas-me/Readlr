@@ -89,8 +89,8 @@ function buildFluencyData(studentId: number, studentName: string, avatar: string
     };
   }
 
-  // Per-stage aggregation
-  const stageMap = new Map<number, AttemptRecord[]>();
+  // Per-stage aggregation — seed all stages so they always appear
+  const stageMap = new Map<number, AttemptRecord[]>([[1, []], [2, []], [3, []]]);
   for (const r of records) {
     if (!stageMap.has(r.stageId)) stageMap.set(r.stageId, []);
     stageMap.get(r.stageId)!.push(r);
@@ -99,21 +99,29 @@ function buildFluencyData(studentId: number, studentName: string, avatar: string
   const stages: StageFluency[] = Array.from(stageMap.entries())
     .sort(([a], [b]) => a - b)
     .map(([stageId, stageRecords]) => {
-      const fluentWords = stageRecords.filter((r) => r.tier === "fluent").length;
-      const fluencyRate = Math.round((fluentWords / stageRecords.length) * 100);
-      const practiceWords = [
-        ...new Set(
-          stageRecords
-            .filter((r) => r.tier !== "fluent")
-            .map((r) => r.word.toUpperCase())
-        ),
-      ].slice(0, 5);
+      // Deduplicate: keep the best attempt per unique word (fluent > halting > syllabic)
+      const TIER_RANK: Record<string, number> = { fluent: 2, halting: 1, syllabic: 0 };
+      const bestByWord = new Map<string, AttemptRecord>();
+      for (const r of stageRecords) {
+        const key = r.word.toUpperCase();
+        const existing = bestByWord.get(key);
+        if (!existing || (TIER_RANK[r.tier] ?? 0) > (TIER_RANK[existing.tier] ?? 0)) {
+          bestByWord.set(key, r);
+        }
+      }
+      const uniqueWords = Array.from(bestByWord.values());
+      const fluentWords = uniqueWords.filter((r) => r.tier === "fluent").length;
+      const fluencyRate = uniqueWords.length > 0 ? Math.round((fluentWords / uniqueWords.length) * 100) : 0;
+      const practiceWords = uniqueWords
+        .filter((r) => r.tier !== "fluent")
+        .map((r) => r.word.toUpperCase())
+        .slice(0, 5);
 
       return {
         stageId,
         stageName: STAGE_NAMES[stageId] ?? `Stage ${stageId}`,
         fluencyRate,
-        totalWords: stageRecords.length,
+        totalWords: uniqueWords.length,
         fluentWords,
         practiceWords,
       };

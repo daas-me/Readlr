@@ -26,6 +26,7 @@ function loadSelfCorrections(): AttemptRecord[] {
 
 interface StickerBookProps {
   onBack: () => void;
+  completedByStage?: Record<number, number>;
 }
 
 interface Sticker {
@@ -33,24 +34,30 @@ interface Sticker {
   emoji: string;
   name: string;
   stage: string;
-  earned: boolean;
+  stageId: number;
+  levelId: number;
 }
 
-export function StickerBook({ onBack }: StickerBookProps) {
-  const stickers: Sticker[] = [
-    { id: 1, emoji: "🦋", name: "Butterfly", stage: "Valley of Vowels — A", earned: true },
-    { id: 2, emoji: "🐝", name: "Bee", stage: "Valley of Vowels — E", earned: true },
-    { id: 3, emoji: "🐞", name: "Ladybug", stage: "Valley of Vowels — I", earned: true },
-    { id: 4, emoji: "🦉", name: "Owl", stage: "Valley of Vowels — O", earned: false },
-    { id: 5, emoji: "🦄", name: "Unicorn", stage: "Valley of Vowels — U", earned: false },
-    { id: 6, emoji: "🐸", name: "Frog", stage: "Blending Bridges 1", earned: false },
-    { id: 7, emoji: "🐢", name: "Turtle", stage: "Blending Bridges 2", earned: false },
-    { id: 8, emoji: "🦎", name: "Lizard", stage: "Blending Bridges 3", earned: false },
-    { id: 9, emoji: "🦜", name: "Parrot", stage: "CVC Kingdom 1", earned: false },
-    { id: 10, emoji: "🦚", name: "Peacock", stage: "CVC Kingdom 2", earned: false },
-    { id: 11, emoji: "🦁", name: "Lion", stage: "CVC Kingdom 3", earned: false },
-    { id: 12, emoji: "🐯", name: "Tiger", stage: "CVC Kingdom Final", earned: false },
-  ];
+const STICKER_DEFS: Sticker[] = [
+  { id: 1,  emoji: "🦋", name: "Butterfly", stage: "Valley of Vowels — A",  stageId: 1, levelId: 1 },
+  { id: 2,  emoji: "🐝", name: "Bee",       stage: "Valley of Vowels — E",  stageId: 1, levelId: 2 },
+  { id: 3,  emoji: "🐞", name: "Ladybug",   stage: "Valley of Vowels — I",  stageId: 1, levelId: 3 },
+  { id: 4,  emoji: "🦉", name: "Owl",       stage: "Valley of Vowels — O",  stageId: 1, levelId: 4 },
+  { id: 5,  emoji: "🦄", name: "Unicorn",   stage: "Valley of Vowels — U",  stageId: 1, levelId: 5 },
+  { id: 6,  emoji: "🐸", name: "Frog",      stage: "Blending Bridges 1",    stageId: 2, levelId: 1 },
+  { id: 7,  emoji: "🐢", name: "Turtle",    stage: "Blending Bridges 2",    stageId: 2, levelId: 2 },
+  { id: 8,  emoji: "🦎", name: "Lizard",    stage: "Blending Bridges 3",    stageId: 2, levelId: 3 },
+  { id: 9,  emoji: "🦜", name: "Parrot",    stage: "CVC Kingdom 1",         stageId: 3, levelId: 1 },
+  { id: 10, emoji: "🦚", name: "Peacock",   stage: "CVC Kingdom 2",         stageId: 3, levelId: 2 },
+  { id: 11, emoji: "🦁", name: "Lion",      stage: "CVC Kingdom 3",         stageId: 3, levelId: 3 },
+  { id: 12, emoji: "🐯", name: "Tiger",     stage: "CVC Kingdom Final",     stageId: 3, levelId: 4 },
+];
+
+export function StickerBook({ onBack, completedByStage = {} }: StickerBookProps) {
+  const stickers = STICKER_DEFS.map((s) => ({
+    ...s,
+    earned: (completedByStage[s.stageId] ?? 0) >= s.levelId,
+  }));
 
   const earnedCount = stickers.filter((s) => s.earned).length;
   const pct = Math.round((earnedCount / stickers.length) * 100);

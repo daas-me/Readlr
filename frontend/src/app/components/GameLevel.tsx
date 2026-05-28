@@ -8,9 +8,31 @@ import { useAudioManager } from "../../hooks/useAudioManager";
 type FluencyTier = "fluent" | "halting" | "syllabic";
 
 function computeTier(confidence: number, attemptNumber: number): FluencyTier {
-  if (confidence < 0.70) return "syllabic";
+  if (confidence < 0.40) return "syllabic";
   if (attemptNumber > 1) return "halting";
   return "fluent";
+}
+
+function editDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  return dp[a.length][b.length];
+}
+
+function fuzzyMatch(word: string, targets: Set<string>): boolean {
+  if (targets.has(word)) return true;
+  for (const target of targets) {
+    // Allow 1 edit for short words (≤4 chars), 2 edits for longer words
+    const maxDist = target.length <= 4 ? 1 : 2;
+    if (editDistance(word, target) <= maxDist) return true;
+  }
+  return false;
 }
 
 const TIER_LABEL: Record<FluencyTier, { label: string; color: string }> = {
@@ -165,6 +187,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
   const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
   const [earnedTier, setEarnedTier] = useState<FluencyTier | null>(null);
+  const [lastTranscript, setLastTranscript] = useState<string | null>(null);
 
   const attemptNumber = useRef(0);
   const attemptStartTime = useRef<number>(0);
@@ -255,11 +278,16 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       if (event.results[event.results.length - 1].isFinal) {
         const result = event.results[event.results.length - 1][0];
         const transcript = result.transcript.toLowerCase().trim();
-        const confidence: number = result.confidence ?? 0.5;
+        const confidence: number = result.confidence || 0.5;
         const durationMs = Date.now() - attemptStartTime.current;
 
+        setLastTranscript(`${transcript} (confidence: ${confidence.toFixed(2)})`);
         const targetWords = new Set(challenge.acceptedTranscripts);
-        const matched = transcript.split(/\s+/).some((word: string) => targetWords.has(word));
+        // Stage 1 targets vowel discrimination — exact match only so "igg" ≠ "egg"
+        const matchWord = (word: string) => stageId === 1
+          ? targetWords.has(word)
+          : fuzzyMatch(word, targetWords);
+        const matched = transcript.split(/\s+/).some((word: string) => matchWord(word.replace(/[^a-z]/g, "")));
 
         if (matched) {
           const tier = computeTier(confidence, attemptNumber.current);
@@ -351,6 +379,9 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           </button>
         </div>
         
+        {lastTranscript && (
+          <p className="text-xs text-gray-400 text-center">heard: "{lastTranscript}"</p>
+        )}
         <p className="mt-2 sm:mt-4 text-gray-500 text-xs sm:text-sm text-center max-w-md">{challenge.storyContext}</p>
 
         {earnedTier && (
