@@ -55,7 +55,7 @@ interface Challenge {
   consonant?: string;  // Used for blending
   vowel?: string;      // Used for blending/phoneme
   targetWord?: string; // The full word for blending (e.g., "Mama")
-  audioPath?: string;
+  audioPath: string;
   acceptedTranscripts: string[];
   storyContext: string;
 }
@@ -126,63 +126,84 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
       storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
     },
   },
-  3: { // Chapter 3: CVC Kingdom (still needs audio "audioPath" and story contexts ""storyContext")
-    1: {
-      id: 1, word: "CAT", audioPath: undefined,
-      acceptedTranscripts: ["cat", "c a t", "see a tee"],
-      storyContext: "Read the whole word: CAT!"
-    },
-    2: {
-      id: 2, word: "MAN", audioPath: undefined,
-      acceptedTranscripts: ["man", "m a n", "em a en"],
-      storyContext: "Read the whole word: MAN!"
-    },
-    3: {
-      id: 3, word: "HAT", audioPath: undefined,
-      acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
-      storyContext: "Read the whole word: HAT!"
-    },
-    4: {
-      id: 4, word: "PIG", audioPath: undefined,
-      acceptedTranscripts: ["pig", "p i g", "pee i gee"],
-      storyContext: "Read the whole word: PIG!"
-    },
-    5: {
-      id: 5, word: "DOG", audioPath: undefined,
-      acceptedTranscripts: ["dog", "d o g", "dee o gee"],
-      storyContext: "Read the whole word: DOG!"
-    },
-    6: {
-      id: 6, word: "SUN", audioPath: undefined,
-      acceptedTranscripts: ["sun", "s u n", "ess u en"],
-      storyContext: "Read the whole word: SUN!"
-    },
-    7: {
-      id: 7, word: "BED", audioPath: undefined,
-      acceptedTranscripts: ["bed", "b e d", "bee e dee"],
-      storyContext: "Read the whole word: BED!"
-    },
-    8: {
-      id: 8, word: "CUP", audioPath: undefined,
-      acceptedTranscripts: ["cup", "c u p", "see u pee"],
-      storyContext: "Read the whole word: CUP!"
-    },
-    9: {
-      id: 9, word: "BUS", audioPath: undefined,
-      acceptedTranscripts: ["bus", "b u s", "bee u ess"],
-      storyContext: "Read the whole word: BUS!"
-    },
-    10: {
-      id: 10, word: "TOP", audioPath: undefined,
-      acceptedTranscripts: ["top", "t o p", "tee o pee"],
-      storyContext: "Read the whole word: TOP!"
-    },
-  },
 };
+
+const VOWEL_WORD_SETS: Array<{
+  phoneme: string;
+  audioWord: string;
+  audioPath: string;
+  words: string[];
+}> = [
+  {
+    phoneme: "A",
+    audioWord: "Apple",
+    audioPath: "/audio/stage1/Apple.wav",
+    words: ["Apple", "Ant", "Axe", "Alligator", "Astronaut", "Anchor", "Arrow", "Acorn", "Apron", "Album"],
+  },
+  {
+    phoneme: "E",
+    audioWord: "Egg",
+    audioPath: "/audio/stage1/Egg.wav",
+    words: ["Egg", "Elephant", "Elbow", "Engine", "Envelope", "Exit", "Echo", "Emerald", "Eskimo", "Exercise"],
+  },
+  {
+    phoneme: "I",
+    audioWord: "Igloo",
+    audioPath: "/audio/stage1/Igloo.wav",
+    words: ["Igloo", "Insect", "Ink", "Island", "Invitation", "Iguana", "Idea", "Ice", "Iron", "Inside"],
+  },
+  {
+    phoneme: "O",
+    audioWord: "Octopus",
+    audioPath: "/audio/stage1/Octopus.wav",
+    words: ["Octopus", "Orange", "Ostrich", "Otter", "Owl", "Ocean", "Olive", "Oven", "Office", "Orbit"],
+  },
+  {
+    phoneme: "U",
+    audioWord: "Umbrella",
+    audioPath: "/audio/stage1/Umbrella.wav",
+    words: ["Umbrella", "Unicorn", "Up", "Under", "Uniform", "Ukulele", "Uncle", "Utensil", "Urn", "Us"],
+  },
+];
+
+const VOWEL_GATE_CHALLENGES: Challenge[] = [
+  { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to light the A door!" },
+  { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to light the E door!" },
+  { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to light the I door!" },
+  { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to light the O door!" },
+  { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to unlock the Valley of Vowels!" },
+];
+
+function getChallenge(stageId: number, levelId: number): Challenge {
+  if (stageId === 1) {
+    if (levelId <= VOWEL_GATE_CHALLENGES.length) {
+      return VOWEL_GATE_CHALLENGES[levelId - 1];
+    }
+
+    const valleyLevel = Math.max(1, Math.min(levelId - VOWEL_GATE_CHALLENGES.length, 50));
+    const group = VOWEL_WORD_SETS[Math.floor((valleyLevel - 1) / 10)];
+    const word = group.words[(valleyLevel - 1) % 10];
+
+    return {
+      id: levelId,
+      word,
+      phoneme: group.phoneme,
+      audioPath: group.audioPath,
+      acceptedTranscripts: [
+        word.toLowerCase(),
+        group.phoneme.toLowerCase(),
+        group.audioWord.toLowerCase(),
+      ],
+      storyContext: `Say '${word}' to restore the ${group.phoneme} part of the valley!`,
+    };
+  }
+
+  return ALL_CHALLENGES[stageId]?.[levelId] ?? ALL_CHALLENGES[2][1];
+}
 
 export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelProps) {
   const { accent, tint } = STAGE_ACCENTS[stageId] ?? STAGE_ACCENTS[1];
-  const { playAudio, speakText, stopAudio, stopAllAudio } = useAudioManager();
+  const { playAudio, stopAudio, stopAllAudio } = useAudioManager();
 
   const [characterState, setCharacterState] = useState<CharacterState>("idle");
   const [bubbleMessage, setBubbleMessage] = useState<string>("Hi! Let's read together!");
@@ -192,9 +213,8 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   const attemptNumber = useRef(0);
   const attemptStartTime = useRef<number>(0);
 
-  const challenge = ALL_CHALLENGES[stageId]?.[levelId];
+  const challenge = getChallenge(stageId, levelId);
   const isBlendingMode = stageId === 2;
-  const isCvcMode = stageId === 3;
 
   // Cleanup audio when the user leaves the level completely
   useEffect(() => {
@@ -208,22 +228,16 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     setCharacterState("speaking");
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
-    const sound = challenge.audioPath
-      ? playAudio(challenge.audioPath)
-      : speakText(challenge.word.toLowerCase(), 0.75);
+    const sound = playAudio(challenge.audioPath);
     
     if (sound) {
-      const onDone = () => {
+      // Ties the character state directly to the length of the audio file!
+      sound.onended = () => {
         setCharacterState("idle");
         setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
       };
-      if (sound instanceof HTMLAudioElement) {
-        sound.onended = onDone;
-      } else {
-        sound.onend = onDone;
-      }
     }
-  }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
+  }, [challenge, isBlendingMode, playAudio, stopAudio]);
 
   useEffect(() => {
     attemptNumber.current = 0;
@@ -348,18 +362,6 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
                 <span className="text-4xl sm:text-6xl">{challenge.vowel}</span>
                 <span className="text-2xl sm:text-3xl text-gray-300">=</span>
                 <span className="text-4xl sm:text-6xl uppercase">{challenge.targetWord}</span>
-              </div>
-            </div>
-          ) : isCvcMode ? (
-            <div className="flex flex-col items-center">
-              <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Read the word:</h2>
-              <span className="text-5xl sm:text-7xl font-bold inline-block" style={{ color: accent }}>{challenge.word}</span>
-              <div className="mt-4 flex items-center gap-2 sm:gap-3 justify-center" style={{ color: accent }}>
-                {challenge.word.split("").map((letter, index) => (
-                  <span key={`${letter}-${index}`} className="text-xl sm:text-2xl font-bold">
-                    {letter}
-                  </span>
-                ))}
               </div>
             </div>
           ) : (

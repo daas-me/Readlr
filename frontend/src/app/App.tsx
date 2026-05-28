@@ -23,41 +23,68 @@ import { ProfilePage } from "./components/ProfilePage";
 
 // Stage configuration for determining progress
 const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextStageId?: number }> = {
-  1: { title: "Valley of Vowels", totalLevels: 5, nextStageId: 2 },
+  1: { title: "Valley of Vowels", totalLevels: 55, nextStageId: 2 },
   2: { title: "Blending Bridges", totalLevels: 8, nextStageId: 3 },
   3: { title: "CVC Kingdom", totalLevels: 10 },
 };
 
-const DEFAULT_PROGRESS: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
-
-function getProgressStorageKey(userId?: number): string | null {
-  return userId ? `readlr_progress_user_${userId}` : null;
-}
-
-function readProgressFromStorage(userId?: number): Record<number, number> {
-  const storageKey = getProgressStorageKey(userId);
-  if (!storageKey) return { ...DEFAULT_PROGRESS };
-
-  try {
-    const saved = localStorage.getItem(storageKey);
-    return saved ? { ...DEFAULT_PROGRESS, ...JSON.parse(saved) } : { ...DEFAULT_PROGRESS };
-  } catch {
-    return { ...DEFAULT_PROGRESS };
-  }
-}
-
-function saveProgressToStorage(userId: number | undefined, progress: Record<number, number>) {
-  const storageKey = getProgressStorageKey(userId);
-  if (!storageKey) return;
-  localStorage.setItem(storageKey, JSON.stringify(progress));
-}
 // Vowel mapping for stage 1 (levels 1-5 correspond to A, E, I, O, U)
 const VOWEL_MAP: Record<number, { vowel: string; name: string }> = {
-  1: { vowel: "A", name: "" },
-  2: { vowel: "E", name: "" },
-  3: { vowel: "I", name: "" },
-  4: { vowel: "O", name: "" },
-  5: { vowel: "U", name: "" },
+  1: { vowel: "A", name: "Apple" },
+  2: { vowel: "E", name: "Egg" },
+  3: { vowel: "I", name: "Igloo" },
+  4: { vowel: "O", name: "Octopus" },
+  5: { vowel: "U", name: "Umbrella" },
+  6: { vowel: "A", name: "Apple" },
+  7: { vowel: "A", name: "Ant" },
+  8: { vowel: "A", name: "Axe" },
+  9: { vowel: "A", name: "Alligator" },
+  10: { vowel: "A", name: "Astronaut" },
+  11: { vowel: "A", name: "Anchor" },
+  12: { vowel: "A", name: "Arrow" },
+  13: { vowel: "A", name: "Acorn" },
+  14: { vowel: "A", name: "Apron" },
+  15: { vowel: "A", name: "Album" },
+  16: { vowel: "E", name: "Egg" },
+  17: { vowel: "E", name: "Elephant" },
+  18: { vowel: "E", name: "Elbow" },
+  19: { vowel: "E", name: "Engine" },
+  20: { vowel: "E", name: "Envelope" },
+  21: { vowel: "E", name: "Exit" },
+  22: { vowel: "E", name: "Echo" },
+  23: { vowel: "E", name: "Emerald" },
+  24: { vowel: "E", name: "Eskimo" },
+  25: { vowel: "E", name: "Exercise" },
+  26: { vowel: "I", name: "Igloo" },
+  27: { vowel: "I", name: "Insect" },
+  28: { vowel: "I", name: "Ink" },
+  29: { vowel: "I", name: "Island" },
+  30: { vowel: "I", name: "Invitation" },
+  31: { vowel: "I", name: "Iguana" },
+  32: { vowel: "I", name: "Idea" },
+  33: { vowel: "I", name: "Ice" },
+  34: { vowel: "I", name: "Iron" },
+  35: { vowel: "I", name: "Inside" },
+  36: { vowel: "O", name: "Octopus" },
+  37: { vowel: "O", name: "Orange" },
+  38: { vowel: "O", name: "Ostrich" },
+  39: { vowel: "O", name: "Otter" },
+  40: { vowel: "O", name: "Owl" },
+  41: { vowel: "O", name: "Ocean" },
+  42: { vowel: "O", name: "Olive" },
+  43: { vowel: "O", name: "Oven" },
+  44: { vowel: "O", name: "Office" },
+  45: { vowel: "O", name: "Orbit" },
+  46: { vowel: "U", name: "Umbrella" },
+  47: { vowel: "U", name: "Unicorn" },
+  48: { vowel: "U", name: "Up" },
+  49: { vowel: "U", name: "Under" },
+  50: { vowel: "U", name: "Uniform" },
+  51: { vowel: "U", name: "Ukulele" },
+  52: { vowel: "U", name: "Uncle" },
+  53: { vowel: "U", name: "Utensil" },
+  54: { vowel: "U", name: "Urn" },
+  55: { vowel: "U", name: "Us" },
 };
 
 const BLENDING_MAP: Record<number, { consonant: string; vowel: string; name: string }> = {
@@ -186,34 +213,37 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
 }
 
 function AppContent() {
-  const { isAuthenticated, user, token, isLoading: isAuthLoading, logout } = useAuth();
+  const { isAuthenticated, user, token, logout } = useAuth();
   const initialRoute = parseAppPath(window.location.pathname);
   const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
   const [selectedStage, setSelectedStage] = useState<number>(initialRoute.stageId ?? 1);
   const [selectedLevel, setSelectedLevel] = useState<number>(initialRoute.levelId ?? 1);
-  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>({ ...DEFAULT_PROGRESS });
+  const [completedByStage, setCompletedByStage] = useState<Record<number, number>>(() => {
+    // Load from localStorage or use default
+    try {
+      const saved = localStorage.getItem('readlr_progress');
+      return saved ? JSON.parse(saved) : { 1: 0, 2: 0, 3: 0 };
+    } catch {
+      return { 1: 0, 2: 0, 3: 0 };
+    }
+  });
   const [levelScore] = useState(300);
   const [learnerName, setLearnerName] = useState("");
   const [learnerAvatar, setLearnerAvatar] = useState("🦊");
   const [learnerId, setLearnerId] = useState<number | null>(null);
   const [isCheckingProfile, setIsCheckingProfile] = useState(false);
-  const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
-  const publicScreens: Screen[] = ["landing", "auth"];
-  const isPublicScreen = publicScreens.includes(currentScreen);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "learner") {
-      setCompletedByStage(readProgressFromStorage(user.id));
-      return;
+    try {
+      localStorage.setItem('readlr_progress', JSON.stringify(completedByStage));
+    } catch (error) {
+      console.error('Failed to persist progress locally:', error);
     }
+  }, [completedByStage]);
 
-    if (!isAuthenticated) {
-      setCompletedByStage({ ...DEFAULT_PROGRESS });
-    }
-  }, [isAuthenticated, user]);
   useEffect(() => {
     const handlePopState = () => {
       const route = parseAppPath(window.location.pathname);
@@ -240,12 +270,6 @@ function AppContent() {
     }
   }, [currentScreen, selectedStage, selectedLevel, authMode]);
 
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated && !isPublicScreen) {
-      setCurrentScreen("landing");
-    }
-  }, [isAuthLoading, isAuthenticated, isPublicScreen]);
-
   // Protect celebration screen from direct URL access
   useEffect(() => {
     const route = parseAppPath(window.location.pathname);
@@ -263,15 +287,9 @@ function AppContent() {
     }
   }, [isAuthenticated, user, currentScreen]);
 
+  // Check if learner profile exists and fetch progress when showing learner-profile screen
   useEffect(() => {
-    if (!isAuthenticated) {
-      setHasCheckedLearnerProfile(false);
-    }
-  }, [isAuthenticated]);
-
-  // Check if learner profile exists and keep the header identity stable after refresh/navigation.
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
+    if (isAuthenticated && user?.role === "learner" && currentScreen === "learner-profile" && token) {
       setIsCheckingProfile(true);
       
       const checkProfile = async () => {
@@ -285,30 +303,23 @@ function AppContent() {
 
           if (response.ok) {
             const data = await response.json();
+            // Profile exists, skip to welcome
             setLearnerName(data.name);
             setLearnerAvatar(data.avatar);
             setLearnerId(data.id);
-            if (currentScreen === "learner-profile") {
-              setCurrentScreen("welcome");
-            }
-          } else if (currentScreen !== "learner-profile") {
-            setCurrentScreen("learner-profile");
+            setCurrentScreen("welcome");
           }
         } catch (error) {
           // Profile doesn't exist, show profile setup
           console.log('No existing profile found, showing setup screen');
-          if (currentScreen !== "learner-profile") {
-            setCurrentScreen("learner-profile");
-          }
         } finally {
-          setHasCheckedLearnerProfile(true);
           setIsCheckingProfile(false);
         }
       };
 
       checkProfile();
     }
-  }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
+  }, [isAuthenticated, user, token, currentScreen]);
 
   // Fetch progress from backend when user authenticates
   useEffect(() => {
@@ -326,19 +337,25 @@ function AppContent() {
 
           if (response.ok) {
             const progressData = await response.json();
-            const stages = Array.isArray(progressData)
-              ? progressData
-              : Array.isArray(progressData.stages)
-                ? progressData.stages
-                : [];
-            const newCompletedByStage: Record<number, number> = { ...DEFAULT_PROGRESS };
+            // progressData should be an array of progress objects per stage
+            const newCompletedByStage: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
             
-            stages.forEach((progress: { stage_id: number; completed_levels: number }) => {
-              newCompletedByStage[progress.stage_id] = progress.completed_levels;
+            if (Array.isArray(progressData)) {
+              progressData.forEach((progress: any) => {
+                newCompletedByStage[progress.stage_id] = progress.completed_levels;
+              });
+            }
+            
+            setCompletedByStage((prev) => {
+              const mergedProgress = { ...prev };
+              Object.entries(newCompletedByStage).forEach(([stageId, completedLevels]) => {
+                mergedProgress[Number(stageId)] = Math.max(
+                  mergedProgress[Number(stageId)] ?? 0,
+                  completedLevels
+                );
+              });
+              return mergedProgress;
             });
-            
-            setCompletedByStage(newCompletedByStage);
-            saveProgressToStorage(user.id, newCompletedByStage);
           }
         } catch (error) {
           console.error('Failed to fetch progress from backend:', error);
@@ -366,12 +383,9 @@ function AppContent() {
     // After auth, learner-profile will be shown (auto-navigate via useEffect)
   };
 
-  const handleProfileComplete = (name: string, avatar: string, newLearnerId?: number) => {
+  const handleProfileComplete = (name: string, avatar: string) => {
     setLearnerName(name);
     setLearnerAvatar(avatar);
-    if (newLearnerId) setLearnerId(newLearnerId);
-    setHasCheckedLearnerProfile(true);
-    setCompletedByStage(readProgressFromStorage(user?.id));
     setCurrentScreen("welcome");
   };
 
@@ -396,13 +410,11 @@ function AppContent() {
   const handleLevelComplete = async () => {
     const newProgress = Math.max(completedByStage[selectedStage] ?? 0, selectedLevel);
     
-    // Update local state and the per-user fallback cache.
-    const nextProgress = {
-      ...completedByStage,
-      [selectedStage]: newProgress,
-    };
-    setCompletedByStage(nextProgress);
-    saveProgressToStorage(user?.id, nextProgress);
+    // Update local state. The persistence effect writes this to localStorage.
+    setCompletedByStage((prev) => ({
+      ...prev,
+      [selectedStage]: Math.max(prev[selectedStage] ?? 0, newProgress),
+    }));
 
     // Save to backend
     if (learnerId && token) {
@@ -440,6 +452,20 @@ function AppContent() {
     setIsLevelJustCompleted(false);
     
     if (stageConfig && nextLevel <= stageConfig.totalLevels) {
+      if (selectedStage === 1) {
+        if (nextLevel <= 5) {
+          // The five vowel doors each get their own story bridge before the challenge.
+          setSelectedLevel(nextLevel);
+          setCurrentScreen("chapter-bridge");
+          return;
+        }
+
+        // After the five doors, return to the unlocked Valley map reveal.
+        setSelectedLevel(nextLevel);
+        setCurrentScreen("level-map");
+        return;
+      }
+
       // More levels in this stage - show chapter bridge intro for next level
       setSelectedLevel(nextLevel);
       setCurrentScreen("chapter-bridge");
@@ -513,14 +539,18 @@ function AppContent() {
     setLearnerName("");
     setLearnerAvatar("🦊");
     setLearnerId(null);
-    setHasCheckedLearnerProfile(false);
-    setCompletedByStage({ ...DEFAULT_PROGRESS });
+    setCompletedByStage({ 1: 0, 2: 0, 3: 0 });
+    try {
+      localStorage.removeItem('readlr_progress');
+    } catch (error) {
+      console.error('Failed to clear local progress:', error);
+    }
   };
 
   const stickers = ["🦋", "🐝", "🐞", "🦉", "🦄"];
 
   // Screens that shouldn't show navigation header
-  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "level-complete"];
+  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "game", "level-complete"];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
 
   // Landing Screen
@@ -538,23 +568,11 @@ function AppContent() {
     );
   }
 
-  if (isAuthLoading && token && !user && !isPublicScreen) {
-    return (
-      <div className="size-full bg-[#FAF7F2] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#E6DED2] border-t-[#4F46E5] rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!isAuthenticated && !isPublicScreen) {
-    return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
-  }
-
   return (
     <div className="size-full flex flex-col">
       {showLearnerHeader && (
         <NavigationHeader
-          userName={learnerName || user?.name || "Reader"}
+          userName={learnerName}
           userAvatar={learnerAvatar}
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
@@ -665,7 +683,6 @@ function AppContent() {
         {currentScreen === "dashboard" && (
           <UnifiedDashboard
             userName={learnerName || user?.name}
-            completedByStage={completedByStage}
           />
         )}
 
