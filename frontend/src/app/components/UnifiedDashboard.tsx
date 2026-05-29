@@ -15,6 +15,104 @@ import {
 } from 'lucide-react';
 import { FluencyHeatmap } from './FluencyHeatmap';
 
+interface AttemptRecord {
+  wordId: number;
+  sessionId: string;
+  stageId: number;
+  levelId: number;
+  word: string;
+  attemptNumber: number;
+  confidence: number;
+  durationMs: number;
+  tier: string;
+  selfCorrected: boolean;
+  timestamp: string;
+}
+
+function computeStreak(days: string[]): number {
+  if (days.length === 0) return 0;
+  const sorted = [...days].sort().reverse();
+  const today = new Date().toISOString().slice(0, 10);
+  let streak = 0;
+  let expected = today;
+  for (const day of sorted) {
+    if (day === expected) {
+      streak++;
+      const d = new Date(expected);
+      d.setDate(d.getDate() - 1);
+      expected = d.toISOString().slice(0, 10);
+    } else if (day < expected) {
+      break;
+    }
+  }
+  return streak;
+}
+
+const STAGE_NAMES: Record<number, string> = {
+  1: 'Valley of Vowels',
+  2: 'Blending Bridges',
+  3: 'CVC Kingdom',
+};
+
+function buildProgressStats() {
+  let records: AttemptRecord[] = [];
+  try {
+    records = JSON.parse(localStorage.getItem('readlr_attempt_records') || '[]');
+  } catch {
+    records = [];
+  }
+
+  const fluentCount = records.filter((r) => r.tier === 'fluent').length;
+  const pronunciationAccuracy =
+    records.length > 0 ? Math.round((fluentCount / records.length) * 100) : 0;
+
+  const activeDays = [...new Set(records.map((r) => r.timestamp.slice(0, 10)))];
+  const streak = computeStreak(activeDays);
+
+  const totalPlayTime = Math.round(
+    records.reduce((sum, r) => sum + (r.durationMs ?? 0), 0) / 60000,
+  );
+
+  // Weekly activity grouped by day-of-week (Mon=0 … Sun=6)
+  const weeklyMs = [0, 0, 0, 0, 0, 0, 0];
+  for (const r of records) {
+    const dow = (new Date(r.timestamp).getDay() + 6) % 7;
+    weeklyMs[dow] += r.durationMs ?? 0;
+  }
+  const weeklyProgress = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => ({
+    day,
+    minutes: Math.round(weeklyMs[i] / 60000),
+  }));
+
+  // Recent activity: last 3 unique sessions sorted newest first
+  const sessionMap = new Map<string, AttemptRecord[]>();
+  for (const r of records) {
+    if (!sessionMap.has(r.sessionId)) sessionMap.set(r.sessionId, []);
+    sessionMap.get(r.sessionId)!.push(r);
+  }
+  const recentActivity = Array.from(sessionMap.entries())
+    .sort(([, a], [, b]) => {
+      const latest = (recs: AttemptRecord[]) =>
+        Math.max(...recs.map((r) => new Date(r.timestamp).getTime()));
+      return latest(b) - latest(a);
+    })
+    .slice(0, 3)
+    .map(([, sessionRecords]) => {
+      const fluent = sessionRecords.filter((r) => r.tier === 'fluent').length;
+      const accuracy = Math.round((fluent / sessionRecords.length) * 100);
+      const latestTs = sessionRecords.map((r) => r.timestamp).sort().reverse()[0];
+      const date = new Date(latestTs).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      });
+      const { stageId, levelId } = sessionRecords[0];
+      const level = `${STAGE_NAMES[stageId] ?? `Stage ${stageId}`} - Level ${levelId}`;
+      return { date, level, score: fluent * 100, accuracy };
+    });
+
+  return { pronunciationAccuracy, streak, totalPlayTime, weeklyProgress, recentActivity };
+}
+
 interface UnifiedDashboardProps {
   userName?: string;
   completedByStage?: Record<number, number>;
@@ -50,48 +148,23 @@ export function UnifiedDashboard({
   const [activeTab, setActiveTab] = useState<'progress' | 'heatmap'>('progress');
 
   const stageTotals: Record<number, number> = { 1: 55, 2: 8, 3: 10 };
-  const stageNames: Record<number, string> = {
-    1: 'Valley of Vowels',
-    2: 'Blending Bridges',
-    3: 'CVC Kingdom',
-  };
   const totalLevels = Object.values(stageTotals).reduce((sum, total) => sum + total, 0);
   const levelsCompleted = Object.entries(stageTotals).reduce((sum, [stageId, total]) => {
     const completed = completedByStage[Number(stageId)] ?? 0;
     return sum + Math.min(completed, total);
   }, 0);
 
+  const { pronunciationAccuracy, streak, totalPlayTime, weeklyProgress, recentActivity } =
+    buildProgressStats();
+
   const studentStats: StudentStats = {
     totalScore: levelsCompleted * 100,
     levelsCompleted,
     totalLevels,
-    pronunciationAccuracy: levelsCompleted > 0 ? 85 : 0,
-    streak: levelsCompleted > 0 ? 1 : 0,
-    totalPlayTime: levelsCompleted * 5,
+    pronunciationAccuracy,
+    streak,
+    totalPlayTime,
   };
-
-  const recentActivity: RecentActivity[] = Object.entries(stageTotals)
-    .flatMap(([stageId, total]) => {
-      const completed = Math.min(completedByStage[Number(stageId)] ?? 0, total);
-      return Array.from({ length: completed }, (_, index) => ({
-        date: 'Completed',
-        level: `${stageNames[Number(stageId)]} - Chapter ${index + 1}`,
-        score: 100,
-        accuracy: 85,
-      }));
-    })
-    .slice(-3)
-    .reverse();
-
-  const weeklyProgress: WeeklyProgress[] = [
-    { day: 'Mon', minutes: studentStats.totalPlayTime },
-    { day: 'Tue', minutes: 0 },
-    { day: 'Wed', minutes: 0 },
-    { day: 'Thu', minutes: 0 },
-    { day: 'Fri', minutes: 0 },
-    { day: 'Sat', minutes: 0 },
-    { day: 'Sun', minutes: 0 },
-  ];
 
   const maxMinutes = Math.max(...weeklyProgress.map((d) => d.minutes), 1);
   const totalWeekMin = weeklyProgress.reduce((a, b) => a + b.minutes, 0);
