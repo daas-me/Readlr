@@ -742,7 +742,7 @@ function AppContent() {
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements onBack={handleBackToStages} />
+          <Achievements onBack={handleBackToStages} completedByStage={completedByStage} />
         )}
 
         {currentScreen === "settings" && (
