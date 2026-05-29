@@ -49,7 +49,7 @@ export function UnifiedDashboard({
 }: UnifiedDashboardProps) {
   const [activeTab, setActiveTab] = useState<'progress' | 'heatmap'>('progress');
 
-  const stageTotals: Record<number, number> = { 1: 5, 2: 8, 3: 10 };
+  const stageTotals: Record<number, number> = { 1: 55, 2: 8, 3: 10 };
   const stageNames: Record<number, string> = {
     1: 'Valley of Vowels',
     2: 'Blending Bridges',

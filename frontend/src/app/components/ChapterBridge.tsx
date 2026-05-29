@@ -13,12 +13,20 @@ interface ChapterBridgeProps {
   onBeginChapter: () => void;
   onBack: () => void;
   blendingPair?: { consonant: string; vowel: string };
+  cvcWord?: string;
   isCompletionView?: boolean;
 }
 
 const STAGE_THEMES = {
-  1: { from: "from-[#FFF7ED]", to: "to-[#FAF7F2]", border: "border-[#F59E0B]/30", text: "text-[#F59E0B]", bg: "bg-[#F59E0B]" },
-  2: { from: "from-[#EEF2FF]", to: "to-[#E0E7FF]", border: "border-[#4F46E5]/30", text: "text-[#4F46E5]", bg: "bg-[#4F46E5]" }
+  1: { from: "from-[#FFF7ED]", to: "to-[#FAF7F2]", border: "border-[#F59E0B]/30", text: "text-[#F59E0B]", bg: "bg-[#F59E0B]", panel: "from-[#FFF7ED] to-[#FEF3C7]" },
+  2: { from: "from-[#EEF2FF]", to: "to-[#E0E7FF]", border: "border-[#4F46E5]/30", text: "text-[#4F46E5]", bg: "bg-[#4F46E5]", panel: "from-[#EEF2FF] to-[#E0E7FF]" },
+  3: { from: "from-[#ECFDF5]", to: "to-[#FAF7F2]", border: "border-[#10B981]/30", text: "text-[#10B981]", bg: "bg-[#10B981]", panel: "from-[#ECFDF5] to-[#D1FAE5]" },
+};
+
+const STAGE_AUDIO_DIR: Record<number, string> = {
+  1: "stage1",
+  2: "stage2",
+  3: "stage 3",
 };
 
 const VOWEL_STORIES: Record<number, { message: string; doorCount: string }> = {
@@ -39,6 +47,23 @@ const BLENDING_STORIES: Record<number, { message: string; doorCount: string }> =
   8: { message: "Fantastic! The final 'D' and 'A' blend to make 'DA'. You've built the whole bridge and crossed the gap! You're a master builder!", doorCount: "Bridge Piece 8" },
 };
 
+const CVC_STORIES: Record<number, { message: string; doorCount: string }> = {
+  1: { message: "Great reading! The kingdom gate opens to the word MAN. Look at each sound, then blend the whole word.", doorCount: "Word 1 read" },
+  2: { message: "Nice work! HAT is waiting at the next tower. Read the letters from left to right, then say the word.", doorCount: "Word 2 read" },
+  3: { message: "Wonderful! PIG is splashing near the path. Blend the sounds together to keep moving.", doorCount: "Word 3 read" },
+  4: { message: "You did it! DOG is ready for a game of fetch. Say the whole word when you are ready.", doorCount: "Word 4 read" },
+  5: { message: "Bright work! SUN is shining over the castle road. Read each sound, then blend it fast.", doorCount: "Word 5 read" },
+  6: { message: "Cozy progress! BED is tucked into the next room. Keep your voice smooth from first sound to last.", doorCount: "Word 6 read" },
+  7: { message: "Careful reading! CUP is waiting on the table. Touch each sound in your mind, then say it together.", doorCount: "Word 7 read" },
+  8: { message: "Strong blend! BUS has arrived for the next stop. Read the whole CVC word clearly.", doorCount: "Word 8 read" },
+  9: { message: "Almost there! TOP is spinning near the castle door. Say the word to finish this path.", doorCount: "Word 9 read" },
+  10: { message: "CVC Kingdom is complete! You read every word on the path.", doorCount: "Word 10 read" },
+};
+
+function stageAudioPath(stageId: number, fileName: string) {
+  return `/audio/${STAGE_AUDIO_DIR[stageId] ?? `stage${stageId}`}/${fileName}.wav`;
+}
+
 export function ChapterBridge({ 
   stageName, 
   currentLevel, 
@@ -48,6 +73,7 @@ export function ChapterBridge({
   onBeginChapter, 
   onBack,
   blendingPair,
+  cvcWord,
   isCompletionView = false 
 }: ChapterBridgeProps) {
   const theme = STAGE_THEMES[stageId as keyof typeof STAGE_THEMES] || STAGE_THEMES[1];
@@ -55,20 +81,25 @@ export function ChapterBridge({
   // Apply the -1 logic to fetch the story and audio for the level just completed.
   // Math.max ensures it doesn't drop below 1 if the user is on the very first level.
   const storyLevel = Math.max(1, currentLevel - 1);
-  const storySet = stageId === 2 ? BLENDING_STORIES : VOWEL_STORIES;
+  const storySet = stageId === 3 ? CVC_STORIES : stageId === 2 ? BLENDING_STORIES : VOWEL_STORIES;
   const story = storySet[storyLevel] || Object.values(storySet)[0];
+  const displaySound = stageId === 3 && cvcWord
+    ? cvcWord
+    : blendingPair
+      ? `${blendingPair.consonant} + ${blendingPair.vowel}`
+      : vowel;
 
   const { playAudio, stopAudio } = useAudioManager();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Both Stage 1 and Stage 2 use the "MiloCompletedLevelX.wav" naming convention for stories
+    // Stages use the "MiloCompletedLevelX.wav" naming convention for bridge stories.
     // This will now properly play the audio for the (currentLevel - 1)
     const fileName = `MiloCompletedLevel${storyLevel}`;
     
     // Delay autoplay to allow page to render first
     const timer = setTimeout(() => {
-      const audio = playAudio(`/audio/stage${stageId}/${fileName}.wav`);
+      const audio = playAudio(stageAudioPath(stageId, fileName));
       audioRef.current = audio || null;
     }, 1000);
 
@@ -82,7 +113,7 @@ export function ChapterBridge({
     // Stop any other audio and replay the story
     stopAudio();
     const fileName = `MiloCompletedLevel${storyLevel}`;
-    const audio = playAudio(`/audio/stage${stageId}/${fileName}.wav`);
+    const audio = playAudio(stageAudioPath(stageId, fileName));
     audioRef.current = audio || null;
   };
 
@@ -90,10 +121,11 @@ export function ChapterBridge({
     // Stop any other audio first
     stopAudio();
     
-    // Stage 1 looks for pure vowels (E.wav), Stage 2 looks for Pronunciation (PronounceMA.wav)
-    const audioPath = stageId === 2 
-      ? `/audio/stage${stageId}/Pronounce${blendingPair?.consonant}${blendingPair?.vowel}.wav` 
-      : `/audio/stage${stageId}/${vowel.toUpperCase()}.wav`;
+    const audioPath = stageId === 3 && cvcWord
+      ? stageAudioPath(stageId, cvcWord === "CAT" ? cvcWord : `Pronounce${cvcWord}`)
+      : stageId === 2
+        ? stageAudioPath(stageId, `Pronounce${blendingPair?.consonant}${blendingPair?.vowel}`)
+        : stageAudioPath(stageId, vowel.toUpperCase());
       
     playAudio(audioPath);
   };
@@ -123,11 +155,13 @@ export function ChapterBridge({
                 {/* This will now show the -1 story message */}
                 <p className="text-center text-sm sm:text-base md:text-lg text-[#1F2430] leading-relaxed mb-4 sm:mb-6 mt-3 sm:mt-4">{story.message}</p>
                 
-                <div className="bg-gradient-to-br from-[#FFF7ED] to-[#FEF3C7] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
-                  <p className="text-[9px] sm:text-xs uppercase tracking-widest text-[#8A91A3] text-center mb-2 sm:mb-3 font-medium">THE SOUND</p>
+                <div className={`bg-gradient-to-br ${theme.panel} rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6`}>
+                  <p className="text-[9px] sm:text-xs uppercase tracking-widest text-[#8A91A3] text-center mb-2 sm:mb-3 font-medium">
+                    {stageId === 3 ? "THE WORD" : "THE SOUND"}
+                  </p>
                   <div className="text-center flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
                     <div className={`text-2xl sm:text-3xl md:text-5xl font-bold ${theme.text}`}>
-                      {blendingPair ? `${blendingPair.consonant} + ${blendingPair.vowel}` : vowel}
+                      {displaySound}
                     </div>
                     <button onClick={handleListen} className={`p-2 sm:p-3 md:p-4 rounded-full bg-current/10 hover:bg-current/20 transition-colors ${theme.text}`}>
                       <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
