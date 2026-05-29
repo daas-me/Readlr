@@ -21,9 +21,11 @@ export function Landing({ onGetStarted, onSignIn }: LandingProps) {
         className="text-center relative z-10 max-w-2xl w-full flex-1 flex flex-col items-center justify-center"
       >
         <div className="mb-8">
-          <div className="w-20 h-20 bg-[#4F46E5] rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-[0_18px_40px_-18px_rgba(79,70,229,0.6)]">
-            <span className="text-4xl font-semibold text-white">R</span>
-          </div>
+          <img
+            src="/readlr-mark.svg"
+            alt="Readlr"
+            className="w-24 h-24 rounded-3xl mx-auto mb-6 shadow-[0_18px_40px_-18px_rgba(79,70,229,0.6)]"
+          />
           <h1 className="text-5xl md:text-6xl text-[#1F2430] mb-3 tracking-tight font-bold">Readlr</h1>
           <p className="text-lg text-[#4B5266] max-w-xl mx-auto">
             A gamified phonetics companion that helps Grade 1 learners read English with confidence.

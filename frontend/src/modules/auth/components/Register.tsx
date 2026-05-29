@@ -66,9 +66,11 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
         <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(31,36,48,0.04),0_8px_24px_-12px_rgba(31,36,48,0.10)] p-8 border border-[#1F243014]">
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="w-16 h-16 bg-[#EEF2FF] rounded-xl mx-auto mb-4 flex items-center justify-center shadow-[0_4px_12px_-4px_rgba(79,70,229,0.2)]">
-              <span className="text-3xl font-semibold text-[#4F46E5]">R</span>
-            </div>
+            <img
+              src="/readlr-mark.svg"
+              alt="Readlr"
+              className="w-16 h-16 rounded-xl mx-auto mb-4 shadow-[0_4px_12px_-4px_rgba(79,70,229,0.2)]"
+            />
             <h1 className="text-2xl font-semibold text-[#1F2430] mb-1">Join Readlr</h1>
             <p className="text-[#4B5266] text-sm">Create your account to get started</p>
           </div>

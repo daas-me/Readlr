@@ -1,0 +1,22 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Readlr mark</title>
+  <desc id="desc">A rounded app icon with a stylized open book forming the letter R and a voice wave.</desc>
+  <rect width="256" height="256" rx="64" fill="url(#bg)"/>
+  <path d="M70 70C70 64.4772 74.4772 60 80 60H122C143.539 60 161 77.4609 161 99C161 120.539 143.539 138 122 138H94V186C94 191.523 89.5228 196 84 196H80C74.4772 196 70 191.523 70 186V70Z" fill="white"/>
+  <path d="M94 84H120C128.837 84 136 91.1634 136 100C136 108.837 128.837 116 120 116H94V84Z" fill="#4F46E5"/>
+  <path d="M128 135L162 188C166.02 194.267 161.522 202.5 154.078 202.5H149.1C145.673 202.5 142.488 200.741 140.663 197.84L104 139.5L128 135Z" fill="white"/>
+  <path d="M170 76C181.5 88.5 181.5 111.5 170 124" stroke="#34D399" stroke-width="11" stroke-linecap="round"/>
+  <path d="M190 58C211.5 82 211.5 118 190 142" stroke="#A7F3D0" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="182" cy="178" r="12" fill="#FBBF24"/>
+  <path d="M182 154V164" stroke="#FBBF24" stroke-width="8" stroke-linecap="round"/>
+  <path d="M182 192V202" stroke="#FBBF24" stroke-width="8" stroke-linecap="round"/>
+  <path d="M158 178H168" stroke="#FBBF24" stroke-width="8" stroke-linecap="round"/>
+  <path d="M196 178H206" stroke="#FBBF24" stroke-width="8" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg" x1="34" y1="28" x2="226" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="0.58" stop-color="#6D5DF6"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+</svg>
