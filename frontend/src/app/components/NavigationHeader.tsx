@@ -52,9 +52,7 @@ export function NavigationHeader({
               onClick={() => onNavigate("stage-selection")}
               className="flex items-center gap-2.5 cursor-pointer"
             >
-              <div className="w-9 h-9 bg-[#4F46E5] rounded-lg flex items-center justify-center">
-                <span className="text-lg text-white">R</span>
-              </div>
+              <img src="/readlr-mark.svg" alt="Readlr" className="w-9 h-9 rounded-lg" />
               <div className="hidden sm:block leading-tight">
                 <h1 className="text-lg text-[#1F2430]">Readlr</h1>
                 <p className="text-[10px] uppercase tracking-wider text-[#8A91A3]">Learn to Read</p>

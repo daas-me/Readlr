@@ -1,0 +1,25 @@
+<svg width="760" height="220" viewBox="0 0 760 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Readlr logo</title>
+  <desc id="desc">Readlr wordmark with an open-book R mark and a voice wave.</desc>
+  <g>
+    <rect x="24" y="24" width="172" height="172" rx="44" fill="url(#bg)"/>
+    <path d="M70 68C70 62.4772 74.4772 58 80 58H119C140.539 58 158 75.4609 158 97C158 118.539 140.539 136 119 136H94V178C94 183.523 89.5228 188 84 188H80C74.4772 188 70 183.523 70 178V68Z" fill="white"/>
+    <path d="M94 82H116C124.837 82 132 89.1634 132 98C132 106.837 124.837 114 116 114H94V82Z" fill="#4F46E5"/>
+    <path d="M124 133L154 178.5C158.13 184.764 153.639 193.125 146.134 193.125H142.3C138.861 193.125 135.665 191.354 133.843 188.437L101.5 136.7L124 133Z" fill="white"/>
+    <path d="M166 78C176 90 176 109 166 121" stroke="#34D399" stroke-width="9" stroke-linecap="round"/>
+    <path d="M183 62C201 84 201 115 183 137" stroke="#A7F3D0" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="166" cy="164" r="9" fill="#FBBF24"/>
+  </g>
+  <text x="232" y="105" fill="#1F2430" font-family="Inter, Nunito, Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="0">Readlr</text>
+  <text x="236" y="145" fill="#8A91A3" font-family="Inter, Nunito, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4">LEARN TO READ</text>
+  <path d="M236 168H478" stroke="#E6DED2" stroke-width="8" stroke-linecap="round"/>
+  <path d="M236 168H338" stroke="#F59E0B" stroke-width="8" stroke-linecap="round"/>
+  <path d="M356 168H412" stroke="#10B981" stroke-width="8" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg" x1="46" y1="28" x2="190" y2="194" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="0.58" stop-color="#6D5DF6"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+</svg>
