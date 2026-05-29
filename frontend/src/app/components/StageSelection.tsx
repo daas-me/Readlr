@@ -130,7 +130,9 @@ export function StageSelection({
           {/* Stages */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {stages.map((stage, index) => {
-              const pct = Math.round((stage.completed / stage.total) * 100);
+              const completed = Math.min(stage.completed, stage.total);
+              const pct = Math.round((completed / stage.total) * 100);
+              const progressColor = stage.locked ? "#A8A29E" : stage.accent;
               return (
                 <motion.button
                   key={stage.id}
@@ -141,20 +143,25 @@ export function StageSelection({
                   whileTap={!stage.locked ? { scale: 0.99 } : {}}
                   onClick={() => !stage.locked && onSelectStage(stage.id)}
                   disabled={stage.locked}
-                  className={`bg-white rounded-2xl border border-[#1F243014] text-left overflow-hidden transition-all relative ${
+                  className={`rounded-2xl border text-left overflow-hidden transition-all relative min-h-[284px] ${
                     stage.locked
-                      ? "opacity-60 cursor-not-allowed"
-                      : "cursor-pointer hover:border-[#1F243029] hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(31,36,48,0.18)]"
+                      ? "bg-[#F6F3EE] border-[#D8D2C8] cursor-not-allowed grayscale-[0.35]"
+                      : "bg-white border-[#1F243014] cursor-pointer hover:border-[#1F243029] hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(31,36,48,0.18)]"
                   }`}
                 >
                   {/* Top color band — single solid color, not a gradient */}
-                  <div className="h-1" style={{ background: stage.accent }} />
-
-                  <div className="p-6">
+                  <div
+                    className="absolute inset-x-0 top-0 z-20 h-1.5"
+                    style={{ background: stage.locked ? "#BDB7AE" : stage.accent }}
+                  />
+                  <div className="relative z-10 p-6 pt-8">
                     <div className="flex items-start justify-between mb-5">
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ background: stage.accentSoft, color: stage.accent }}
+                        style={{
+                          background: stage.locked ? "#E7E2DA" : stage.accentSoft,
+                          color: progressColor,
+                        }}
                       >
                         {stage.icon}
                       </div>
@@ -168,8 +175,12 @@ export function StageSelection({
                       </div>
                     </div>
 
-                    <h3 className="text-xl text-[#1F2430] mb-1.5">{stage.title}</h3>
-                    <p className="text-[#4B5266] text-sm mb-6">{stage.subtitle}</p>
+                    <h3 className={`text-xl mb-1.5 ${stage.locked ? "text-[#6B7280]" : "text-[#1F2430]"}`}>
+                      {stage.title}
+                    </h3>
+                    <p className={`text-sm mb-6 ${stage.locked ? "text-[#8A91A3]" : "text-[#4B5266]"}`}>
+                      {stage.subtitle}
+                    </p>
 
                     {/* Progress */}
                     <div className="space-y-2 mb-5">
@@ -178,7 +189,7 @@ export function StageSelection({
                           Progress
                         </span>
                         <span className="text-sm text-[#1F2430]">
-                          <span style={{ color: stage.accent }}>{stage.completed}</span>
+                          <span style={{ color: progressColor }}>{completed}</span>
                           <span className="text-[#8A91A3]"> / {stage.total}</span>
                         </span>
                       </div>
@@ -188,7 +199,7 @@ export function StageSelection({
                           animate={{ width: `${pct}%` }}
                           transition={{ delay: 0.3 + index * 0.08, duration: 0.7, ease: "easeOut" }}
                           className="h-1.5 rounded-full"
-                          style={{ background: stage.accent }}
+                          style={{ background: progressColor }}
                         />
                       </div>
                     </div>

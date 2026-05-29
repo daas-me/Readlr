@@ -144,63 +144,63 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
   },
   3: { // Chapter 3: CVC Kingdom — all monosyllabic CVC words (600ms)
     1: {
-      id: 1, word: "CAT", audioPath: "",
+      id: 1, word: "CAT", audioPath: "/audio/stage 3/CAT.wav",
       acceptedTranscripts: ["cat", "c a t", "see a tee"],
-      storyContext: "Read the whole word: CAT!",
+      storyContext: "Say 'CAT' to greet the fuzzy kitty sleeping on the wall!",
       expectedDurationMs: 600,
     },
     2: {
-      id: 2, word: "MAN", audioPath: "",
+      id: 2, word: "MAN", audioPath: "/audio/stage 3/MAN.wav",
       acceptedTranscripts: ["man", "m a n", "em a en"],
-      storyContext: "Read the whole word: MAN!",
+      storyContext: "Say 'MAN' to help the friendly baker carry his tray of bread!",
       expectedDurationMs: 600,
     },
     3: {
-      id: 3, word: "HAT", audioPath: "",
+      id: 3, word: "HAT", audioPath: "/audio/stage 3/HAT.wav",
       acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
-      storyContext: "Read the whole word: HAT!",
+      storyContext: "Say 'HAT' to give the lonely scarecrow his magical cap!",
       expectedDurationMs: 600,
     },
     4: {
-      id: 4, word: "PIG", audioPath: "",
+      id: 4, word: "PIG", audioPath: "/audio/stage 3/PIG.wav",
       acceptedTranscripts: ["pig", "p i g", "pee i gee"],
-      storyContext: "Read the whole word: PIG!",
+      storyContext: "Say 'PIG' to wake up the little pink piggy playing in the mud!",
       expectedDurationMs: 600,
     },
     5: {
-      id: 5, word: "DOG", audioPath: "",
+      id: 5, word: "DOG", audioPath: "/audio/stage 3/DOG.wav",
       acceptedTranscripts: ["dog", "d o g", "dee o gee"],
-      storyContext: "Read the whole word: DOG!",
+      storyContext: "Say 'DOG' to play a happy game of fetch with the puppy!",
       expectedDurationMs: 600,
     },
     6: {
-      id: 6, word: "SUN", audioPath: "",
+      id: 6, word: "SUN", audioPath: "/audio/stage 3/SUN.wav",
       acceptedTranscripts: ["sun", "s u n", "ess u en"],
-      storyContext: "Read the whole word: SUN!",
+      storyContext: "Say 'SUN' to clear away the dark clouds and make the morning bright!",
       expectedDurationMs: 600,
     },
     7: {
-      id: 7, word: "BED", audioPath: "",
+      id: 7, word: "BED", audioPath: "/audio/stage 3/BED.wav",
       acceptedTranscripts: ["bed", "b e d", "bee e dee"],
-      storyContext: "Read the whole word: BED!",
+      storyContext: "Say 'BED' to help Milo tuck under the cozy blankets for a rest!",
       expectedDurationMs: 600,
     },
     8: {
-      id: 8, word: "CUP", audioPath: "",
+      id: 8, word: "CUP", audioPath: "/audio/stage 3/CUP.wav",
       acceptedTranscripts: ["cup", "c u p", "see u pee"],
-      storyContext: "Read the whole word: CUP!",
+      storyContext: "Say 'CUP' to fill the magical glass with sweet, cold juice!",
       expectedDurationMs: 600,
     },
     9: {
-      id: 9, word: "BUS", audioPath: "",
+      id: 9, word: "BUS", audioPath: "/audio/stage 3/BUS.wav",
       acceptedTranscripts: ["bus", "b u s", "bee u ess"],
-      storyContext: "Read the whole word: BUS!",
+      storyContext: "Say 'BUS' to open the doors so everyone can ride to school!",
       expectedDurationMs: 600,
     },
     10: {
-      id: 10, word: "TOP", audioPath: "",
+      id: 10, word: "TOP", audioPath: "/audio/stage 3/TOP.wav",
       acceptedTranscripts: ["top", "t o p", "tee o pee"],
-      storyContext: "Read the whole word: TOP!",
+      storyContext: "Say 'TOP' to spin the colorful toy round and round!",
       expectedDurationMs: 600,
     },
   },
@@ -300,6 +300,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
 
   const challenge = getChallenge(stageId, levelId);
   const isBlendingMode = stageId === 2;
+  const isCvcMode = stageId === 3;
 
   // Cleanup audio when the user leaves the level completely
   useEffect(() => {
@@ -321,7 +322,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
       };
     }
-  }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
+  }, [challenge, isBlendingMode, playAudio, stopAudio]);
 
   useEffect(() => {
     attemptNumber.current = 0;
@@ -460,6 +461,25 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
                 <span className="text-4xl sm:text-6xl">{challenge.vowel}</span>
                 <span className="text-2xl sm:text-3xl text-gray-300">=</span>
                 <span className="text-4xl sm:text-6xl uppercase">{challenge.targetWord}</span>
+              </div>
+            </div>
+          ) : isCvcMode ? (
+            <div className="flex flex-col items-center">
+              <h2 className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-3 sm:mb-4">Read the word:</h2>
+              <span className="text-5xl sm:text-7xl font-bold inline-block mb-2" style={{ color: accent }}>{challenge.word}</span>
+              <div className="mt-4 flex items-center gap-2 sm:gap-3 justify-center" style={{ color: accent }}>
+                {challenge.word.split("").map((letter, index) => (
+                  <span key={`${letter}-${index}`} className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xl sm:text-2xl font-bold uppercase">
+                      {letter}
+                    </span>
+                    {index < challenge.word.length - 1 && (
+                      <span className="text-gray-300 text-xl sm:text-2xl font-bold">
+                        +
+                      </span>
+                    )}
+                  </span>
+                ))}
               </div>
             </div>
           ) : (
