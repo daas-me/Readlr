@@ -38,12 +38,16 @@ const STAGE_NAMES: Record<number, string> = {
 };
 
 interface AttemptRecord {
+  wordId: number;
+  sessionId: string;
   stageId: number;
   levelId: number;
   word: string;
   attemptNumber: number;
   confidence: number;
+  durationMs: number;
   tier: string;
+  selfCorrected: boolean;
   timestamp: string;
 }
 
@@ -132,7 +136,7 @@ function buildFluencyData(studentId: number, studentName: string, avatar: string
       ? Math.round(stages.reduce((sum, s) => sum + s.fluencyRate, 0) / stages.length)
       : 0;
 
-  const selfCorrections = records.filter((r) => r.attemptNumber > 1).length;
+  const selfCorrections = records.filter((r) => r.selfCorrected === true).length;
 
   const activeDays = [...new Set(records.map((r) => r.timestamp.slice(0, 10)))];
   const streak = computeStreak(activeDays);
