@@ -41,7 +41,7 @@ function fuzzyMatch(word: string, targets: Set<string>): boolean {
 }
 
 const TIER_LABEL: Record<FluencyTier, { label: string; color: string }> = {
-  fluent:   { label: "Fluent ⭐",   color: "#10B981" },
+  fluent:   { label: "Fluent ⭐",  color: "#10B981" },
   halting:  { label: "Halting 🔄",  color: "#F59E0B" },
   syllabic: { label: "Keep Trying 💪", color: "#EF4444" },
 };
@@ -144,61 +144,61 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
   },
   3: { // Chapter 3: CVC Kingdom — all monosyllabic CVC words (600ms)
     1: {
-      id: 1, word: "CAT", audioPath: "/audio/stage 3/CAT.wav",
+      id: 1, word: "CAT", audioPath: "/audio/stage3/CAT.wav",
       acceptedTranscripts: ["cat", "c a t", "see a tee"],
       storyContext: "Say 'CAT' to greet the fuzzy kitty sleeping on the wall!",
       expectedDurationMs: 600,
     },
     2: {
-      id: 2, word: "MAN", audioPath: "/audio/stage 3/MAN.wav",
+      id: 2, word: "MAN", audioPath: "/audio/stage3/MAN.wav",
       acceptedTranscripts: ["man", "m a n", "em a en"],
       storyContext: "Say 'MAN' to help the friendly baker carry his tray of bread!",
       expectedDurationMs: 600,
     },
     3: {
-      id: 3, word: "HAT", audioPath: "/audio/stage 3/HAT.wav",
+      id: 3, word: "HAT", audioPath: "/audio/stage3/HAT.wav",
       acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
       storyContext: "Say 'HAT' to give the lonely scarecrow his magical cap!",
       expectedDurationMs: 600,
     },
     4: {
-      id: 4, word: "PIG", audioPath: "/audio/stage 3/PIG.wav",
+      id: 4, word: "PIG", audioPath: "/audio/stage3/PIG.wav",
       acceptedTranscripts: ["pig", "p i g", "pee i gee"],
       storyContext: "Say 'PIG' to wake up the little pink piggy playing in the mud!",
       expectedDurationMs: 600,
     },
     5: {
-      id: 5, word: "DOG", audioPath: "/audio/stage 3/DOG.wav",
+      id: 5, word: "DOG", audioPath: "/audio/stage3/DOG.wav",
       acceptedTranscripts: ["dog", "d o g", "dee o gee"],
       storyContext: "Say 'DOG' to play a happy game of fetch with the puppy!",
       expectedDurationMs: 600,
     },
     6: {
-      id: 6, word: "SUN", audioPath: "/audio/stage 3/SUN.wav",
+      id: 6, word: "SUN", audioPath: "/audio/stage3/SUN.wav",
       acceptedTranscripts: ["sun", "s u n", "ess u en"],
       storyContext: "Say 'SUN' to clear away the dark clouds and make the morning bright!",
       expectedDurationMs: 600,
     },
     7: {
-      id: 7, word: "BED", audioPath: "/audio/stage 3/BED.wav",
+      id: 7, word: "BED", audioPath: "/audio/stage3/BED.wav",
       acceptedTranscripts: ["bed", "b e d", "bee e dee"],
       storyContext: "Say 'BED' to help Milo tuck under the cozy blankets for a rest!",
       expectedDurationMs: 600,
     },
     8: {
-      id: 8, word: "CUP", audioPath: "/audio/stage 3/CUP.wav",
+      id: 8, word: "CUP", audioPath: "/audio/stage3/CUP.wav",
       acceptedTranscripts: ["cup", "c u p", "see u pee"],
       storyContext: "Say 'CUP' to fill the magical glass with sweet, cold juice!",
       expectedDurationMs: 600,
     },
     9: {
-      id: 9, word: "BUS", audioPath: "/audio/stage 3/BUS.wav",
+      id: 9, word: "BUS", audioPath: "/audio/stage3/BUS.wav",
       acceptedTranscripts: ["bus", "b u s", "bee u ess"],
       storyContext: "Say 'BUS' to open the doors so everyone can ride to school!",
       expectedDurationMs: 600,
     },
     10: {
-      id: 10, word: "TOP", audioPath: "/audio/stage 3/TOP.wav",
+      id: 10, word: "TOP", audioPath: "/audio/stage3/TOP.wav",
       acceptedTranscripts: ["top", "t o p", "tee o pee"],
       storyContext: "Say 'TOP' to spin the colorful toy round and round!",
       expectedDurationMs: 600,
@@ -210,37 +210,92 @@ const VOWEL_WORD_SETS: Array<{
   phoneme: string;
   audioWord: string;
   audioPath: string;
-  words: string[];
+  words: { word: string; audioPath: string }[];
 }> = [
   {
     phoneme: "A",
     audioWord: "Apple",
     audioPath: "/audio/stage1/Apple.wav",
-    words: ["Apple", "Ant", "Axe", "Alligator", "Astronaut", "Anchor", "Arrow", "Acorn", "Apron", "Album"],
+    words: [
+      { word: "Apple", audioPath: "/audio/stage1/Apple.wav" },
+      { word: "Ant", audioPath: "/audio/stage1/Ant.wav" },
+      { word: "Axe", audioPath: "/audio/stage1/Axe.wav" },
+      { word: "Alligator", audioPath: "/audio/stage1/Alligator.wav" },
+      { word: "Astronaut", audioPath: "/audio/stage1/Astronaut.wav" },
+      { word: "Anchor", audioPath: "/audio/stage1/Anchor.wav" },
+      { word: "Arrow", audioPath: "/audio/stage1/Arrow.wav" },
+      { word: "Acorn", audioPath: "/audio/stage1/Acorn.wav" },
+      { word: "Apron", audioPath: "/audio/stage1/Apron.wav" },
+      { word: "Album", audioPath: "/audio/stage1/Album.wav" },
+    ],
   },
   {
     phoneme: "E",
     audioWord: "Egg",
     audioPath: "/audio/stage1/Egg.wav",
-    words: ["Egg", "Elephant", "Elbow", "Engine", "Envelope", "Exit", "Echo", "Emerald", "Eskimo", "Exercise"],
+    words: [
+      { word: "Egg", audioPath: "/audio/stage1/Egg.wav" },
+      { word: "Elephant", audioPath: "/audio/stage1/Elephant.wav" },
+      { word: "Elbow", audioPath: "/audio/stage1/Elbow.wav" },
+      { word: "Engine", audioPath: "/audio/stage1/Engine.wav" },
+      { word: "Envelope", audioPath: "/audio/stage1/Envelope.wav" },
+      { word: "Exit", audioPath: "/audio/stage1/Exit.wav" },
+      { word: "Echo", audioPath: "/audio/stage1/Echo.wav" },
+      { word: "Emerald", audioPath: "/audio/stage1/Emerald.wav" },
+      { word: "Eskimo", audioPath: "/audio/stage1/Eskimo.wav" },
+      { word: "Exercise", audioPath: "/audio/stage1/Exercise.wav" },
+    ],
   },
   {
     phoneme: "I",
     audioWord: "Igloo",
     audioPath: "/audio/stage1/Igloo.wav",
-    words: ["Igloo", "Insect", "Ink", "Island", "Invitation", "Iguana", "Idea", "Ice", "Iron", "Inside"],
+    words: [
+      { word: "Igloo", audioPath: "/audio/stage1/Igloo.wav" },
+      { word: "Insect", audioPath: "/audio/stage1/Insect.wav" },
+      { word: "Ink", audioPath: "/audio/stage1/Ink.wav" },
+      { word: "Island", audioPath: "/audio/stage1/Island.wav" },
+      { word: "Invitation", audioPath: "/audio/stage1/Invitation.wav" },
+      { word: "Iguana", audioPath: "/audio/stage1/Iguana.wav" },
+      { word: "Idea", audioPath: "/audio/stage1/Idea.wav" },
+      { word: "Ice", audioPath: "/audio/stage1/Ice.wav" },
+      { word: "Iron", audioPath: "/audio/stage1/Iron.wav" },
+      { word: "Inside", audioPath: "/audio/stage1/Inside.wav" },
+    ],
   },
   {
     phoneme: "O",
     audioWord: "Octopus",
     audioPath: "/audio/stage1/Octopus.wav",
-    words: ["Octopus", "Orange", "Ostrich", "Otter", "Owl", "Ocean", "Olive", "Oven", "Office", "Orbit"],
+    words: [
+      { word: "Octopus", audioPath: "/audio/stage1/Octopus.wav" },
+      { word: "Orange", audioPath: "/audio/stage1/Orange.wav" },
+      { word: "Ostrich", audioPath: "/audio/stage1/Ostrich.wav" },
+      { word: "Otter", audioPath: "/audio/stage1/Otter.wav" },
+      { word: "Owl", audioPath: "/audio/stage1/Owl.wav" },
+      { word: "Ocean", audioPath: "/audio/stage1/Ocean.wav" },
+      { word: "Olive", audioPath: "/audio/stage1/Olive.wav" },
+      { word: "Oven", audioPath: "/audio/stage1/Oven.wav" },
+      { word: "Office", audioPath: "/audio/stage1/Office.wav" },
+      { word: "Orbit", audioPath: "/audio/stage1/Orbit.wav" },
+    ],
   },
   {
     phoneme: "U",
     audioWord: "Umbrella",
     audioPath: "/audio/stage1/Umbrella.wav",
-    words: ["Umbrella", "Unicorn", "Up", "Under", "Uniform", "Ukulele", "Uncle", "Utensil", "Urn", "Us"],
+    words: [
+      { word: "Umbrella", audioPath: "/audio/stage1/Umbrella.wav" },
+      { word: "Unicorn", audioPath: "/audio/stage1/Unicorn.wav" },
+      { word: "Up", audioPath: "/audio/stage1/Up.wav" },
+      { word: "Under", audioPath: "/audio/stage1/Under.wav" },
+      { word: "Uniform", audioPath: "/audio/stage1/Uniform.wav" },
+      { word: "Ukulele", audioPath: "/audio/stage1/Ukulele.wav" },
+      { word: "Uncle", audioPath: "/audio/stage1/Uncle.wav" },
+      { word: "Utensil", audioPath: "/audio/stage1/Utensil.wav" },
+      { word: "Urn", audioPath: "/audio/stage1/Urn.wav" },
+      { word: "Us", audioPath: "/audio/stage1/Us.wav" },
+    ],
   },
 ];
 
@@ -260,19 +315,19 @@ function getChallenge(stageId: number, levelId: number): Challenge {
 
     const valleyLevel = Math.max(1, Math.min(levelId - VOWEL_GATE_CHALLENGES.length, 50));
     const group = VOWEL_WORD_SETS[Math.floor((valleyLevel - 1) / 10)];
-    const word = group.words[(valleyLevel - 1) % 10];
+    const wordData = group.words[(valleyLevel - 1) % 10]; // Now properly extracted as an object
 
     return {
       id: levelId,
-      word,
+      word: wordData.word,
       phoneme: group.phoneme,
-      audioPath: group.audioPath,
+      audioPath: wordData.audioPath, // Uses the exact audio path for this specific word
       acceptedTranscripts: [
-        word.toLowerCase(),
+        wordData.word.toLowerCase(),
         group.phoneme.toLowerCase(),
         group.audioWord.toLowerCase(),
       ],
-      storyContext: `Say '${word}' to restore the ${group.phoneme} part of the valley!`,
+      storyContext: `Say '${wordData.word}' to restore the ${group.phoneme} part of the valley!`,
       expectedDurationMs: 600,
     };
   }
