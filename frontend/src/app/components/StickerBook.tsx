@@ -3,12 +3,16 @@ import { motion } from "motion/react";
 import { ArrowLeft, Star, Lock, Check, Sparkles } from "lucide-react";
 
 interface AttemptRecord {
+  wordId: number;
+  sessionId: string;
   stageId: number;
   levelId: number;
   word: string;
   attemptNumber: number;
   confidence: number;
+  durationMs: number;
   tier: string;
+  selfCorrected: boolean;
   timestamp: string;
 }
 
@@ -17,8 +21,9 @@ function loadSelfCorrections(): AttemptRecord[] {
     const records: AttemptRecord[] = JSON.parse(
       localStorage.getItem("readlr_attempt_records") || "[]"
     );
-    // A self-correction = succeeded but needed more than 1 attempt
-    return records.filter((r) => r.attemptNumber > 1);
+    // SDD UC-06: self-corrected flag is set explicitly when attempt N failed
+    // and attempt N+1 succeeded without the learner pressing Listen between them
+    return records.filter((r) => r.selfCorrected === true);
   } catch {
     return [];
   }

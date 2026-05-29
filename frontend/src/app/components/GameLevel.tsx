@@ -7,9 +7,14 @@ import { useAudioManager } from "../../hooks/useAudioManager";
 
 type FluencyTier = "fluent" | "halting" | "syllabic";
 
-function computeTier(confidence: number, attemptNumber: number): FluencyTier {
-  if (confidence < 0.40) return "syllabic";
-  if (attemptNumber > 1) return "halting";
+// SDD §2.5 / UC-07 fluency classification rules (confidence threshold = 0.70):
+// 1. accuracy < 0.70 OR duration > 2.0× expected → SYLLABIC
+// 2. duration > 1.4× expected → HALTING
+// 3. otherwise → FLUENT
+function computeTier(confidence: number, durationMs: number, expectedDurationMs: number): FluencyTier {
+  const ratio = durationMs / expectedDurationMs;
+  if (confidence < 0.70 || ratio > 2.0) return "syllabic";
+  if (ratio > 1.4) return "halting";
   return "fluent";
 }
 
@@ -58,6 +63,7 @@ interface Challenge {
   audioPath: string;
   acceptedTranscripts: string[];
   storyContext: string;
+  expectedDurationMs: number; // SDD §2.5: 600ms per syllable default
 }
 
 type Outcome = "success" | "incorrect" | "silent";
@@ -70,60 +76,132 @@ const STAGE_ACCENTS: Record<number, { accent: string; tint: string }> = {
 
 const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
   1: {
-    1: { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to open the door!" },
-    2: { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to help the bird hatch!" },
-    3: { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to unlock the chest!" },
-    4: { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to wake up the octopus!" },
-    5: { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to move the boulder!" },
+    // Apple = 2 syllables (1200ms), Egg = 1 (600ms), Igloo = 2 (1200ms),
+    // Octopus = 3 (1800ms), Umbrella = 3 (1800ms)
+    1: { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to open the door!", expectedDurationMs: 1200 },
+    2: { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to help the bird hatch!", expectedDurationMs: 600 },
+    3: { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to unlock the chest!", expectedDurationMs: 1200 },
+    4: { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to wake up the octopus!", expectedDurationMs: 1800 },
+    5: { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to move the boulder!", expectedDurationMs: 1800 },
   },
-  2: { // Chapter 2: Blending Bridges
-    1: { 
+  2: { // Chapter 2: Blending Bridges — all CV blends are 1 syllable (600ms)
+    1: {
       id: 1, word: "MA", consonant: "M", vowel: "A", targetWord: "Mama",
-      audioPath: "/audio/stage2/MA.wav", 
-      acceptedTranscripts: ["ma", "mama", "mah", "maa", "m a", "momma", "mamma"], 
-      storyContext: "Blend M and A to say 'MA', then say 'Mama'!" 
+      audioPath: "/audio/stage2/MA.wav",
+      acceptedTranscripts: ["ma", "mama", "mah", "maa", "m a", "momma", "mamma"],
+      storyContext: "Blend M and A to say 'MA', then say 'Mama'!",
+      expectedDurationMs: 600,
     },
-    2: { 
+    2: {
       id: 2, word: "BA", consonant: "B", vowel: "A", targetWord: "Baba",
-      audioPath: "/audio/stage2/BA.wav", 
-      acceptedTranscripts: ["ba", "baba", "bah", "baa", "b a", "bubba", "bub"], 
-      storyContext: "Blend B and A to say 'BA', then say 'Baba'!" 
+      audioPath: "/audio/stage2/BA.wav",
+      acceptedTranscripts: ["ba", "baba", "bah", "baa", "b a", "bubba", "bub"],
+      storyContext: "Blend B and A to say 'BA', then say 'Baba'!",
+      expectedDurationMs: 600,
     },
-    3: { 
+    3: {
       id: 3, word: "TA", consonant: "T", vowel: "A", targetWord: "Tata",
-      audioPath: "/audio/stage2/TA.wav", 
-      acceptedTranscripts: ["ta", "tata", "tah", "taa", "t a", "tada"], 
-      storyContext: "Blend T and A to say 'TA', then say 'Tata'!" 
+      audioPath: "/audio/stage2/TA.wav",
+      acceptedTranscripts: ["ta", "tata", "tah", "taa", "t a", "tada"],
+      storyContext: "Blend T and A to say 'TA', then say 'Tata'!",
+      expectedDurationMs: 600,
     },
-    4: { 
+    4: {
       id: 4, word: "SA", consonant: "S", vowel: "A", targetWord: "Sasa",
-      audioPath: "/audio/stage2/SA.wav", 
-      acceptedTranscripts: ["sa", "sasa", "sah", "saa", "s a", "saw"], 
-      storyContext: "Blend S and A to say 'SA', then say 'Sasa'!" 
+      audioPath: "/audio/stage2/SA.wav",
+      acceptedTranscripts: ["sa", "sasa", "sah", "saa", "s a", "saw"],
+      storyContext: "Blend S and A to say 'SA', then say 'Sasa'!",
+      expectedDurationMs: 600,
     },
-    5: { 
+    5: {
       id: 5, word: "LA", consonant: "L", vowel: "A", targetWord: "Lala",
-      audioPath: "/audio/stage2/LA.wav", 
-      acceptedTranscripts: ["la", "lala", "lah", "laa", "l a", "law", "lola"], 
-      storyContext: "Blend L and A to say 'LA', then say 'Lala'!" 
+      audioPath: "/audio/stage2/LA.wav",
+      acceptedTranscripts: ["la", "lala", "lah", "laa", "l a", "law", "lola"],
+      storyContext: "Blend L and A to say 'LA', then say 'Lala'!",
+      expectedDurationMs: 600,
     },
-    6: { 
+    6: {
       id: 6, word: "PA", consonant: "P", vowel: "A", targetWord: "Papa",
-      audioPath: "/audio/stage2/PA.wav", 
-      acceptedTranscripts: ["pa", "papa", "pah", "paa", "p a", "paw", "poppa"], 
-      storyContext: "Blend P and A to say 'PA', then say 'Papa'!" 
+      audioPath: "/audio/stage2/PA.wav",
+      acceptedTranscripts: ["pa", "papa", "pah", "paa", "p a", "paw", "poppa"],
+      storyContext: "Blend P and A to say 'PA', then say 'Papa'!",
+      expectedDurationMs: 600,
     },
-    7: { 
+    7: {
       id: 7, word: "NA", consonant: "N", vowel: "A", targetWord: "Nana",
-      audioPath: "/audio/stage2/NA.wav", 
-      acceptedTranscripts: ["na", "nana", "nah", "naa", "n a", "naw", "nonna"], 
-      storyContext: "Blend N and A to say 'NA', then say 'Nana'!" 
+      audioPath: "/audio/stage2/NA.wav",
+      acceptedTranscripts: ["na", "nana", "nah", "naa", "n a", "naw", "nonna"],
+      storyContext: "Blend N and A to say 'NA', then say 'Nana'!",
+      expectedDurationMs: 600,
     },
-    8: { 
+    8: {
       id: 8, word: "DA", consonant: "D", vowel: "A", targetWord: "Dada",
-      audioPath: "/audio/stage2/DA.wav", 
-      acceptedTranscripts: ["da", "dada", "dah", "daa", "d a", "dad"], 
-      storyContext: "Blend D and A to say 'DA', then say 'Dada'!" 
+      audioPath: "/audio/stage2/DA.wav",
+      acceptedTranscripts: ["da", "dada", "dah", "daa", "d a", "dad"],
+      storyContext: "Blend D and A to say 'DA', then say 'Dada'!",
+      expectedDurationMs: 600,
+    },
+  },
+  3: { // Chapter 3: CVC Kingdom — all monosyllabic CVC words (600ms)
+    1: {
+      id: 1, word: "CAT", audioPath: "",
+      acceptedTranscripts: ["cat", "c a t", "see a tee"],
+      storyContext: "Read the whole word: CAT!",
+      expectedDurationMs: 600,
+    },
+    2: {
+      id: 2, word: "MAN", audioPath: "",
+      acceptedTranscripts: ["man", "m a n", "em a en"],
+      storyContext: "Read the whole word: MAN!",
+      expectedDurationMs: 600,
+    },
+    3: {
+      id: 3, word: "HAT", audioPath: "",
+      acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
+      storyContext: "Read the whole word: HAT!",
+      expectedDurationMs: 600,
+    },
+    4: {
+      id: 4, word: "PIG", audioPath: "",
+      acceptedTranscripts: ["pig", "p i g", "pee i gee"],
+      storyContext: "Read the whole word: PIG!",
+      expectedDurationMs: 600,
+    },
+    5: {
+      id: 5, word: "DOG", audioPath: "",
+      acceptedTranscripts: ["dog", "d o g", "dee o gee"],
+      storyContext: "Read the whole word: DOG!",
+      expectedDurationMs: 600,
+    },
+    6: {
+      id: 6, word: "SUN", audioPath: "",
+      acceptedTranscripts: ["sun", "s u n", "ess u en"],
+      storyContext: "Read the whole word: SUN!",
+      expectedDurationMs: 600,
+    },
+    7: {
+      id: 7, word: "BED", audioPath: "",
+      acceptedTranscripts: ["bed", "b e d", "bee e dee"],
+      storyContext: "Read the whole word: BED!",
+      expectedDurationMs: 600,
+    },
+    8: {
+      id: 8, word: "CUP", audioPath: "",
+      acceptedTranscripts: ["cup", "c u p", "see u pee"],
+      storyContext: "Read the whole word: CUP!",
+      expectedDurationMs: 600,
+    },
+    9: {
+      id: 9, word: "BUS", audioPath: "",
+      acceptedTranscripts: ["bus", "b u s", "bee u ess"],
+      storyContext: "Read the whole word: BUS!",
+      expectedDurationMs: 600,
+    },
+    10: {
+      id: 10, word: "TOP", audioPath: "",
+      acceptedTranscripts: ["top", "t o p", "tee o pee"],
+      storyContext: "Read the whole word: TOP!",
+      expectedDurationMs: 600,
     },
   },
 };
@@ -167,11 +245,11 @@ const VOWEL_WORD_SETS: Array<{
 ];
 
 const VOWEL_GATE_CHALLENGES: Challenge[] = [
-  { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to light the A door!" },
-  { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to light the E door!" },
-  { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to light the I door!" },
-  { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to light the O door!" },
-  { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to unlock the Valley of Vowels!" },
+  { id: 1, word: "Apple", phoneme: "A", audioPath: "/audio/stage1/Apple.wav", acceptedTranscripts: ["apple", "a", "ah"], storyContext: "Say 'Apple' to light the A door!", expectedDurationMs: 1200 },
+  { id: 2, word: "Egg", phoneme: "E", audioPath: "/audio/stage1/Egg.wav", acceptedTranscripts: ["egg", "e", "eh"], storyContext: "Say 'Egg' to light the E door!", expectedDurationMs: 600 },
+  { id: 3, word: "Igloo", phoneme: "I", audioPath: "/audio/stage1/Igloo.wav", acceptedTranscripts: ["igloo", "i", "ee"], storyContext: "Say 'Igloo' to light the I door!", expectedDurationMs: 1200 },
+  { id: 4, word: "Octopus", phoneme: "O", audioPath: "/audio/stage1/Octopus.wav", acceptedTranscripts: ["octopus", "o", "oh"], storyContext: "Say 'Octopus' to light the O door!", expectedDurationMs: 1800 },
+  { id: 5, word: "Umbrella", phoneme: "U", audioPath: "/audio/stage1/Umbrella.wav", acceptedTranscripts: ["umbrella", "u", "uh"], storyContext: "Say 'Umbrella' to unlock the Valley of Vowels!", expectedDurationMs: 1800 },
 ];
 
 function getChallenge(stageId: number, levelId: number): Challenge {
@@ -195,6 +273,7 @@ function getChallenge(stageId: number, levelId: number): Challenge {
         group.audioWord.toLowerCase(),
       ],
       storyContext: `Say '${word}' to restore the ${group.phoneme} part of the valley!`,
+      expectedDurationMs: 600,
     };
   }
 
@@ -212,6 +291,12 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
 
   const attemptNumber = useRef(0);
   const attemptStartTime = useRef<number>(0);
+  // SDD UC-06: track whether last attempt failed and whether the learner
+  // requested the model audio before retrying (blocks self-correction flag)
+  const lastAttemptFailed = useRef(false);
+  const userRequestedModel = useRef(false);
+  // SDD §2.1 schema: sessionId scoped to this level visit
+  const sessionId = useRef<string>(crypto.randomUUID());
 
   const challenge = getChallenge(stageId, levelId);
   const isBlendingMode = stageId === 2;
@@ -229,18 +314,20 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     setBubbleMessage(`Listen to Milo: "${challenge.word}"`);
 
     const sound = playAudio(challenge.audioPath);
-    
+
     if (sound) {
-      // Ties the character state directly to the length of the audio file!
       sound.onended = () => {
         setCharacterState("idle");
         setBubbleMessage(`Your turn! Say: "${isBlendingMode ? challenge.targetWord : challenge.word}"!`);
       };
     }
-  }, [challenge, isBlendingMode, playAudio, stopAudio]);
+  }, [challenge, isBlendingMode, playAudio, speakText, stopAudio]);
 
   useEffect(() => {
     attemptNumber.current = 0;
+    lastAttemptFailed.current = false;
+    userRequestedModel.current = false;
+    sessionId.current = crypto.randomUUID();
     setEarnedTier(null);
 
     const autoplayTimer = setTimeout(() => {
@@ -304,10 +391,19 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         const matched = transcript.split(/\s+/).some((word: string) => matchWord(word.replace(/[^a-z]/g, "")));
 
         if (matched) {
-          const tier = computeTier(confidence, attemptNumber.current);
+          const tier = computeTier(confidence, durationMs, challenge.expectedDurationMs);
           setEarnedTier(tier);
 
+          // SDD UC-06: self-correction = previous attempt failed AND learner
+          // did not press Listen to request the audio model between attempts
+          const selfCorrected = lastAttemptFailed.current && !userRequestedModel.current;
+          lastAttemptFailed.current = false;
+          userRequestedModel.current = false;
+
+          // SDD §2.5 / READING_ATTEMPT_RECORD schema with all required fields
           const record = {
+            wordId: challenge.id,
+            sessionId: sessionId.current,
             stageId,
             levelId,
             word: challenge.word,
@@ -315,6 +411,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
             confidence,
             durationMs,
             tier,
+            selfCorrected,
             timestamp: new Date().toISOString(),
           };
           const existing = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
@@ -323,6 +420,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           recognition.stop();
           handleSpeechResult("success");
         } else {
+          lastAttemptFailed.current = true;
           recognition.stop();
           handleSpeechResult("incorrect");
         }
@@ -373,7 +471,7 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
         </motion.div>
 
         <div className="flex flex-col sm:flex-row gap-3 max-w-sm sm:max-w-md sm:gap-4 justify-center">
-          <button onClick={speakPhoneme} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
+          <button onClick={() => { userRequestedModel.current = true; speakPhoneme(); }} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
             <Volume2 className="w-4 h-4 flex-shrink-0" /> Listen
           </button>
           <button onClick={handleListen} className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm sm:text-base" style={{ background: accent }}>

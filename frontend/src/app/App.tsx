@@ -337,14 +337,13 @@ function AppContent() {
 
           if (response.ok) {
             const progressData = await response.json();
-            // progressData should be an array of progress objects per stage
             const newCompletedByStage: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
-            
-            if (Array.isArray(progressData)) {
-              progressData.forEach((progress: any) => {
-                newCompletedByStage[progress.stage_id] = progress.completed_levels;
-              });
-            }
+
+            // API returns { success, learner_id, stages: [...], overall_completion_percentage }
+            const stages = Array.isArray(progressData) ? progressData : (progressData.stages ?? []);
+            stages.forEach((progress: any) => {
+              newCompletedByStage[progress.stage_id] = progress.completed_levels;
+            });
             
             setCompletedByStage((prev) => {
               const mergedProgress = { ...prev };
@@ -683,6 +682,8 @@ function AppContent() {
         {currentScreen === "dashboard" && (
           <UnifiedDashboard
             userName={learnerName || user?.name}
+            completedByStage={completedByStage}
+            onBack={handleBackToStages}
           />
         )}
 
