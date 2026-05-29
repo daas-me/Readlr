@@ -11,12 +11,14 @@ import {
   TrendingUp,
   Award,
   Flame,
+  ArrowLeft,
 } from 'lucide-react';
 import { FluencyHeatmap } from './FluencyHeatmap';
 
 interface UnifiedDashboardProps {
   userName?: string;
   completedByStage?: Record<number, number>;
+  onBack?: () => void;
 }
 
 interface StudentStats {
@@ -43,6 +45,7 @@ interface WeeklyProgress {
 export function UnifiedDashboard({
   userName = 'Student',
   completedByStage = {},
+  onBack,
 }: UnifiedDashboardProps) {
   const [activeTab, setActiveTab] = useState<'progress' | 'heatmap'>('progress');
 
@@ -129,10 +132,20 @@ export function UnifiedDashboard({
     <div className="size-full bg-[#FAF7F2] overflow-auto">
       <div className="min-h-full px-6 md:px-10 py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center justify-between mb-8">
+            {onBack ? (
+              <button
+                onClick={onBack}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#1F243014] text-[#4B5266] hover:text-[#1F2430] hover:border-[#1F243029] transition-colors text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+            ) : <div />}
             <span className="text-xs uppercase tracking-wider text-[#8A91A3]">
               Learning Dashboard
             </span>
+            <div className="w-16" />
           </div>
 
           <motion.div
