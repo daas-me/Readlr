@@ -738,7 +738,7 @@ function AppContent() {
         )}
 
         {currentScreen === "phoneme-bank" && (
-          <PhonemeBank onBack={handleBackToStages} />
+          <PhonemeBank onBack={handleBackToStages} completedByStage={completedByStage} />
         )}
 
         {currentScreen === "achievements" && (
