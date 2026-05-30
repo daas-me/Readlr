@@ -346,6 +346,10 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   const [earnedTier, setEarnedTier] = useState<FluencyTier | null>(null);
   const [lastTranscript, setLastTranscript] = useState<string | null>(null);
 
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const listenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const attemptNumber = useRef(0);
   const attemptStartTime = useRef<number>(0);
   // SDD UC-06: track whether last attempt failed and whether the learner
@@ -359,10 +363,10 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
   const isBlendingMode = stageId === 2;
   const isCvcMode = stageId === 3;
 
-  // Cleanup audio when the user leaves the level completely
   useEffect(() => {
     return () => {
       stopAllAudio();
+      stopListening();
     };
   }, [stopAllAudio]);
 
@@ -420,21 +424,37 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
     }
   };
 
+  const stopListening = () => {
+    if (listenTimeoutRef.current) { clearTimeout(listenTimeoutRef.current); listenTimeoutRef.current = null; }
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch { /* already stopped */ } recognitionRef.current = null; }
+    setIsListening(false);
+  };
+
   const handleListen = () => {
+    if (isListening) return;
     stopAudio();
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) { alert("Use Chrome!"); return; }
 
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     recognition.lang = 'en-US';
     recognition.interimResults = true;
+    setIsListening(true);
     setCharacterState("listening");
     setBubbleMessage(`Listening...`);
     attemptStartTime.current = Date.now();
     attemptNumber.current += 1;
 
+    // Auto-stop after 10s if ASR hangs and never fires onresult/onerror
+    listenTimeoutRef.current = setTimeout(() => {
+      stopListening();
+      handleSpeechResult("silent");
+    }, 10000);
+
     recognition.onresult = (event: any) => {
       if (event.results[event.results.length - 1].isFinal) {
+        stopListening();
         const result = event.results[event.results.length - 1][0];
         const transcript = result.transcript.toLowerCase().trim();
         const confidence: number = result.confidence || 0.75;
@@ -476,16 +496,14 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           const existing = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
           localStorage.setItem("readlr_attempt_records", JSON.stringify([...existing, record]));
 
-          recognition.stop();
           handleSpeechResult("success");
         } else {
           lastAttemptFailed.current = true;
-          recognition.stop();
           handleSpeechResult("incorrect");
         }
       }
     };
-    recognition.onerror = (e: any) => handleSpeechResult(e.error === 'no-speech' ? "silent" : "incorrect");
+    recognition.onerror = (e: any) => { stopListening(); handleSpeechResult(e.error === 'no-speech' ? "silent" : "incorrect"); };
     recognition.start();
   };
 
@@ -552,8 +570,8 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
           <button onClick={() => { userRequestedModel.current = true; speakPhoneme(); }} className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-white border flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm sm:text-base font-medium">
             <Volume2 className="w-4 h-4 flex-shrink-0" /> Listen
           </button>
-          <button onClick={handleListen} className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm sm:text-base" style={{ background: accent }}>
-            <Mic className="w-4 h-4 flex-shrink-0" /> Tap to Speak
+          <button onClick={handleListen} disabled={isListening} className="px-6 sm:px-10 py-3 sm:py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: accent }}>
+            <Mic className="w-4 h-4 flex-shrink-0" /> {isListening ? "Listening..." : "Tap to Speak"}
           </button>
         </div>
         
