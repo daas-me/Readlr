@@ -68,9 +68,21 @@ function buildProgressStats() {
     records = [];
   }
 
-  const fluentCount = records.filter((r) => r.tier === 'fluent').length;
-  const pronunciationAccuracy =
-    records.length > 0 ? Math.round((fluentCount / records.length) * 100) : 0;
+  // Word-level mastery: per unique word, take the best tier ever achieved.
+  // Consistent with the Fluency tab which also measures per-word mastery.
+  const wordBestTier = new Map<string, string>();
+  for (const r of records) {
+    const key = `${r.stageId}-${r.word}`;
+    const current = wordBestTier.get(key);
+    if (!current || r.tier === 'fluent' || (r.tier === 'halting' && current === 'syllabic')) {
+      wordBestTier.set(key, r.tier);
+    }
+  }
+  const uniqueWordCount = wordBestTier.size;
+  const masteredWordCount = [...wordBestTier.values()].filter((t) => t === 'fluent').length;
+  const pronunciationAccuracy = uniqueWordCount > 0
+    ? Math.round((masteredWordCount / uniqueWordCount) * 100)
+    : 0;
 
   const activeDays = [...new Set(records.map((r) => r.timestamp.slice(0, 10)))];
   const streak = computeStreak(activeDays);
@@ -79,15 +91,15 @@ function buildProgressStats() {
     records.reduce((sum, r) => sum + (r.durationMs ?? 0), 0) / 60000,
   );
 
-  // Weekly activity grouped by day-of-week (Mon=0 … Sun=6)
-  const weeklyMs = [0, 0, 0, 0, 0, 0, 0];
+  // Weekly activity grouped by day-of-week (Mon=0 … Sun=6), counted as words practiced
+  const weeklyWords = [0, 0, 0, 0, 0, 0, 0];
   for (const r of records) {
     const dow = (new Date(r.timestamp).getDay() + 6) % 7;
-    weeklyMs[dow] += r.durationMs ?? 0;
+    weeklyWords[dow] += 1;
   }
   const weeklyProgress = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => ({
     day,
-    minutes: Math.round(weeklyMs[i] / 60000),
+    minutes: weeklyWords[i],
   }));
 
   // Recent activity: last 3 unique sessions sorted newest first
@@ -105,7 +117,8 @@ function buildProgressStats() {
     .slice(0, 3)
     .map(([, sessionRecords]) => {
       const fluent = sessionRecords.filter((r) => r.tier === 'fluent').length;
-      const accuracy = Math.round((fluent / sessionRecords.length) * 100);
+      const correct = sessionRecords.length; // all saved records are matched attempts
+      const accuracy = Math.round((fluent / correct) * 100);
       const latestTs = sessionRecords.map((r) => r.timestamp).sort().reverse()[0];
       const date = new Date(latestTs).toLocaleDateString('en-US', {
         month: 'short',
@@ -113,7 +126,7 @@ function buildProgressStats() {
       });
       const { stageId, levelId } = sessionRecords[0];
       const level = `${STAGE_NAMES[stageId] ?? `Stage ${stageId}`} - Level ${levelId}`;
-      return { date, level, score: fluent * 100, accuracy };
+      return { date, level, score: correct * 100, accuracy };
     });
 
   return { pronunciationAccuracy, streak, totalPlayTime, weeklyProgress, recentActivity };
@@ -240,7 +253,7 @@ export function UnifiedDashboard({
                 {userName}'s Progress
               </h1>
               <p className="text-[#4B5266]">
-                {totalWeekMin} minutes this week - {activeDays} active days
+                {totalWeekMin} words this week · {activeDays} active days
               </p>
             </div>
           </motion.div>
@@ -314,7 +327,7 @@ export function UnifiedDashboard({
                     <h2 className="text-lg text-[#1F2430]">Weekly Activity</h2>
                   </div>
                   <span className="text-xs uppercase tracking-wider text-[#8A91A3]">
-                    Minutes
+                    Words Practiced
                   </span>
                 </div>
 
