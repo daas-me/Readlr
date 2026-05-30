@@ -89,7 +89,7 @@ const VOWEL_SECTIONS: Array<{
     title: "Umbrella Grove",
     accent: "#10B981",
     tint: "#D1FAE5",
-    words: ["Umbrella", "Unicorn", "Up", "Under", "Uniform", "Ukulele", "Uncle", "Utensil", "Urn", "Us"],
+    words: ["Umbrella", "Unicorn", "Up", "Under", "Uniform", "Ukulele", "Uncle", "Utensil", "Unit", "Us"],
   },
 ];
 

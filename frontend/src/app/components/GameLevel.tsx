@@ -8,13 +8,15 @@ import { useAudioManager } from "../../hooks/useAudioManager";
 type FluencyTier = "fluent" | "halting" | "syllabic";
 
 // SDD §2.5 / UC-07 fluency classification rules (confidence threshold = 0.70):
-// 1. accuracy < 0.70 OR duration > 2.0× expected → SYLLABIC
-// 2. duration > 1.4× expected → HALTING
+// durationMs is wall-clock (tap → ASR result), so thresholds are scaled up to
+// account for ~800ms browser recognition startup overhead.
+// 1. accuracy < 0.70 OR duration > 4.0× expected → SYLLABIC
+// 2. duration > 2.5× expected → HALTING
 // 3. otherwise → FLUENT
 function computeTier(confidence: number, durationMs: number, expectedDurationMs: number): FluencyTier {
   const ratio = durationMs / expectedDurationMs;
-  if (confidence < 0.70 || ratio > 2.0) return "syllabic";
-  if (ratio > 1.4) return "halting";
+  if (confidence < 0.70 || ratio > 4.0) return "syllabic";
+  if (ratio > 2.5) return "halting";
   return "fluent";
 }
 
@@ -157,7 +159,7 @@ const ALL_CHALLENGES: Record<number, Record<number, Challenge>> = {
     },
     3: {
       id: 3, word: "HAT", audioPath: "/audio/stage3/HAT.wav",
-      acceptedTranscripts: ["hat", "h a t", "aitch a tee"],
+      acceptedTranscripts: ["hat", "hot", "h a t", "aitch a tee"],
       storyContext: "Say 'HAT' to give the lonely scarecrow his magical cap!",
       expectedDurationMs: 600,
     },
@@ -271,7 +273,7 @@ const VOWEL_WORD_SETS: Array<{
       { word: "Octopus", audioPath: "/audio/stage1/Octopus.wav" },
       { word: "Orange", audioPath: "/audio/stage1/Orange.wav" },
       { word: "Ostrich", audioPath: "/audio/stage1/Ostrich.wav" },
-      { word: "Otter", audioPath: "/audio/stage1/Otter.wav" },
+      { word: "Oblong", audioPath: "/audio/stage1/Oblong.wav" },
       { word: "Owl", audioPath: "/audio/stage1/Owl.wav" },
       { word: "Ocean", audioPath: "/audio/stage1/Ocean.wav" },
       { word: "Olive", audioPath: "/audio/stage1/Olive.wav" },
@@ -293,7 +295,7 @@ const VOWEL_WORD_SETS: Array<{
       { word: "Ukulele", audioPath: "/audio/stage1/Ukulele.wav" },
       { word: "Uncle", audioPath: "/audio/stage1/Uncle.wav" },
       { word: "Utensil", audioPath: "/audio/stage1/Utensil.wav" },
-      { word: "Urn", audioPath: "/audio/stage1/Urn.wav" },
+      { word: "Unit", audioPath: "/audio/stage1/Unit.wav" },
       { word: "Us", audioPath: "/audio/stage1/Us.wav" },
     ],
   },
@@ -435,16 +437,17 @@ export function GameLevel({ stageId, levelId, onBack, onComplete }: GameLevelPro
       if (event.results[event.results.length - 1].isFinal) {
         const result = event.results[event.results.length - 1][0];
         const transcript = result.transcript.toLowerCase().trim();
-        const confidence: number = result.confidence || 0.5;
+        const confidence: number = result.confidence || 0.75;
         const durationMs = Date.now() - attemptStartTime.current;
 
-        setLastTranscript(`${transcript} (confidence: ${confidence.toFixed(2)})`);
         const targetWords = new Set(challenge.acceptedTranscripts);
         // Stage 1 targets vowel discrimination — exact match only so "igg" ≠ "egg"
         const matchWord = (word: string) => stageId === 1
           ? targetWords.has(word)
           : fuzzyMatch(word, targetWords);
         const matched = transcript.split(/\s+/).some((word: string) => matchWord(word.replace(/[^a-z]/g, "")));
+
+        setLastTranscript(`${matched ? challenge.word.toLowerCase() : transcript} (confidence: ${confidence.toFixed(2)})`);
 
         if (matched) {
           const tier = computeTier(confidence, durationMs, challenge.expectedDurationMs);

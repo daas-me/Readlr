@@ -51,7 +51,10 @@ function readAttemptRecords(): AttemptRecord[] {
   try {
     const raw = localStorage.getItem("readlr_attempt_records");
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const records: AttemptRecord[] = Array.isArray(parsed) ? parsed : [];
+    return records.map((r) =>
+      r.tier === "syllabic" && (r as any).confidence >= 0.70 ? { ...r, tier: "fluent" } : r
+    );
   } catch {
     return [];
   }
