@@ -82,7 +82,7 @@ const VOWEL_SECTIONS: Array<{
     title: "Octopus Orchard",
     accent: "#8B5CF6",
     tint: "#EDE9FE",
-    words: ["Octopus", "Orange", "Ostrich", "Otter", "Owl", "Ocean", "Olive", "Oven", "Office", "Orbit"],
+    words: ["Octopus", "Orange", "Ostrich", "Oblong", "Owl", "Ocean", "Olive", "Oven", "Office", "Orbit"],
   },
   {
     vowel: "U",
