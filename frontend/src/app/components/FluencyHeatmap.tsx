@@ -74,6 +74,11 @@ function buildFluencyData(studentId: number, studentName: string, avatar: string
   let records: AttemptRecord[] = [];
   try {
     records = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
+    // durationMs measured wall-clock so ratio easily exceeded 2.0× threshold.
+    // Reclassify any record with good confidence (≥0.70) wrongly marked syllabic.
+    records = records.map((r) =>
+      r.tier === "syllabic" && r.confidence >= 0.70 ? { ...r, tier: "fluent" } : r
+    );
   } catch {
     records = [];
   }

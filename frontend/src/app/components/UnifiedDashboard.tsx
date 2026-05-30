@@ -58,6 +58,12 @@ function buildProgressStats() {
   let records: AttemptRecord[] = [];
   try {
     records = JSON.parse(localStorage.getItem('readlr_attempt_records') || '[]');
+    // durationMs measured wall-clock (tap → ASR result) so the ratio easily exceeds
+    // the 2.0× threshold even for correct, confident answers. Reclassify any record
+    // where confidence was good (≥0.70) but tier was wrongly set to syllabic.
+    records = records.map((r) =>
+      r.tier === 'syllabic' && r.confidence >= 0.70 ? { ...r, tier: 'fluent' } : r
+    );
   } catch {
     records = [];
   }
@@ -258,7 +264,7 @@ export function UnifiedDashboard({
                   : 'bg-white text-[#4B5266] border border-[#1F243014] hover:border-[#1F243029]'
               }`}
             >
-              Fluency Heatmap
+              Fluency
             </button>
           </div>
 
