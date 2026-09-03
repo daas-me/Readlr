@@ -5,11 +5,14 @@ import { AudioResult } from './audio.types.js';
 let openai: OpenAI | null = null;
 
 try {
-  if (config.openaiApiKey) {
-    openai = new OpenAI({ apiKey: config.openaiApiKey });
+  if (config.groqApiKey) {
+    openai = new OpenAI({
+      apiKey: config.groqApiKey,
+      baseURL: 'https://api.groq.com/openai/v1',
+    });
   }
 } catch (error) {
-  console.warn('OpenAI client initialization failed. Audio transcription will use mock responses.');
+  console.warn('Groq client initialization failed. Audio transcription will use mock responses.');
 }
 
 export async function processAudio(
@@ -41,7 +44,7 @@ export async function processAudio(
     file: new File([file.buffer], file.originalname || 'audio.webm', {
       type: file.mimetype || 'audio/webm',
     }),
-    model: 'whisper-1',
+    model: 'whisper-large-v3',
     language: 'en',
     response_format: 'verbose_json',
     temperature: 0,
