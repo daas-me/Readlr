@@ -13,10 +13,13 @@ test("chapter collections retain all reward milestones and totals", () => {
 });
 test("sticker collection provides keyboard-accessible details and guarded frame actions", () => {
   const source = readFileSync(new URL("../src/app/components/StickerBook.tsx",import.meta.url),"utf8");
-  assert.ok(source.includes('onClick={()=>setSelected(sticker)}'));
+  assert.ok(source.includes('onSelect={setSelected}'));
   assert.ok(source.includes('<DialogTitle>'));
   assert.ok(source.includes('disabled={!frame.unlocked || frame.equipped || wearing!==null || !equipFrame}'));
-  assert.ok(source.includes('useReducedMotion()'));
+  const album = readFileSync(new URL("../src/app/components/StickerAlbum.tsx",import.meta.url),"utf8");
+  assert.ok(album.includes('useReducedMotion()'));
+  assert.ok(album.includes('album-leaf-back'));
+  assert.ok(album.includes('busy.current||to<0||to>=count'));
 });
 test("voice achievement counts recordings within the current learner's key range", () => {
   const source = readFileSync(new URL("../src/app/components/Achievements.tsx",import.meta.url),"utf8");
