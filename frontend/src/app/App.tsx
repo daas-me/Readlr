@@ -851,6 +851,7 @@ function AppContent() {
             userName={learnerName || user?.name}
             completedByStage={completedByStage}
             onBack={handleBackToStages}
+            onContinue={handleSelectStage}
           />
         )}
 

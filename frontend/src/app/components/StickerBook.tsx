@@ -1,5 +1,5 @@
 import { useMemo, useState, type CSSProperties } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { StickerAlbum } from "./StickerAlbum";
 import { ArrowLeft, ArrowRight, BookOpen, Check, Crown, Lock, Sparkles, Star, Zap } from "lucide-react";
 import { POINT_STICKERS, getTrailPoints } from "./trailRewards";
 import { STICKERS, isStickerEarned, type Sticker } from "./stickers";
@@ -34,7 +34,6 @@ export function StickerBookView({ onBack, completedByStage = {}, avatar = "", fr
   const [selected, setSelected] = useState<Sticker | null>(null);
   const [wearing, setWearing] = useState<number | null>(null);
   const [frameMessage, setFrameMessage] = useState("");
-  const reducedMotion = useReducedMotion();
   const corrections = useMemo(loadSelfCorrections, []);
   const page = PAGES[chapter-1];
   const Icon = page.icon;
@@ -67,12 +66,7 @@ export function StickerBookView({ onBack, completedByStage = {}, avatar = "", fr
       <section className="album-chapter" aria-label={page.title}>
         <header className="album-chapter-heading"><div><span className="album-chapter-icon"><Icon size={23}/></span><div><p>Chapter {chapter}</p><h2>{page.title}</h2></div></div><span>{pageEarned} of {pageStickers.length} collected</span></header>
         <div className="album-layout">
-          <motion.div key={chapter} initial={reducedMotion?false:{opacity:0,y:8}} animate={{opacity:1,y:0}} className="sticker-grid">
-            {pageStickers.map(sticker=>{const earned=isStickerEarned(sticker,completedByStage);return <button key={sticker.id} className={`sticker-stamp ${earned?"is-collected":"is-uncollected"}`} onClick={()=>setSelected(sticker)} aria-label={`${sticker.name}, ${earned?"collected":"locked"}`}>
-              <div className="sticker-stamp-art"><span aria-hidden="true">{sticker.emoji}</span>{earned?<Check className="sticker-check" size={17}/>:<Lock className="sticker-lock" size={16}/>}</div>
-              <strong>{sticker.name}</strong><small>{earned?"Collected":`Level ${sticker.at}`}</small>
-            </button>;})}
-          </motion.div>
+          <StickerAlbum key={chapter} stickers={pageStickers} title={page.title} progress={completedByStage} onSelect={setSelected}/>
           <aside className="album-sidebar" aria-label="Chapter rewards">
             <div className="album-next-reward"><p className="rewards-eyebrow">{next?"Your next treasure":"Chapter complete"}</p><span className="album-next-art" aria-hidden="true">{next?.emoji ?? pageStickers[pageStickers.length-1].emoji}</span><h3>{next?.name ?? "All stickers collected!"}</h3><p>{next?`Complete level ${next.at} in ${page.title}.`:"Every memory has a place in your book."}</p></div>
             {chapter===1&&<div className="album-points"><Star size={21}/><div><b>{trailPoints} trail points</b><p>{nextBonus?`${nextBonus.points-trailPoints} to ${nextBonus.name}`:"Every valley bonus collected"}</p></div></div>}
