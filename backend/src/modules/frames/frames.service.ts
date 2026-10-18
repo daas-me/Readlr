@@ -17,7 +17,8 @@ import { curriculumRewardAccess, FRAME_REWARDS, rewardHint } from './curriculum-
 
 export async function getFramesForUser(
   userId: number,
-  equippedFrameId: number | null
+  equippedFrameId: number | null,
+  rewardAccess?: Awaited<ReturnType<typeof curriculumRewardAccess>>
 ): Promise<FrameResponse[]> {
   const [frames, unlockedIds, stages] = await Promise.all([
     getAllFrames(),
@@ -25,7 +26,7 @@ export async function getFramesForUser(
     getAllStages(),
   ]);
   const unlockedSet = new Set(unlockedIds);
-  const rewards=await curriculumRewardAccess(userId);
+  const rewards=rewardAccess??await curriculumRewardAccess(userId);
   const earned=frames.filter(frame=>FRAME_REWARDS[frame.asset_key]&&rewards.has(FRAME_REWARDS[frame.asset_key])&&!unlockedSet.has(frame.id));
   for(const frame of earned){await unlockFrameDB(userId,frame.id);unlockedSet.add(frame.id);}
 

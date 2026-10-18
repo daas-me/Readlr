@@ -11,6 +11,7 @@ export interface AdminLearner {
   presence: {stage:number|null;level:number|null;screen:string;last_seen:string} | null;
   earnedProgress?: Record<number,number>;
   readingChapters?: number | null;
+  curriculum?: {campPractices:number;guidedStops:number;recordings:number;updatedAt:string}|null;
   progress: Array<{
     stageId: number;
     completedLevels: number;
@@ -51,6 +52,7 @@ async function getLearnerBatch(users: Array<{id:number;email:string;created_at:s
     .select('id, user_id, name, avatar, grade')
     .in('user_id', userIds)) as Array<{ id: number; user_id: number; name: string; avatar: string; grade: number }>;
   const profileIds = profiles.map((profile) => profile.id);
+  const curriculum=profileIds.length?await supabase.from('learner_curriculum_state').select('learner_id,camp_orientation_step,guided_stops,sound_recordings,updated_at').in('learner_id',profileIds):{data:[],error:null};
   const reading = profileIds.length ? await supabase.rpc('reading_checkpoint_overview',{p_learners:profileIds}) : {data:[],error:null};
   const readingByLearner = new Map<number,number>((reading.data ?? []).map((row:{learner_id:number;chapters:number})=>[row.learner_id,Number(row.chapters)]));
   const rewardRows = profileIds.length ? unwrap(await supabase.from('learner_stage_state').select('learner_id,stage_number,earned_completed').in('learner_id',profileIds)) as Array<{learner_id:number;stage_number:number;earned_completed:number}> : [];
@@ -89,6 +91,7 @@ async function getLearnerBatch(users: Array<{id:number;email:string;created_at:s
     return {
       id: user.id,
       readingChapters:reading.error?null:readingByLearner.get(profile?.id ?? 0) ?? 0,
+      curriculum:curriculum.error?null:(()=>{const row=curriculum.data?.find(row=>row.learner_id===profile?.id);return {campPractices:Math.min(3,Number(row?.camp_orientation_step)||0),guidedStops:Array.isArray(row?.guided_stops)?new Set(row.guided_stops).size:0,recordings:Array.isArray(row?.sound_recordings)?row.sound_recordings.length:0,updatedAt:row?.updated_at??user.created_at};})(),
       earnedProgress: Object.fromEntries(rewardRows.filter(row => row.learner_id === profile?.id).map(row => [row.stage_number,row.earned_completed])),
       email: user.email,
       name: profile?.name ?? user.email.split('@')[0],
@@ -98,6 +101,7 @@ async function getLearnerBatch(users: Array<{id:number;email:string;created_at:s
       lastActivity: [
         profile ? lastActivityByLearnerId.get(profile.id) : undefined,
         presenceRows.find(row=>row.user_id===user.id)?.last_seen,
+        curriculum.data?.find(row=>row.learner_id===profile?.id)?.updated_at,
         ...(profile ? progressByLearnerId.get(profile.id)?.map(row=>row.last_updated) ?? [] : []),
         ...(profile ? journeyRows.filter(row=>row.learner_id===profile.id).map(row=>row.updated_at) : []),
       ].filter((value): value is string => Boolean(value)).sort().at(-1) ?? null,

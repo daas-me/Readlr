@@ -11,6 +11,8 @@ function hydrateLegacy(learnerId:number,state:LearnerCurriculumState) {
 export function useLearnerCurriculumState(learnerId:number|null,token:string|null) {
   const [state,setState]=useState<LearnerCurriculumState>(()=>learnerId?readLearnerCurriculumState(learnerId):emptyLearnerCurriculumState());
   const [loading,setLoading]=useState(Boolean(learnerId&&token));
+  const [loadedFor,setLoadedFor]=useState<string|null>(null);
+  const accountKey=learnerId&&token?`${learnerId}:${token}`:null;
   const [message,setMessage]=useState('');
   const persist=useCallback(async(next:LearnerCurriculumState)=>{
     if(!learnerId||!token)return;
@@ -18,13 +20,13 @@ export function useLearnerCurriculumState(learnerId:number|null,token:string|nul
     catch{setMessage('Your latest activity is safe on this device and will sync when you reconnect.');}
   },[learnerId,token]);
   useEffect(()=>{
-    if(!learnerId||!token){setState(emptyLearnerCurriculumState());setMessage('');setLoading(false);return;}
+    if(!learnerId||!token){setState(emptyLearnerCurriculumState());setMessage('');setLoading(false);setLoadedFor(null);return;}
     const controller=new AbortController();setLoading(true);
     void fetch(`${API}/evidence/me/curriculum-state`,{headers:{Authorization:`Bearer ${token}`},signal:controller.signal}).then(async response=>{if(!response.ok)throw new Error();return response.json();}).then(remote=>{
       if(controller.signal.aborted)return;
       const merged=mergeLearnerCurriculumState(readLearnerCurriculumState(learnerId),remote as LearnerCurriculumState);
       saveLearnerCurriculumState(learnerId,merged,false);hydrateLegacy(learnerId,merged);setState(merged);void persist(merged);
-    }).catch(()=>{if(!controller.signal.aborted){const local=readLearnerCurriculumState(learnerId);setState(local);setMessage('Using progress saved on this device.');}}).finally(()=>{if(!controller.signal.aborted)setLoading(false);});
+    }).catch(()=>{if(!controller.signal.aborted){const local=readLearnerCurriculumState(learnerId);setState(local);setMessage('Using progress saved on this device.');}}).finally(()=>{if(!controller.signal.aborted){setLoadedFor(`${learnerId}:${token}`);setLoading(false);}});
     return()=>controller.abort();
   },[learnerId,token,persist]);
   useEffect(()=>{
@@ -33,5 +35,6 @@ export function useLearnerCurriculumState(learnerId:number|null,token:string|nul
     const changed=(event:Event)=>{if((event as CustomEvent).detail?.learnerId!==learnerId)return;const next=readLearnerCurriculumState(learnerId);setState(next);window.clearTimeout(timer);timer=window.setTimeout(()=>void persist(next),450);};
     window.addEventListener(CURRICULUM_STATE_CHANGED,changed);return()=>{window.removeEventListener(CURRICULUM_STATE_CHANGED,changed);window.clearTimeout(timer);};
   },[learnerId,persist]);
-  return {state,loading,message};
+  // Account changes must be loading on the first render, before effects run.
+  return {state,loading:loading||Boolean(accountKey&&loadedFor!==accountKey),message};
 }

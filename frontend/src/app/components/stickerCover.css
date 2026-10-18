@@ -1,0 +1,39 @@
+.sticker-table-scene .sticker-table-book {
+  width: min(390px, 76vw, 58dvh);
+  min-height: 380px;
+  padding: 78px 24px 30px 34px;
+  gap: 14px;
+  background: #7c3aed;
+  border: 6px double #ffdc65;
+  box-shadow: -12px 9px 0 #4c2484, 7px 7px 0 #fff1cc, 11px 11px 0 #d8bd84, 0 25px 38px #47264b55;
+}
+.sticker-table-book::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 10px;
+  width: 9px;
+  border-inline: 2px solid #b287ff;
+  background: #6024b9;
+}
+.sticker-table-scene .sticker-table-band {
+  top: 22px;
+  left: 24px;
+  right: 10px;
+  background: #542093;
+  color: #fff4cb;
+  font-size: 16px;
+  font-weight: 800;
+}
+.sticker-cover-art { position: relative; display: block; width: 100%; height: 170px; flex-shrink: 0; }
+.sticker-cover-art>span { position: absolute; display: block; width: 100px; height: 95px; }
+.sticker-cover-art svg { width: 100%; height: 100%; }
+.sticker-cover-art .cover-star { width: 145px; height: 130px; left: 50%; top: 0; transform: translateX(-50%) rotate(-8deg); }
+.sticker-cover-art .cover-apple { left: 0; bottom: 0; transform: rotate(-16deg); }
+.sticker-cover-art .cover-top { right: 0; bottom: 0; transform: rotate(14deg); }
+.sticker-table-scene .sticker-table-book strong { position: relative; font-size: 24px; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+.sticker-table-book small { position: relative; color: #fff3ce; font-size: 13px; text-align: center; }
+@media(max-height:650px) {
+  .sticker-table-scene:not(.has-open-album) { min-height: 490px; overflow: auto; padding-block: 70px 30px; }
+  .sticker-table-scene .sticker-table-book { min-height: 360px; }
+  .sticker-cover-art { height: 140px; }
+}

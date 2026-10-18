@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../modules/auth/auth.context";
 
 export interface FrameOption {
@@ -14,40 +14,68 @@ export interface FrameOption {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+type AvatarOption = {avatar:string;name:string;hint:string;unlocked:boolean};
+type Rewards = {frames:FrameOption[];avatars:AvatarOption[]};
+const cache = new Map<string, {data:Rewards;at:number}>();
+const pending = new Map<string, Promise<Rewards>>();
+
+function loadRewards(token:string, force=false):Promise<Rewards> {
+  const running=pending.get(token);
+  if(running)return running;
+  const saved=cache.get(token);
+  if(!force&&saved&&Date.now()-saved.at<30000)return Promise.resolve(saved.data);
+  const request=(async()=>{
+    const res=await fetch(`${API_URL}/frames/me`,{headers:{Authorization:`Bearer ${token}`},signal:AbortSignal.timeout(12000)});
+    if(!res.ok)throw new Error('Your rewards could not load. Please try again.');
+    const data=await res.json();
+    if(!Array.isArray(data.frames)||!Array.isArray(data.avatars))throw new Error('Your rewards are temporarily unavailable.');
+    const rewards={frames:data.frames,avatars:data.avatars};
+    cache.set(token,{data:rewards,at:Date.now()});
+    return rewards;
+  })();
+  pending.set(token,request);
+  void request.finally(()=>pending.delete(token)).catch(()=>{});
+  return request;
+}
 
 export function useFrames() {
-  const { token } = useAuth();
-  const [frames, setFrames] = useState<FrameOption[]>([]);
-  const [avatars,setAvatars]=useState<Array<{avatar:string;name:string;hint:string;unlocked:boolean}>>([]);
+  const { token,user } = useAuth();
+  const accountToken=user?.role==='learner'?token:null;
+  const activeToken=useRef(accountToken);
+  activeToken.current=accountToken;
+  const [frames, setFrames] = useState<FrameOption[]>(()=>accountToken?cache.get(accountToken)?.data.frames??[]:[]);
+  const [avatars,setAvatars]=useState<AvatarOption[]>(()=>accountToken?cache.get(accountToken)?.data.avatars??[]:[]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error,setError]=useState<string|null>(null);
 
-  const fetchFrames = useCallback(async () => {
-    if (!token) {
+  const fetchFrames = useCallback(async (force=false) => {
+    if (!accountToken) {
       setIsLoading(false);
       return;
     }
+    setIsLoading(true);setError(null);
     try {
-      const res = await fetch(`${API_URL}/frames/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
+      const data=await loadRewards(accountToken,force);
+      if (activeToken.current===accountToken) {
         setFrames(data.frames);
-        setAvatars(data.avatars??[]);
+        setAvatars(data.avatars);
       }
     } catch (err) {
-      console.error("Failed to fetch frames:", err);
+      if(activeToken.current===accountToken)setError('Your rewards could not load. Please try again.');
     } finally {
-      setIsLoading(false);
+      if(activeToken.current===accountToken)setIsLoading(false);
     }
-  }, [token]);
+  }, [accountToken]);
 
   useEffect(() => {
-    setFrames([]);setAvatars([]);setIsLoading(true);
-    fetchFrames();
-    window.addEventListener("readlr:frames-changed", fetchFrames);
-    return () => window.removeEventListener("readlr:frames-changed", fetchFrames);
-  }, [fetchFrames]);
+    activeToken.current=accountToken;
+    const saved=accountToken?cache.get(accountToken)?.data:undefined;
+    setFrames(saved?.frames??[]);setAvatars(saved?.avatars??[]);
+    void fetchFrames();
+    const refresh=()=>void fetchFrames(true);
+    window.addEventListener("readlr:frames-changed", refresh);
+    return () => {activeToken.current=null;window.removeEventListener("readlr:frames-changed", refresh);};
+  }, [fetchFrames,accountToken]);
 
   const equipFrame = useCallback(
     async (frameId: number): Promise<boolean> => {
@@ -63,6 +91,7 @@ export function useFrames() {
         });
         if (res.ok) {
           const data = await res.json();
+          cache.delete(token);
           setFrames(data.frames);
           window.dispatchEvent(new Event("readlr:frames-changed"));
           return true;
@@ -77,5 +106,5 @@ export function useFrames() {
 
   const equippedAssetKey = frames.find((f) => f.equipped)?.asset_key ?? 'indigo-classic';
 
-  return { frames, avatars, isLoadingFrames: isLoading, equipFrame, equippedAssetKey, refetchFrames: fetchFrames };
+  return { frames, avatars, isLoadingFrames: isLoading, framesError:error, equipFrame, equippedAssetKey, refetchFrames: fetchFrames };
 }

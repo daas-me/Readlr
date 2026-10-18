@@ -67,7 +67,7 @@ export function AdminClassroomControls({ token, learners, target, onTargetChange
   return <section id="classroom-controls" className="admin-controls" aria-labelledby="classroom-heading">
     <div className="flex items-start justify-between gap-4">
       <div><h2 id="classroom-heading" className="flex items-center gap-2 text-lg font-semibold"><ShieldCheck size={20} className="text-emerald-600" />Classroom controls</h2>
-        <p className="mt-1 text-sm text-[#667085]">Manage learning access and stage restarts for your class.</p></div>
+        <p className="mt-1 text-sm text-[#667085]">Manage book access, practice, and progress for your class.</p></div>
       <button onClick={load} disabled={busy} title="Refresh saved controls (discards unsaved edits)" aria-label="Refresh saved controls" className="admin-icon-button"><RefreshCw size={18} /></button>
     </div>
     {state && <>
@@ -95,13 +95,13 @@ export function AdminClassroomControls({ token, learners, target, onTargetChange
           <p>Selected stages open immediately, even if earlier stages are unfinished. Progress and rewards are kept.</p>
           {draft.mode === 'stages' && !draft.stages?.length && <p className="text-red-700">Choose at least one stage.</p>}
         </div>}
-        {!inherit && !['paused','survey'].includes(draft.mode) && <section className="admin-level-access" aria-label="Lesson unlocks"><h4>Lesson access</h4><p>Open extra lessons for practice. Skipped lessons are not marked complete; completion and rewards still follow learning order.</p>{['Valley of Vowels','Blending Bridges','CVC Kingdom'].map((name,i) => {
+        {!inherit && !['paused','survey'].includes(draft.mode) && <details className="admin-level-access"><summary>Earlier curriculum controls</summary><section aria-label="Lesson unlocks"><h4>Legacy lesson access</h4><p>These controls apply to the earlier three-stage curriculum, not book completion or current rewards.</p>{['Valley of Vowels','Blending Bridges','CVC Kingdom'].map((name,i) => {
           const stage = i + 1;
           const permitted = draft.mode === 'open' || (draft.mode === 'stage' ? draft.stage === stage : draft.stages?.includes(stage));
           return <div className="admin-level-row" key={stage}><label id={`unlock-stage-${stage}`}>Stage {stage}: {name}<small>{stage === 1 ? '1-5: Vowel Dojo; 6-20: valley trails' : stage === 2 ? '1-5: Bridge Workshop; 6-20: bridge challenges' : '1-19: word challenges; 20: crown finale'}</small></label><Select disabled={!permitted} value={String(draft.unlockThrough?.[stage] ?? 0)} onValueChange={value => setDraft({...draft,unlockThrough:{...draft.unlockThrough,[stage]:Number(value)}})}><SelectTrigger aria-labelledby={`unlock-stage-${stage}`}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0">Follow saved progress</SelectItem>{Array.from({length:20},(_,n)=><SelectItem key={n+1} value={String(n+1)}>{n===19 ? 'Unlock all 20 levels' : n===4 && stage<3 ? `Unlock all ${stage===1 ? 'Dojo' : 'Workshop'} lessons` : `Unlock through level ${n+1}`}</SelectItem>)}</SelectContent></Select></div>;
-        })}<label className="admin-library-toggle"><input type="checkbox" checked={draft.soundLibrary ?? false} onChange={e=>setDraft({...draft,soundLibrary:e.target.checked})}/><span><strong>Unlock Sound Library</strong><small>All vowel, blend, and word sounds, plus the Workshop sound shelf. Does not complete lessons.</small></span></label></section>}
+        })}<label className="admin-library-toggle"><input type="checkbox" checked={draft.soundLibrary ?? false} onChange={e=>setDraft({...draft,soundLibrary:e.target.checked})}/><span><strong>Legacy sound shelf access</strong><small>Earlier vowel, blend, and word shelves. Current Sound Library discoveries follow book progress.</small></span></label></section></details>}
         {!inherit && !['paused','survey'].includes(draft.mode) && <div className="admin-level-row">
-          <label id="unlock-reading-chapters">Reading Chronicles: unlock books through<small>Opens book entrances in order. Reading Chronicles must be allowed by the stage access setting (Stage 3). Earlier adventure levels stay unchanged.</small></label>
+          <label id="unlock-reading-chapters">Reading Chronicles: unlock books through<small>Opens book entrances without awarding completion. Use normal progression, or include Stage 3 in a saved legacy access rule, to enable book access.</small></label>
           <Select disabled={draft.mode!=='open' && !(draft.mode==='stage'?draft.stage===3:draft.stages?.includes(3))} value={String(draft.readingUnlockThrough??0)} onValueChange={value=>setDraft({...draft,readingUnlockThrough:Number(value)})}>
             <SelectTrigger aria-labelledby="unlock-reading-chapters"><SelectValue/></SelectTrigger><SelectContent>
               <SelectItem value="0">Follow checkpoint progress</SelectItem>

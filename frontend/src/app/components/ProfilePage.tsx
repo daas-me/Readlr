@@ -310,7 +310,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate, curriculumSt
                   </button>
                 ))}
               </div>
-              {!avatars.length&&<p role="status">Rewards could not load yet. <button onClick={()=>void refetchFrames()}>Try again</button></p>}
+              {!avatars.length&&<p role="status">{isLoadingFrames?'Loading your avatars...':'Your avatars could not load.'} {!isLoadingFrames&&<button onClick={()=>void refetchFrames(true)}>Try again</button>}</p>}
 
           <section className="mt-6 border-t border-purple-200 pt-5" aria-label="Avatar borders">
             <h2 className="text-xl mb-4">Borders</h2>
@@ -319,7 +319,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate, curriculumSt
                 <AvatarFrame assetKey={frame.asset_key} size={70}><span className="text-3xl">{displayAvatar}</span></AvatarFrame><strong className="text-sm">{frame.name}</strong>{!frame.unlocked&&<small>{frame.design_notes}</small>}
               </button>)}
             </div>
-            {!frames.length&&<p role="status">{isLoadingFrames?'Loading your borders...':'Your borders could not load.'} <button onClick={()=>void refetchFrames()}>Retry</button></p>}
+            {!frames.length&&<p role="status">{isLoadingFrames?'Loading your borders...':'Your borders could not load.'} {!isLoadingFrames&&<button onClick={()=>void refetchFrames(true)}>Retry</button>}</p>}
           </section>
             </motion.div>
           )}
