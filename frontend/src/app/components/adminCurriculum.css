@@ -1,0 +1,18 @@
+.admin-curriculum-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.admin-curriculum-item{min-width:0;border-left:3px solid #e9ddff;padding-left:10px}
+.admin-curriculum-item:nth-child(2){border-color:#ffc86a}
+.admin-curriculum-item:nth-child(3){border-color:#eb9fbd}
+.admin-curriculum-item>strong{display:block;color:#6240a1;font-size:11px;font-weight:600;line-height:1.4}
+.admin-curriculum-item p{margin:7px 0 4px;font-size:20px;font-weight:700;line-height:1.3;color:#292334}
+.admin-curriculum-item small{font-size:11px;font-weight:400;line-height:1.5;color:#746b82}
+.admin-curriculum-item>small,.admin-completion small{display:block}
+.admin-dashboard progress{appearance:none;display:block;width:100%;max-width:100%;height:6px;border:0;border-radius:4px;overflow:hidden;background:#ece6f3;margin:8px 0}
+.admin-dashboard progress::-webkit-progress-bar{background:#ece6f3;border-radius:4px}
+.admin-dashboard progress::-webkit-progress-value{background:#7c3aed;border-radius:4px}
+.admin-dashboard progress::-moz-progress-bar{background:#7c3aed;border-radius:4px}
+.admin-dashboard .admin-completion progress{max-width:110px}
+.admin-dashboard .admin-table td{padding-block:20px;overflow-wrap:anywhere}
+.admin-dashboard .admin-person>div{min-width:0}
+.admin-dashboard .admin-completion strong{color:#51318a}
+@media(min-width:981px) and (max-width:1400px){.admin-curriculum-grid{grid-template-columns:1fr;gap:9px}.admin-curriculum-item{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-items:center}.admin-curriculum-item p{margin:0;font-size:16px}.admin-curriculum-item>small{grid-column:2}.admin-curriculum-item progress{grid-column:1/-1}}
+@media(max-width:600px){.admin-curriculum-grid{gap:8px}.admin-curriculum-item{padding-left:6px}.admin-curriculum-item p{font-size:18px}}

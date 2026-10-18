@@ -31,6 +31,8 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
   const [completed,setCompleted]=useState<string[]>(cached?.completed??[]);
   const [available,setAvailable]=useState<string[]>(reviewMode?READING_CHAPTERS.map(c=>c.id):cached?.available??[]);
   const [status,setStatus]=useState('');
+  const [retry,setRetry]=useState(0);
+  const [loadingBooks,setLoadingBooks]=useState(!reviewMode);
   const [opening,setOpening]=useState(false);
   const [destination,setDestination]=useState('');
   const [unlocking,setUnlocking]=useState<number|null>(null);
@@ -75,6 +77,7 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
   },[opening,index,onOpenBook]);
   useEffect(()=>{
     if(reviewMode)return;
+    setLoadingBooks(true);
     const cachedAccess=learnerId?readReadingAccessSnapshot(learnerId):null;
     if(cachedAccess){setCompleted(cachedAccess.completed);setAvailable(cachedAccess.available);if(!focusChosen.current)setIndex(Math.max(0,READING_CHAPTERS.findIndex(c=>cachedAccess.available.includes(c.id)&&!cachedAccess.completed.includes(c.id))));}
     const controller=new AbortController();
@@ -88,12 +91,12 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
     }).catch(async error=>{
       if(controller.signal.aborted)return;
       if(import.meta.env.DEV&&learnerId){try{const p=await loadDevelopmentReadingProgress(learnerId,controller.signal);if(controller.signal.aborted)return;setCompleted(p.completed);setAvailable(p.available);saveReadingAccessSnapshot(learnerId,{completed:p.completed,available:p.available,openChallenges:p.openChallenges??[]});setStatus(devicePracticeNotice(error));}catch{if(!controller.signal.aborted)setStatus('Teacher access could not be verified. Please reconnect.');}}
-      else setStatus('Your books could not load. Return home to try again.');
-    });
+      else setStatus('Your books could not load. Please try again.');
+    }).finally(()=>{if(!controller.signal.aborted)setLoadingBooks(false);});
     refresh();
     const timer=window.setInterval(refresh,15000);
     return()=>{controller.abort();window.clearInterval(timer);};
-  },[learnerId,reviewMode]);
+  },[learnerId,reviewMode,retry]);
   const book=CHRONICLES[index],chapter=READING_CHAPTERS[index];
   const unlocked=!blocked&&(reviewMode||(index===0?access.bookOne:true)&&available.includes(chapter.id));
   const openBook=()=>{if(unlocked&&!opening&&!transition.leaving){saveReadingCarouselFocus(learnerId,index);onFocusBook?.(index);setOpening(true);}};
@@ -114,14 +117,14 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
         <div className="book-carousel-track">{CHRONICLES.map((entry,i)=>{
           const distance=i-index;
           if(Math.abs(distance)>2)return null;
-          const locked=blocked||!reviewMode&&!available.includes(READING_CHAPTERS[i].id);
+          const locked=blocked||!reviewMode&&(!available.includes(READING_CHAPTERS[i].id)||(i===0&&!access.bookOne));
           return <button key={entry.emblem} tabIndex={distance===0?0:-1} className={`chronicle-book ${opening&&distance===0?'is-opening':''} ${distance===0?'is-current':''} ${locked?'is-locked':''} ${unlocking===i?'is-unlocking':''}`} style={{'--book-color':entry.color,'--book-light':entry.light,'--offset':distance,'--distance':Math.abs(distance),'--turn':`${distance===0?-7:distance<0?22:-22}deg`,zIndex:5-Math.abs(distance)} as CSSProperties} aria-label={`${i+1}. ${READING_CHAPTERS[i].title}${locked?', locked':''}`} onClick={()=>distance===0?openBook():focusBook(i)}>
             <span className="book-pages"/><span className="book-cover"><span className="book-corner book-corner--tl"/><span className="book-corner book-corner--br"/><span className="book-volume">CHRONICLE {String(i+1).padStart(2,'0')}</span><span className="book-cover-title">{READING_CHAPTERS[i].title}</span><span className="book-emblem"><LandmarkArt kind={entry.emblem}/></span><span className="book-cover-skill">{entry.skill}</span><span className="book-seal">{completed.includes(READING_CHAPTERS[i].id)?<Check/>:locked?<LockKeyhole/>:<BookOpen/>}</span></span>
           </button>;
         })}</div>
         <button className="carousel-arrow carousel-arrow--next" aria-label="Next book" disabled={opening||transition.leaving||index===9} onClick={()=>focusBook(index+1)}><ChevronRight/></button>
       </div>
-      <div className="book-carousel-footer" aria-live="polite"><span className="book-position">Book {index+1} of 10 {completed.includes(chapter.id)&&' · Complete'}</span>{unlockMessage&&<span className="book-unlock-message"><Sparkles/>{unlockMessage}</span>}<button className="world-primary" disabled={!unlocked} onClick={openBook}>{unlocked?<BookOpen/>:<LockKeyhole/>}{unlocked?completed.includes(chapter.id)?'Read again':'Open this book':blocked?'Adventure is paused':`Finish Book ${index} to unlock`} {unlocked&&<ArrowRight/>}</button>{status&&<p role="status">{status}</p>}</div>
+      <div className="book-carousel-footer" aria-live="polite"><span className="book-position">Book {index+1} of 10 {completed.includes(chapter.id)&&' · Complete'}</span>{unlockMessage&&<span className="book-unlock-message"><Sparkles/>{unlockMessage}</span>}<button className="world-primary" disabled={!unlocked} onClick={openBook}>{unlocked?<BookOpen/>:<LockKeyhole/>}{unlocked?completed.includes(chapter.id)?'Read again':'Open this book':blocked?'Adventure is paused':loadingBooks?'Loading books...':status?'Book access unavailable':index===0?'Visit Learning Camp to begin':`Finish Book ${index} to unlock`} {unlocked&&<ArrowRight/>}</button>{status&&<p role="status">{status} <button disabled={loadingBooks} onClick={()=>setRetry(value=>value+1)}>Retry</button></p>}</div>
     </section>
     <footer className="world-footer"><span>{completed.length} of 10 chronicles complete</span>{onAchievements&&<button disabled={!access.achievements} onClick={()=>access.achievements&&transition.exit(onAchievements)}>{access.achievements?'My achievements':'Achievements unlock after Book 1'} {access.achievements?<ArrowRight size={16}/>:<LockKeyhole size={16}/>}</button>}</footer>
   </div>{transition.leaving&&destination==='camp'&&<div className="camp-arrival" role="status" aria-live="polite">

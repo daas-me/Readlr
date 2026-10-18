@@ -1,9 +1,12 @@
+import { validReadingStop } from '../evidence/reading-stops.js';
+
 export interface ClassroomPolicy {
   mode: 'open' | 'stage' | 'stages' | 'paused' | 'survey';
   stages?: number[];
   unlockThrough?: Record<number, number>;
   readingUnlockThrough?: number;
   readingOpenChallenges?: number[];
+  readingOpenStops?: string[];
   soundLibrary?: boolean;
   stage: number | null;
   message: string;
@@ -19,6 +22,7 @@ export function parsePolicy(value: unknown): ClassroomPolicy {
       (p.mode === 'stage' && ![1, 2, 3].includes(p.stage as number)) ||
       (p.mode === 'stages' && (!Array.isArray(p.stages) || p.stages.length < 1 || p.stages.length > 3 || p.stages.some(s => ![1,2,3].includes(s))))) throw new Error('Invalid classroom policy');
   let surveyUrl = '';
+  if (p.readingOpenStops !== undefined && (!Array.isArray(p.readingOpenStops) || p.readingOpenStops.length > 100 || p.readingOpenStops.some(stop => !validReadingStop(stop)))) throw new Error('Invalid reading stop access');
   if (p.readingOpenChallenges !== undefined && (!Array.isArray(p.readingOpenChallenges) || p.readingOpenChallenges.length > 10 || p.readingOpenChallenges.some(book => !Number.isInteger(book) || book < 1 || book > 10))) throw new Error('Invalid book challenge access');
   if (p.readingUnlockThrough !== undefined && (!Number.isInteger(p.readingUnlockThrough) || p.readingUnlockThrough < 0 || p.readingUnlockThrough > 10)) throw new Error('Invalid reading chapter unlock');
   if (p.soundLibrary !== undefined && typeof p.soundLibrary !== 'boolean') throw new Error('Invalid Sound Library access');
@@ -31,7 +35,7 @@ export function parsePolicy(value: unknown): ClassroomPolicy {
     if (!hosts.includes(url.hostname.toLowerCase())) throw new Error('Survey host is not approved on the server');
     surveyUrl = url.href;
   }
-  return {mode:p.mode, stage:p.mode === 'stage' ? p.stage : null, ...(p.mode === 'stages' ? { stages: [...new Set(p.stages)].sort() } : {}), ...(p.unlockThrough ? {unlockThrough: p.unlockThrough} : {}), ...(p.readingUnlockThrough !== undefined ? {readingUnlockThrough:p.readingUnlockThrough} : {}), ...(p.readingOpenChallenges !== undefined ? {readingOpenChallenges:[...new Set(p.readingOpenChallenges)].sort((a,b)=>a-b)} : {}), ...(p.soundLibrary !== undefined ? {soundLibrary:p.soundLibrary} : {}), message:p.message.trim(), surveyUrl};
+  return {...(p.readingOpenStops !== undefined ? {readingOpenStops:[...new Set(p.readingOpenStops)].sort()} : {}),mode:p.mode, stage:p.mode === 'stage' ? p.stage : null, ...(p.mode === 'stages' ? { stages: [...new Set(p.stages)].sort() } : {}), ...(p.unlockThrough ? {unlockThrough: p.unlockThrough} : {}), ...(p.readingUnlockThrough !== undefined ? {readingUnlockThrough:p.readingUnlockThrough} : {}), ...(p.readingOpenChallenges !== undefined ? {readingOpenChallenges:[...new Set(p.readingOpenChallenges)].sort((a,b)=>a-b)} : {}), ...(p.soundLibrary !== undefined ? {soundLibrary:p.soundLibrary} : {}), message:p.message.trim(), surveyUrl};
 }
 
 export function stagePermitted(policy: ClassroomPolicy, stage: number) {

@@ -2,7 +2,7 @@ import type { ClassroomPolicy } from '../app/hooks/useClassroom';
 import { ReadingServiceError } from './readingProgressError';
 import { READING_CHAPTERS } from '../app/components/aralCurriculum';
 import { readLocalReadingProgress, availableLocalReadingChapters } from './readingLocalProgress';
-export interface ReadingProgress { completed:string[]; available:string[]; epoch:number; openChallenges?:number[] }
+export interface ReadingProgress { completed:string[]; available:string[]; epoch:number; openStops?:string[]; openChallenges?:number[] }
 
 export async function loadDevelopmentReadingProgress(learnerId:number,signal?:AbortSignal):Promise<ReadingProgress> {
   if(!import.meta.env.DEV)throw new Error('Device practice is unavailable.');
@@ -11,7 +11,7 @@ export async function loadDevelopmentReadingProgress(learnerId:number,signal?:Ab
   if(!allowed)throw new Error('Your teacher has paused access to these books.');
   const completed=readLocalReadingProgress(learnerId);
   const normal=availableLocalReadingChapters(completed);
-  return {completed,epoch:0,openChallenges:policy.readingOpenChallenges??[],available:READING_CHAPTERS.filter((c,i)=>normal.includes(c.id)||i<(policy.readingUnlockThrough??0)||policy.readingOpenChallenges?.includes(i+1)).map(c=>c.id)};
+  return {completed,epoch:0,openStops:policy.readingOpenStops??[],openChallenges:policy.readingOpenChallenges??[],available:READING_CHAPTERS.filter((c,i)=>normal.includes(c.id)||policy.readingOpenStops?.some(stop=>stop.startsWith(`${c.id}:`))||i<(policy.readingUnlockThrough??0)||policy.readingOpenChallenges?.includes(i+1)).map(c=>c.id)};
 }
 export interface ReadingCheckpoint { id:string; words:string[]; results:Record<string,string>; passed:boolean }
 async function request<T>(path:string,body?:unknown,signal?:AbortSignal):Promise<T> {

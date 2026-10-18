@@ -6,6 +6,8 @@ import { resetProgress } from '../progress/reset.controller.js';
 import { listRecovery, approveRecovery } from '../auth/recovery.controller.js';
 import { getSurvey,submitSurvey,getSurveyAssignments,assignSurvey,listSurveyResponses,exportSurvey } from './survey.controller.js';
 
+import { getLearnerReadingDetail } from './learner-reading.controller.js';
+
 const router = Router();
 router.get('/survey/me',authMiddleware,requireRole('learner'),getSurvey);
 router.post('/survey/me',authMiddleware,requireRole('learner'),submitSurvey);
@@ -14,6 +16,7 @@ router.put('/survey/assignments',authMiddleware,requireRole('admin'),assignSurve
 router.get('/survey/responses',authMiddleware,requireRole('admin'),listSurveyResponses);
 router.get('/survey/export',authMiddleware,requireRole('admin'),exportSurvey);
 
+router.get('/learners/:id/reading', authMiddleware, requireRole('admin'), getLearnerReadingDetail);
 router.get('/learners', authMiddleware, requireRole('admin'), handleGetLearners);
 router.get('/password-requests', authMiddleware, requireRole('admin'), listRecovery);
 router.post('/password-requests/:id', authMiddleware, requireRole('admin'), approveRecovery);

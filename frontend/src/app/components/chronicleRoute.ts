@@ -6,6 +6,7 @@ export interface TrailAccess {
   reviewMode:boolean;
   practiceDone:boolean;
   challengesOpen:boolean;
+  openStops?:string[];
 }
 export interface TrailPageContext {
   hasPrevious:boolean;
@@ -43,8 +44,9 @@ export function trailLayout(chapter:number,page:number,count:number):TrailPoint[
 export function chronicleStopLocked(stops:TrailStop[],position:number,access:TrailAccess) {
   const stop=stops[position];
   const earlierStopsDone=stops.slice(0,position).every(candidate=>candidate.done);
-  const sequenceOpen=stop.done||access.completed||access.reviewMode||earlierStopsDone;
-  const finalGateReady=stop.id!=='check'||access.practiceDone||access.completed||access.reviewMode||access.challengesOpen;
+  const individuallyOpen=access.openStops?.includes(stop.id)??false;
+  const sequenceOpen=individuallyOpen||access.challengesOpen||stop.done||access.completed||access.reviewMode||earlierStopsDone;
+  const finalGateReady=individuallyOpen||stop.id!=='check'||access.practiceDone||access.completed||access.reviewMode||access.challengesOpen;
   return (!access.available&&!access.completed&&!access.reviewMode)||!sequenceOpen||!finalGateReady;
 }
 

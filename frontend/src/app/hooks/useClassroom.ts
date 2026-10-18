@@ -6,6 +6,7 @@ export interface ClassroomPolicy {
   unlockThrough?: Record<number, number>;
   readingUnlockThrough?: number;
   readingOpenChallenges?: number[];
+  readingOpenStops?: string[];
   soundLibrary?: boolean;
   stage: number | null;
   message: string;
