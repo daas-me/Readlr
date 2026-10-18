@@ -44,7 +44,7 @@ export function ContinuousBridgeLandscape({ completed }: {completed:number[]}) {
       <path d="M-65-5V4M65-5V4M-65 28V37M65 28V37" stroke={completed.includes(i+1)?"#8B5CF6":"#94A3B8"} strokeWidth="5" strokeLinecap="round"/>
     </g>)}
     {[2950,3200,3450,3690].map((y,i)=><g key={y} transform={`translate(${i%2?820:150} ${y})`}><path d="M0 30V-45" stroke="#16A34A" strokeWidth="10"/><path d="M-45-20Q-75-70-20-90Q25-140 52-78Q92-24 35-12Z" fill="#22C55E"/><path d="M-70 40l10-18m-10 18l-10-16" stroke="#10B981" strokeWidth="5"/><circle cx="-70" cy="20" r="8" fill="#FACC15"/></g>)}
-    {[450,800,1130].map((y,i)=><g key={y} opacity=".9"><path d={`M-70 ${y}Q20 ${y-80} 80 ${y-30}Q150 ${y-115} 240 ${y-10}Q290 ${y+60} -70 ${y+50}Z`} fill="white"/><path d={`M750 ${y+120}Q800 ${y+30} 860 ${y+90}Q940 ${y} 1020 ${y+110}V${y+180}H760Z`} fill="white"/></g>)}
+    {[450,800,1130].map(y=><g key={y} opacity=".9"><path d={`M-70 ${y}Q20 ${y-80} 80 ${y-30}Q150 ${y-115} 240 ${y-10}Q290 ${y+60} -70 ${y+50}Z`} fill="white"/><path d={`M750 ${y+120}Q800 ${y+30} 860 ${y+90}Q940 ${y} 1020 ${y+110}V${y+180}H760Z`} fill="white"/></g>)}
     <g transform="translate(500 220) scale(.78 .72)">
       <path d="M-180 0L-110 140L0 205L120 130L185 0Z" fill="#A78BFA"/><ellipse rx="190" ry="64" fill="#86EFAC" stroke="#F0FDF4" strokeWidth="9"/>
       <path d="M-110 0Q0-160 110 0" fill="none" stroke="#EC4899" strokeWidth="18"/><path d="M-94 0Q0-132 94 0" fill="none" stroke="#FBBF24" strokeWidth="12"/>

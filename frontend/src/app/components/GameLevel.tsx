@@ -10,6 +10,7 @@ import { getLearningSettings, learningVolume } from "../../hooks/learningSetting
 import { useBridgeAudio } from "../../hooks/useBridgeAudio";
 import { startAudioPlayback } from "../../hooks/audioPlayback";
 import { explanationSeen } from "../../hooks/learningIntroduction";
+import { hasVoiceSignal } from "./stageTwoContent";
 
 type FluencyTier = "fluent" | "halting" | "syllabic";
 type StageOneLevelType =
@@ -822,6 +823,7 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
   const [, setStageOneVisibleChoiceCount] = useState(0);
   const [stageOneRewardRevealed, setStageOneRewardRevealed] = useState(false);
   const [stageOneAutoCompleting, setStageOneAutoCompleting] = useState(false);
+  const [stageOneMicFallbackAvailable, setStageOneMicFallbackAvailable] = useState(false);
 
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -832,6 +834,10 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
   const learnerAudioRef = useRef<HTMLAudioElement | null>(null);
   const recordingStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const recordingFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stageOneMeterTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stageOneAudioContextRef = useRef<AudioContext | null>(null);
+  const stageOnePeakRef = useRef(0);
+  const stageOneVoicedFramesRef = useRef(0);
   const stageOneCompleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stageOneReplayCompleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stageOneRecordingPlaybackFinishedRef = useRef(false);
@@ -841,6 +847,13 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
   const stageOneRecordingPendingRef = useRef(false);
   const [preparingRecording, setPreparingRecording] = useState(false);
   const recordingLeadInRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function releaseStageOneMeter() {
+    if (stageOneMeterTimerRef.current) clearInterval(stageOneMeterTimerRef.current);
+    stageOneMeterTimerRef.current = null;
+    void stageOneAudioContextRef.current?.close().catch(() => {});
+    stageOneAudioContextRef.current = null;
+  }
 
   const attemptNumber = useRef(0);
   const attemptStartTime = useRef<number>(0);
@@ -907,6 +920,7 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
       cancelVoicePlayback.current?.();
       if (recordingFlushTimerRef.current) clearTimeout(recordingFlushTimerRef.current);
       if (recordingLeadInRef.current) clearTimeout(recordingLeadInRef.current);
+      releaseStageOneMeter();
       stopAllAudio();
       stopListening();
       try {
@@ -1305,12 +1319,14 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
       recordingFlushTimerRef.current = setTimeout(() => {
         practice.finish("error");
         recorder.onstop = null;
+        releaseStageOneMeter();
         mediaStreamRef.current?.getTracks().forEach(track => track.stop());
         if (!stageOneActiveRef.current) return;
         setIsRecording(false);
         setHasRecording(false);
         setCharacterState("encouraging");
-        setBubbleMessage("The recording did not finish. Tap to try again.");
+        setStageOneMicFallbackAvailable(true);
+        setBubbleMessage("The recording did not finish. Try again or practice without the microphone.");
       }, 5000);
       recorder.stop();
     }
@@ -1383,13 +1399,20 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
       }
       setStageOneRewardRevealed(false);
       setStageOneAutoCompleting(false);
+      setStageOneMicFallbackAvailable(false);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       if (!stageOneActiveRef.current) {
         stream.getTracks().forEach((track) => track.stop());
         return;
       }
-      const recorder = new MediaRecorder(stream);
       mediaStreamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
+      const context = new AudioContext();
+      await context.resume();
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 1024;
+      context.createMediaStreamSource(stream).connect(analyser);
+      stageOneAudioContextRef.current = context;
       mediaRecorderRef.current = recorder;
       recordingChunksRef.current = [];
 
@@ -1403,26 +1426,34 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
         if (recordingFlushTimerRef.current) clearTimeout(recordingFlushTimerRef.current);
         if (recordingStopTimerRef.current) clearTimeout(recordingStopTimerRef.current);
         practice.finish("error");
+        releaseStageOneMeter();
         recorder.onstop = null;
         stream.getTracks().forEach((track) => track.stop());
         if (!stageOneActiveRef.current) return;
         setIsRecording(false);
         setPreparingRecording(false);
-        setBubbleMessage("The microphone stopped. Tap to try again.");
+        setStageOneMicFallbackAvailable(true);
+        setBubbleMessage("The microphone stopped. Try again or practice without it.");
       };
 
       recorder.onstop = () => {
         if (recordingFlushTimerRef.current) clearTimeout(recordingFlushTimerRef.current);
-        practice.finish(stageOneActiveRef.current ? "recorded" : "interrupted");
+        releaseStageOneMeter();
         stream.getTracks().forEach((track) => track.stop());
-        if (!stageOneActiveRef.current) return;
+        if (!stageOneActiveRef.current) {
+          practice.finish("interrupted");
+          return;
+        }
         mediaStreamRef.current = null;
         const blob = new Blob(recordingChunksRef.current, { type: recorder.mimeType || "audio/webm" });
-        if (!blob.size) {
+        const voiceDetected = hasVoiceSignal(stageOnePeakRef.current, stageOneVoicedFramesRef.current, blob.size);
+        practice.finish(voiceDetected ? "voice_detected" : "silence");
+        if (!voiceDetected) {
           setIsRecording(false);
           setHasRecording(false);
           setCharacterState("encouraging");
-          setBubbleMessage("That recording was empty. Tap to try again.");
+          setStageOneMicFallbackAvailable(true);
+          setBubbleMessage("I could not hear a voice. Move closer and try again, or practice without the microphone.");
           return;
         }
         const nextUrl = URL.createObjectURL(blob);
@@ -1433,7 +1464,7 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
         setHasRecording(true);
         setIsRecording(false);
         setCharacterState("speaking");
-        setBubbleMessage("Great. Milo is playing your sound back now.");
+        setBubbleMessage("Voice recorded. Milo will play it back so you can compare it with the model.");
         void (async () => {
           try {
             await recordingPrompts.play("/audio/stage1/RecordingDone.wav");
@@ -1461,6 +1492,15 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
           try {
             recorder.start();
             practice.begin();
+            stageOnePeakRef.current = 0;
+            stageOneVoicedFramesRef.current = 0;
+            const samples = new Float32Array(analyser.fftSize);
+            stageOneMeterTimerRef.current = setInterval(() => {
+              analyser.getFloatTimeDomainData(samples);
+              const rms = Math.sqrt(samples.reduce((sum, sample) => sum + sample * sample, 0) / samples.length);
+              stageOnePeakRef.current = Math.max(stageOnePeakRef.current, rms);
+              if (rms >= .018) stageOneVoicedFramesRef.current++;
+            }, 50);
             setPreparingRecording(false);
             setIsRecording(true);
             setHasRecording(false);
@@ -1471,9 +1511,11 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
               recordingStopTimerRef.current = null;
             }, 3000);
           } catch {
+            releaseStageOneMeter();
             stream.getTracks().forEach((track) => track.stop());
             setPreparingRecording(false);
-            setBubbleMessage("The microphone stopped. Tap to try again.");
+            setStageOneMicFallbackAvailable(true);
+            setBubbleMessage("The microphone stopped. Try again or practice without it.");
           }
         }, 900);
       };
@@ -1481,14 +1523,53 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
         if (error.name !== "AbortError") startAfterPrompt();
       });
     } catch {
+      releaseStageOneMeter();
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
       if (!stageOneActiveRef.current) return;
       setIsRecording(false);
       setPreparingRecording(false);
       setCharacterState("encouraging");
-      setBubbleMessage("I could not open the microphone. Check browser microphone permission.");
+      setStageOneMicFallbackAvailable(true);
+      setBubbleMessage("The microphone is unavailable. Try again or practice with Milo without recording.");
     } finally {
       stageOneRecordingPendingRef.current = false;
     }
+  };
+
+  const practiceStageOneWithoutMicrophone = () => {
+    if (!stageOneIntroRevealed || preparingRecording || isRecording || stageOneAutoCompleting || stageOneRecordingPendingRef.current) return;
+    stageOneRecordingPendingRef.current = true;
+    setStageOneMicFallbackAvailable(false);
+    setPreparingRecording(true);
+    setCharacterState("speaking");
+    practice.begin();
+    practice.finish("nonvoice_practice");
+    void (async () => {
+      try {
+        stopAudio();
+        setBubbleMessage(`Listen to Milo's ${activePower.sound} sound.`);
+        const model = playAudio(activePower.audioPath);
+        await new Promise<void>((resolve) => {
+          if (!model) { setTimeout(resolve, 1500); return; }
+          const done = () => resolve();
+          model.addEventListener("ended", done, { once: true });
+          model.addEventListener("error", done, { once: true });
+          setTimeout(done, 3500);
+        });
+        if (!stageOneActiveRef.current) return;
+        setCharacterState("encouraging");
+        setBubbleMessage(`Now say ${activePower.sound} aloud with Milo. No microphone is needed.`);
+        await new Promise(resolve => setTimeout(resolve, 2200));
+        if (!stageOneActiveRef.current) return;
+        stageOneRecordingPlaybackFinishedRef.current = true;
+        setPreparingRecording(false);
+        finishStageOneAutomatically();
+      } finally {
+        stageOneRecordingPendingRef.current = false;
+        if (stageOneActiveRef.current) setPreparingRecording(false);
+      }
+    })();
   };
 
   if (isStageOneQuest) {
@@ -1497,10 +1578,11 @@ export function GameLevel({ learnerId, stageId, levelId, onBack, onComplete }: G
       title={stageOneDoor ? "Train your vowel power" : activePowerChallenge.title}
       message={bubbleMessage} characterState={characterState}
       preparing={preparingRecording}
+      fallbackAvailable={stageOneMicFallbackAvailable}
       onSkip={() => skipExplanationRef.current?.()}
       training={Boolean(stageOneDoor)} ready={stageOneIntroRevealed}
       recording={isRecording} recorded={hasRecording} celebrating={stageOneRewardRevealed}
-      onBack={onBack} onReplay={playStageOneModel} onRecord={startStageOneRecording}
+      onBack={onBack} onReplay={playStageOneModel} onRecord={startStageOneRecording} onPracticeWithoutMic={practiceStageOneWithoutMicrophone}
     />;
   }
 

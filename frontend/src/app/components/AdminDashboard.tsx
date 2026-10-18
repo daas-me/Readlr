@@ -10,6 +10,7 @@ import './adminDashboard.css';
 import { accessLabel, type ClassroomState } from './classroomAccess';
 
 interface Learner {
+  readingChapters?: number | null;
   earnedProgress?: Record<number,number>;
   id: number; email: string; name: string; avatar: string; grade: number;
   createdAt: string; lastActivity: string | null;
@@ -124,7 +125,7 @@ export function AdminDashboard() {
               return <Fragment key={learner.id}><tr className="admin-learner-row">
                 <td className="admin-identity"><div className="admin-person"><span className="admin-avatar">{learner.avatar || learner.name.slice(0, 1)}</span><div><strong>{learner.name}</strong><small>{learner.email}</small><span className="admin-grade">Grade {learner.grade}</span></div></div></td>
                 <td className="admin-stages"><div className="admin-stage-grid">{learner.progress.map(stage => <div key={stage.stageId} className={`admin-stage stage-${stage.stageId}`}><div><strong>{stageNames[stage.stageId - 1] || `Stage ${stage.stageId}`}</strong><span>{stage.completedLevels}/{stage.totalLevels}</span></div><div className="admin-track"><i style={{ width: `${stage.totalLevels ? Math.min(100, stage.completedLevels / stage.totalLevels * 100) : 0}%` }} /></div><small>{stage.completedLevels >= stage.totalLevels ? 'Complete' : `Next: level ${stage.completedLevels + 1}`}</small><span className="sr-only">Stage {stage.stageId}: {stage.completedLevels} / {stage.totalLevels}{stage.completedLevels < stage.totalLevels ? ` (next: ${stage.completedLevels + 1})` : ' - complete'}</span></div>)}</div></td>
-                <td className="admin-completion"><strong>{completion}%</strong><small>{completion === 100 ? 'Journey complete' : 'Of the full journey'}</small></td>
+                <td className="admin-completion"><strong>{completion}%</strong><small>Legacy stages</small><small>Expanded Kingdom: {learner.readingChapters==null?'Not available':`${learner.readingChapters}/10 checkpoints`}</small></td>
                 <td className="admin-access"><span className="admin-access-badge">{accessError ? 'Unable to verify' : access ? accessLabel(access.overrides[String(learner.id)] ?? access.policy) : 'Loading access...'}</span><small>{!accessError && access ? access.overrides[String(learner.id)] ? 'Individual override' : 'Class setting' : 'Refresh to check permissions'}</small></td>
                 <td className="admin-activity"><span className={`admin-presence ${connected(learner) ? 'online' : ''}`}>{connected(learner) ? 'Recently connected' : 'Last active'}</span><DateStamp value={learner.lastActivity} /></td>
                 <td className="admin-row-actions"><button className="admin-icon-button" aria-label={`Manage ${learner.name}`} title="Manage access" onClick={() => manage(learner.id)}><SlidersHorizontal size={17} /></button><button className="admin-icon-button" aria-label={`Details for ${learner.name}`} aria-expanded={expanded === learner.id} aria-controls={`learner-details-${learner.id}`} title="Learner details" onClick={() => setExpanded(expanded === learner.id ? null : learner.id)}><ChevronDown size={18} style={{ transform: expanded === learner.id ? 'rotate(180deg)' : undefined }} /></button></td>

@@ -1,0 +1,141 @@
+.camp-adventure {
+  min-height: 100%;
+  overflow: auto;
+  padding: 24px;
+  color: #223b39;
+  background: var(--paper);
+}
+
+.camp-adventure--center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.camp-adventure--center h1 { margin: 14px 0 8px; font-size: 30px; letter-spacing: 0; }
+.camp-adventure--center > p:last-of-type { max-width: 520px; margin: 0 0 24px; color: #59706d; }
+.camp-adventure__spinner { width: 30px; height: 30px; color: #7357bc; animation: camp-adventure-spin .8s linear infinite; }
+.camp-adventure__blocked { width: 72px; height: 72px; display: grid; place-items: center; color: #7357bc; background: #eee8ff; border-radius: 50%; }
+
+.camp-adventure__preview {
+  width: min(1040px, 100%);
+  min-height: 38px;
+  margin: 0 auto 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #6b430b;
+  background: #fff1c7;
+  border: 1px solid #e7c163;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.camp-adventure__preview svg { width: 16px; }
+
+.camp-adventure__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  width: min(1040px, 100%);
+  min-height: 58px;
+  margin: 0 auto 16px;
+  padding: 8px 4px;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: var(--paper);
+}
+.camp-adventure__topbar p { margin: 0; color: #7357bc; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.camp-adventure__topbar strong { display: block; font-size: 20px; }
+.camp-adventure__topbar > span { padding: 7px 10px; color: #65577f; background: #fff; border: 1px solid #d9d1ea; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.camp-adventure__icon-button { width: 44px; height: 44px; display: grid; place-items: center; color: #334d48; background: #fff; border: 1px solid #ceddca; border-radius: 8px; }
+.camp-adventure__icon-button:hover { color: var(--accent); background: var(--accent-soft); border-color: var(--accent); }
+.camp-adventure__icon-button svg { width: 20px; }
+
+.camp-adventure__scene {
+  position: relative;
+  width: min(1040px, 100%);
+  min-height: 660px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #beeafa;
+  border: 1px solid #abcfc7;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(44, 81, 70, .16);
+}
+.camp-adventure__hills { position: absolute; inset: 38% -10% 0; background: #a8df78; border-radius: 50% 50% 0 0; }
+.camp-adventure__hills::after { content: ''; position: absolute; inset: 24% 0 0; background: #75c75f; border-radius: 50% 50% 0 0; }
+.camp-adventure__river { position: absolute; left: 0; right: 0; bottom: 0; height: 185px; background: #49b9e5; border-top: 10px solid rgba(255,255,255,.65); }
+.camp-adventure__river::after { content: ''; position: absolute; inset: 34px 8%; height: 5px; background: rgba(255,255,255,.55); border-radius: 5px; box-shadow: 260px 62px 0 rgba(255,255,255,.35), 650px 15px 0 rgba(255,255,255,.4); }
+
+.camp-adventure__bridge {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 66px;
+  width: min(460px, 76%);
+  min-height: 94px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  transform: translateX(-50%);
+}
+.camp-adventure__bridge::before, .camp-adventure__bridge::after { content: ''; position: absolute; left: -18px; right: -18px; height: 7px; background: #6d4a2d; border-radius: 8px; }
+.camp-adventure__bridge::before { top: 10px; }
+.camp-adventure__bridge::after { bottom: 10px; }
+.camp-adventure__bridge span { position: relative; z-index: 1; display: grid; place-items: center; color: #664315; background: rgba(255,255,255,.3); border: 3px dashed rgba(255,255,255,.8); border-radius: 8px; font-size: 39px; font-weight: 850; }
+.camp-adventure__bridge span.is-restored { background: #f4c667; border-color: #fff4cf; border-style: solid; box-shadow: inset 0 -8px 0 #dc9b35; }
+
+.camp-adventure__story-card {
+  position: relative;
+  z-index: 4;
+  width: min(560px, calc(100% - 32px));
+  min-height: 398px;
+  margin: 30px auto 0;
+  padding: 26px 28px;
+  text-align: center;
+  background: rgba(255, 253, 244, .97);
+  border: 1px solid #e7d5ae;
+  border-radius: 10px;
+  box-shadow: 0 18px 42px rgba(39, 80, 72, .18);
+}
+.camp-adventure__eyebrow { margin: 0 0 7px; color: #7357bc; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.camp-adventure__story-card h1 { margin: 0; font-size: clamp(26px, 4vw, 38px); letter-spacing: 0; }
+.camp-adventure__story-card > p:not(.camp-adventure__eyebrow) { margin: 8px auto 0; max-width: 440px; color: #647571; }
+.camp-adventure__clue { width: 190px; min-height: 142px; margin: 20px auto; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #7357bc; background: #f4efff; border: 2px solid #c8b8ee; border-radius: 9px; font-size: 11px; font-weight: 750; text-transform: uppercase; }
+.camp-adventure__clue img { width: 150px; height: 102px; object-fit: contain; }
+.camp-adventure__placeholder-mat { width: 142px; height: 82px; padding: 10px; display: grid; gap: 7px; align-content: center; background: #f26c9d; border: 6px solid #fff3be; box-shadow: inset 0 0 0 4px #9c4fb6; transform: rotate(-2deg); }
+.camp-adventure__placeholder-mat span { height: 7px; background: #fff3be; border-radius: 5px; }
+.camp-adventure__tiles { display: flex; justify-content: center; gap: 12px; margin: 18px 0 0; }
+.camp-adventure__tiles button { width: 68px; height: 70px; color: #fff; background: #7357bc; border: 3px solid #fff; border-radius: 8px; box-shadow: 0 5px 0 #503a94; font-size: 37px; font-weight: 850; }
+.camp-adventure__tiles button:nth-child(2) { color: #573b0d; background: #ffc44d; box-shadow: 0 5px 0 #d79117; }
+.camp-adventure__tiles button:nth-child(3) { background: #e85b8b; box-shadow: 0 5px 0 #bd3c68; }
+.camp-adventure__tiles button:hover:not(:disabled) { transform: translateY(-3px); }
+.camp-adventure__tiles button:disabled { opacity: .22; transform: translateY(5px); }
+.camp-adventure__hint { margin: 16px auto 0; padding: 9px 12px; display: flex; align-items: center; justify-content: center; gap: 7px; color: #70430b; background: #fff0cf; border: 1px solid #edcf91; border-radius: 8px; font-size: 13px; }
+.camp-adventure__hint svg { width: 17px; }
+.camp-adventure__actions { min-height: 54px; margin-top: 18px; display: flex; align-items: center; justify-content: center; }
+.camp-adventure__primary, .camp-adventure__secondary { min-height: 48px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 8px; font-weight: 750; }
+.camp-adventure__primary { color: #fff !important; background: var(--sun); box-shadow: 0 4px 0 #b86f06; }
+.camp-adventure__primary:hover:not(:disabled) { color: #fff !important; background: #d98208; }
+.camp-adventure__primary:disabled { color: #68707f !important; background: #e5e7eb; box-shadow: none; cursor: not-allowed; }
+.camp-adventure__secondary { color: #405653; background: #fff; border: 1px solid #cfd9cc; }
+.camp-adventure__success { position: absolute; z-index: 5; right: 24px; bottom: 24px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; color: #0e6552; background: #e3f7ef; border: 1px solid #7fc7b2; border-radius: 8px; font-weight: 800; }
+.camp-adventure__success svg { width: 18px; }
+
+@keyframes camp-adventure-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 620px) {
+  .camp-adventure { padding: 10px; }
+  .camp-adventure__topbar { grid-template-columns: 44px 1fr; }
+  .camp-adventure__topbar > span { grid-column: 2; width: fit-content; }
+  .camp-adventure__scene { min-height: 720px; }
+  .camp-adventure__story-card { margin-top: 16px; padding: 22px 14px; }
+  .camp-adventure__bridge { bottom: 72px; width: 88%; gap: 7px; min-height: 84px; }
+  .camp-adventure__success { right: 50%; bottom: 178px; transform: translateX(50%); white-space: nowrap; }
+  .camp-adventure__primary, .camp-adventure__secondary { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .camp-adventure__spinner { animation-duration: 1.8s; }
+  .camp-adventure__tiles button { transition: none; }
+}

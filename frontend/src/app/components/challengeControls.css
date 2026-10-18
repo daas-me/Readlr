@@ -41,6 +41,18 @@
   display:grid; place-items:center;
 }
 .vowel-play__action-row svg,.bridge-practice__actions svg,.cvc-controls svg { flex-shrink:0; }
+.voice-fallback {
+  min-height:44px; padding:9px 14px; border:1px solid #cfd8e3; border-radius:8px;
+  background:#fff; color:#4b5266; display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; font:inherit; font-size:14px; font-weight:600;
+}
+.voice-fallback:hover:not(:disabled) { background:#f7f5ff; border-color:#a78bfa; color:#6241af; }
+.voice-fallback:focus-visible { outline:3px solid #8b5cf6; outline-offset:3px; }
+.vowel-play .voice-fallback { width:100%; margin-top:10px; }
+.bridge-practice .bridge-practice__actions > .voice-fallback,
+.cvc-play .cvc-controls > .voice-fallback { flex:0 0 100%; min-height:44px; box-shadow:none; }
+.bridge-practice .bridge-practice__actions.has-voice-fallback,
+.cvc-play .cvc-controls.has-voice-fallback { flex-wrap:wrap; }
 .cvc-play .cvc-voice-steps { display:flex; justify-content:center; gap:20px; list-style:none; padding:0; margin:0; }
 .cvc-voice-steps li { display:flex; align-items:center; gap:6px; color:#758596; font-size:13px; padding-bottom:6px; border-bottom:3px solid transparent; }
 .cvc-voice-steps li[data-current="true"] { color:#8B5CF6; border-color:#8B5CF6; }

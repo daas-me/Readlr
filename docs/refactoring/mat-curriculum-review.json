@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "curriculumVersion": "readlr2-eng01-mat-draft-1",
+  "status": "provisional",
+  "runtimeAvailable": false,
+  "updatedAt": "2026-10-13",
+  "scope": {
+    "grade": 1,
+    "targetLanguage": "English",
+    "groupId": "ENG-01",
+    "graphemes": ["m", "a", "t"]
+  },
+  "sources": [
+    {
+      "id": "deped-dm-064-2025-annex-a",
+      "url": "https://www.deped.gov.ph/wp-content/uploads/DM_s2025_064r.pdf",
+      "supports": ["English ARAL introductory sequence", "readiness before m-a-t", "structured phonics"]
+    },
+    {
+      "id": "deped-matatag-reading-literacy-grade1",
+      "url": "https://www.deped.gov.ph/wp-content/uploads/MATATAG-Reading-and-Literacy-CG.pdf",
+      "supports": ["letter sound production", "letter identification", "sound isolation", "sound substitution", "sounding out words"],
+      "boundary": "Published competencies are framed for the learner's first language and are not relabeled as English standards."
+    }
+  ],
+  "content": [
+    { "id": "eng01.grapheme.m", "type": "grapheme", "display": "m", "target": "/m/", "approval": "pending" },
+    { "id": "eng01.grapheme.a", "type": "grapheme", "display": "a", "target": "short-a (/ae/ provisional)", "approval": "pending" },
+    { "id": "eng01.grapheme.t", "type": "grapheme", "display": "t", "target": "/t/", "approval": "pending" },
+    { "id": "eng01.word.am", "type": "word", "display": "am", "pattern": "VC", "approval": "pending" },
+    { "id": "eng01.word.at", "type": "word", "display": "at", "pattern": "VC", "approval": "pending" },
+    { "id": "eng01.word.mat", "type": "word", "display": "mat", "pattern": "CVC", "approval": "pending" }
+  ],
+  "skills": [
+    { "id": "eng01.sound.discriminate", "category": "oral_sound_awareness", "prerequisites": [] },
+    { "id": "eng01.letter.m", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng01.letter.a", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng01.letter.t", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng01.blend.am", "category": "blending", "prerequisites": ["eng01.letter.a", "eng01.letter.m"] },
+    { "id": "eng01.blend.at", "category": "blending", "prerequisites": ["eng01.letter.a", "eng01.letter.t"] },
+    { "id": "eng01.decode.mat", "category": "decoding_encoding", "prerequisites": ["eng01.letter.m", "eng01.letter.a", "eng01.letter.t", "eng01.blend.am", "eng01.blend.at"] },
+    { "id": "eng01.meaning.mat", "category": "vocabulary", "prerequisites": ["eng01.decode.mat"] }
+  ],
+  "activities": [
+    { "id": "ENG01-MAT-D01", "mode": "teaching", "targets": ["eng01.letter.m"], "evidenceCeiling": "practiced" },
+    { "id": "ENG01-MAT-D02", "mode": "teaching", "targets": ["eng01.letter.a"], "evidenceCeiling": "practiced" },
+    { "id": "ENG01-MAT-D03", "mode": "teaching", "targets": ["eng01.letter.t"], "evidenceCeiling": "practiced" },
+    { "id": "ENG01-MAT-P01", "mode": "practice", "targets": ["eng01.sound.discriminate", "eng01.letter.m", "eng01.letter.a", "eng01.letter.t"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG01-MAT-P02", "mode": "practice", "targets": ["eng01.letter.m", "eng01.letter.a", "eng01.letter.t"], "evidenceCeiling": "practiced" },
+    { "id": "ENG01-MAT-B01", "mode": "guided", "targets": ["eng01.blend.am"], "evidenceCeiling": "completed_with_help" },
+    { "id": "ENG01-MAT-B02", "mode": "guided", "targets": ["eng01.blend.at"], "evidenceCeiling": "completed_with_help" },
+    { "id": "ENG01-MAT-B03", "mode": "guided", "targets": ["eng01.decode.mat", "eng01.meaning.mat"], "evidenceCeiling": "completed_with_help" },
+    { "id": "ENG01-MAT-A01", "mode": "adventure", "targets": ["eng01.decode.mat"], "evidenceCeiling": "independent_candidate", "separateAdventureCompletion": true },
+    { "id": "ENG01-MAT-I01", "mode": "independent_check", "targets": ["eng01.sound.discriminate", "eng01.letter.m", "eng01.letter.a", "eng01.letter.t"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG01-MAT-I02", "mode": "independent_check", "targets": ["eng01.decode.mat", "eng01.meaning.mat"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG01-MAT-R01", "mode": "delayed_review", "targets": ["eng01.letter.m", "eng01.letter.a", "eng01.letter.t", "eng01.decode.mat"], "evidenceCeiling": "independent_candidate" }
+  ],
+  "mediaRequirements": [
+    { "target": "eng01.grapheme.m", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng01.grapheme.a", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng01.grapheme.t", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng01.word.am", "kinds": ["segmented_audio", "continuous_blend", "whole_word"], "approval": "pending" },
+    { "target": "eng01.word.at", "kinds": ["segmented_audio", "continuous_blend", "whole_word"], "approval": "pending" },
+    { "target": "eng01.word.mat", "kinds": ["segmented_audio", "continuous_blend", "whole_word", "meaning_image"], "approval": "pending" }
+  ],
+  "evidenceStatuses": ["not_assessed", "practiced", "completed_with_help", "demonstrated_independently", "educator_verified"],
+  "publicationGates": {
+    "sourceReviewed": true,
+    "educatorSignoff": false,
+    "languageModelApproved": false,
+    "wordBankApproved": false,
+    "mediaApproved": false,
+    "independentRubricApproved": false,
+    "accessibilityReviewed": false,
+    "pilotProtocolApproved": false
+  },
+  "migration": {
+    "mapLegacyProgressToSkills": false,
+    "preserveAdventureProgress": true,
+    "preserveRewards": true,
+    "featureFlagDefault": false
+  }
+}

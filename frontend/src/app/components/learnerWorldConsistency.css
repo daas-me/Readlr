@@ -1,0 +1,25 @@
+/* Shared interaction language; scoped to illustrated learner destinations. */
+:is(.chronicle-home,.camp-world,.book-world,.camp-lesson,.chronicle-activity-paper){
+  --trail-paper:#fff8e7;
+  --trail-gold:#fbbf24;
+  --world-focus:#7451d8;
+}
+:is(.world-place,.book-map-stop,.chronicle-stop,.dojo-station,.valley-stop,.cvc-map-stop):focus-visible{
+  outline:3px solid #7451d8;outline-offset:5px;
+}
+:is(.world-primary,.world-secondary,.reading-primary,.reading-secondary){
+  transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease;
+}
+:is(.world-primary,.world-secondary,.reading-primary,.reading-secondary):active:not(:disabled){transform:translateY(2px)}
+.chronicle-home .world-place:hover:not(:disabled)>.landmark-art,
+.camp-world .camp-place:hover:not(:disabled)>.landmark-art{filter:drop-shadow(0 5px 3px #22634b20)}
+.chronicle-trail-road .chronicle-trail-gold:not(.is-lit){stroke:#fff8e7}
+.chronicle-trail-road .chronicle-trail-gold.is-lit{stroke:#fbbf24}
+.chronicle-stop:disabled>span{background:#f5f0ff;border-color:#b8a0e1;box-shadow:0 5px 0 #9380b3;color:#78629a}
+.cvc-map-stop.is-locked .cvc-stop-art{background:#f5f0ff;border-color:#b8a0e1;box-shadow:0 5px 0 #9380b350}
+.cvc-map-stop.is-locked .cvc-stop-art>span{background:#9176ba}
+.cvc-map-stop.is-done .cvc-stop-art{border-color:#34d399;background:#ecfdf5}
+@media(prefers-reduced-motion:reduce){
+  :is(.world-primary,.world-secondary,.reading-primary,.reading-secondary){transition:none}
+  :is(.world-primary,.world-secondary,.reading-primary,.reading-secondary):active:not(:disabled){transform:none}
+}

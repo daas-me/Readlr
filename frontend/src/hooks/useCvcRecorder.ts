@@ -9,7 +9,7 @@ export function useCvcRecorder(telemetry?: { begin: () => void; finish: (outcome
   async function capture(onTick:(remaining:number)=>void, beforeStart:()=>Promise<void>):Promise<Blob> {
     stop();
     const run = generation.current;
-    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error("This browser cannot record. Please try Chrome or Edge.");
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error("This browser cannot record. You can practice without the microphone.");
     const stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}});
     if (generation.current !== run || document.hidden) { stream.getTracks().forEach(track=>track.stop()); throw new DOMException("Stopped", "AbortError"); }
     return new Promise((resolve,reject)=> {

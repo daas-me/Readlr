@@ -1,0 +1,2718 @@
+[
+  {
+    "path": "frontend/public/audio/common/GreatJob.wav",
+    "bytes": 81166,
+    "sha256": "e0a90e1749054342de846a080c0e54378b5780b85b6a37d54d318aa98a3f9227",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/common/IncorrectWord.wav",
+    "bytes": 142156,
+    "sha256": "168c8e0e3aefaafd8fc32a52f71b87ad3a62fef3f3e707f2528ccae00c9526e4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/common/TryAgain.wav",
+    "bytes": 81648,
+    "sha256": "f3626b8006483103b10155d4ed39047d9da93aeec077666950fa89e87b2fa00e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/A.wav",
+    "bytes": 65354,
+    "sha256": "cdeeee4616223f8b4964a901cb8a26a5df26181c6d4e81d25503adbb92e88c79",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/AArmorMouth.wav",
+    "bytes": 337486,
+    "sha256": "159144e49e83a9d5cef22b4adc5dcc1f5e76603e39377a4eafb6806c34522dbe",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/AArmorWaiting.wav",
+    "bytes": 290926,
+    "sha256": "228f14233682124bcd1f1ccf19952da1d0d470f2906be2978bcc2107ca82931a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeABranchWall.wav",
+    "bytes": 265966,
+    "sha256": "ee85bb1a90c566f3d173d10790325a8e8d1cf08546731c4cb73d23a73acf3630",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeAHeavyGate.wav",
+    "bytes": 299594,
+    "sha256": "4630a76c4f7ffca99f94a1b0ea7a3ea4d6891528fb3774bbc65b2f05a479cc02",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeAStoneStep.wav",
+    "bytes": 294794,
+    "sha256": "a029b4e24187f30326c284a2620a0dc059a2a470535503c664ec95d76e30d3fa",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeEBlinkingSign.wav",
+    "bytes": 252046,
+    "sha256": "3d0beb80344eb74f9b34f81a18a7262d93529a0004d02c5c9b6e04dc3a124347",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeEHiddenMarks.wav",
+    "bytes": 303886,
+    "sha256": "444a8b4e4335f5d3953993af1a67c354440c90ea5b43204e923d428dad012810",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeELittleLightPath.w.wav",
+    "bytes": 245326,
+    "sha256": "dc22d3faa8f55f4d9594324645d9387ce691de0c8b90a9bdbfa21caef5980378",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeIMissingMapLine.wa.wav",
+    "bytes": 267914,
+    "sha256": "94d385af1198e8ff974e4fda128a0deb9433c8fb30f19569e985bea215973428",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeINeedleBridge.wav",
+    "bytes": 244366,
+    "sha256": "1633a84a4a0f84575a21ab9ef44459949aea95009bfb7583670e8154582c1edb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeITinyClue.wav",
+    "bytes": 224686,
+    "sha256": "41f4687ca75f7539199076fcf277d909ed233dc418770d0c7ca76bee4d377e11",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeOMoonDoor.wav",
+    "bytes": 230474,
+    "sha256": "d5211ee1310b06c7f7f7ec3fd8b16f8c7461d51d7a7a8baa025b649e65ece043",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeORollingStone.wav",
+    "bytes": 204526,
+    "sha256": "18179f8089f970dd20aff63682f395fa724b7ff03cf1ebacc53f354ba75a6c36",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeORoundGate.wav",
+    "bytes": 272206,
+    "sha256": "51bdeb255c6c722440946c758195ee7e5d09e18fc5419e00e5bc916aeb90a4d1",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeULowBridge.wav",
+    "bytes": 267886,
+    "sha256": "71f07841b17dacc84e7d12376f4419134c62dcf5f8108fdb9831828f83082f5c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeURainyShield.wav",
+    "bytes": 211754,
+    "sha256": "3d1362077d844d31c5a626bfd795134d0408677ee9d6177a8ab9c33646662532",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ChallengeUUpdraftPath.wav",
+    "bytes": 201646,
+    "sha256": "f2b98f67cc458c379917c5f8a1342fc88db79bac31573a3befa41f02253e3a19",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/DojoIntro.wav",
+    "bytes": 266926,
+    "sha256": "597663cf2f354a0d967f4be7b3f7293f03673ff09957b010c5e558fc39f6bf97",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/DojoReturn.wav",
+    "bytes": 253514,
+    "sha256": "0d3d274d1e16a1f154dd1c440e0e70533979ed589622d1ca2e8a57bded05b53f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/E.wav",
+    "bytes": 54314,
+    "sha256": "d1e68332bd2bd8020340fc332a45e52af31810b231a29f6134e8f1ee9cc38a7c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/EEchoMouth.wav",
+    "bytes": 349994,
+    "sha256": "ca4266b14419dd2d9c107d406f16934b9e6dd9074355dd3ef8eb60079dbb7297",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/EEchoWaiting.wav",
+    "bytes": 330288,
+    "sha256": "89b1d05969ed606c1d08d6044faae28979503c750acde11ab9fa6c262516a024",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/GainedAArmor.wav",
+    "bytes": 300046,
+    "sha256": "6f2ae2e7ba0fab737149f21ae649f8056087deb9a0995b712744ef1b3334953d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/GainedEEcho.wav",
+    "bytes": 263114,
+    "sha256": "21fe04b78b90e8c1534b6ebcd8dc2e774920653ac7f99648bce12dc8b54ba226",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/GainedIInsight.wav",
+    "bytes": 278474,
+    "sha256": "b479f792b819613662c554d1bda325f08a02637aae9858a1e874f1b82d3e6715",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/GainedOOrb.wav",
+    "bytes": 259726,
+    "sha256": "f74dca9e98ddf463a5cd7d8322773b185f3f67f10abb10df4fcde20e274f721a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/GainedUUplift.wav",
+    "bytes": 284686,
+    "sha256": "50feb05af6ffb43e4cd32c356c24829f09486fafd810faa0ff25b9e22e1299d0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/I.wav",
+    "bytes": 32686,
+    "sha256": "480490854221621ec13450413617d8843a3b58f75607d7ebca0d5ee6ca377ba1",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/IInsightMouth.wav",
+    "bytes": 281326,
+    "sha256": "fd4263fb446aa4f7a7f21d813ad33ee841d1942a1ada26c5abe3c3029fed75ef",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/IInsightWaiting.wav",
+    "bytes": 323566,
+    "sha256": "b7ae4673aecb2f90e564143cf9f281248b3ae62569539a284962ce0e81561e17",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/LearnAArmor.wav",
+    "bytes": 94126,
+    "sha256": "8938224008b993ae55c48b987ce2597b4f0b2530870b28a2be875ffbaff1f898",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/LearnEEcho.wav",
+    "bytes": 91726,
+    "sha256": "e096b471142e21c15af4d6c05d692ee9bb1452771dcb9bf67439d33a96fb2245",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/LearnIInsight.wav",
+    "bytes": 100366,
+    "sha256": "3496612a68815041a95f8754494eab0aa28507db3e1f0e3f6ef89b7ed534e4b7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/LearnOOrb.wav",
+    "bytes": 92686,
+    "sha256": "83a26d811c876fc58145c50fa74eaf3141dbbc2c90a6db69f77c219afc1a1d38",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/LearnUUplift.wav",
+    "bytes": 96046,
+    "sha256": "647dc3d978c246822652c2046ddb0a1feb84f349bafd98b9fe0c990b3b96da48",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/MiloUsesPower.wav",
+    "bytes": 114286,
+    "sha256": "dbc055b9552a100830965eebc9499d706b5d1a3c5160cd978c34a7f3ea7bb6bc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/NowListenBack.wav",
+    "bytes": 99434,
+    "sha256": "1719d8b46b86d73acb36999d53a492e156abfa18cf96fea0113f40098f7ca422",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/O.wav",
+    "bytes": 33646,
+    "sha256": "fea15b6a018662f9b8ee1bdeb8bb44eb9bf0743d791da22e98d36a3c1348e222",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/OOrbMouth.wav",
+    "bytes": 300526,
+    "sha256": "3d853b7f6f7dbb1b5fa76ecf6939a091673263ac7899ea2f2079b34ed7ccdcab",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/OOrbWaiting.wav",
+    "bytes": 308206,
+    "sha256": "4d5c194d394605963f3239dbcfececcfbc5040520458026ca5d653a98ff21393",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/PowerWorked.wav",
+    "bytes": 123406,
+    "sha256": "84ab79ebdb6b3f31964e4f35221ce9da4d3375175c351f67b363255f6c25eb00",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/RecordingDone.wav",
+    "bytes": 110926,
+    "sha256": "e70ace54918eaa1ecb55b70eb193e4308a61dd7e668e71b192c4479579e16e21",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/RecordingStarts.wav",
+    "bytes": 78766,
+    "sha256": "d19032b6c1a3c3ff2650ff13c320b7978c98374a6e67adab3af93aa705024bdf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/Stage1BeginChapter.wav",
+    "bytes": 163246,
+    "sha256": "b54057ab351f8ba04000283967b5ee5c80e3c7192191cfc31d8ec6b412aee6ac",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/Stage1Goal.wav",
+    "bytes": 293326,
+    "sha256": "6605705ff2e9ba81becb3ba7759c87988ec70d2748dacbe3a4935bfbe8408445",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/Stage1MiloIntro.wav",
+    "bytes": 319274,
+    "sha256": "b99e5ad8859f5d3d110b086bc55cbba441a2796a7603e9f53b0d2d0c4176e0fa",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/Stage1MiloMission.wav",
+    "bytes": 413326,
+    "sha256": "dee271efc6ca28384b3547b4a515a9069540ad4cc4a987252189f63c3fa9cac8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/Stage1Scene.wav",
+    "bytes": 527086,
+    "sha256": "5c9200e04f2e5283e71669454acab344771008a7d892e1c585ec38f1e1ec122e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessABranchWall.wav",
+    "bytes": 253034,
+    "sha256": "2734f5bc58452a997a48b1d6a6288851c1564622d3e48f2d41d969bbaae1a450",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessAHeavyGate.wav",
+    "bytes": 241006,
+    "sha256": "10adcb2fd217ea3e98e37c38401a57ccecd89b40a878982b495e290c75fa3510",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessAStoneStep.wav",
+    "bytes": 257354,
+    "sha256": "18db81d3c4ea9f137d467dbeb3e9e79c002d13a370798ecbfedc5d2dcd94acf7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessEBlinkingSign.wav",
+    "bytes": 252046,
+    "sha256": "f80b50ae7c2c8c5ffcaa364ecc56bbf3e80f27681233694af22eba9252af04f0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessEHiddenMarks.wav",
+    "bytes": 253966,
+    "sha256": "c3facb1b7dc3ced377be2b77b9073909e8ebe39495f7ccfa5fedde5ca34eaa3f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessELittleLightPath.wav",
+    "bytes": 254446,
+    "sha256": "170110ea7900fb48f31dc3be92994b998ad91f91da38c662864fda082efa10cc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessIMissingMapLine.wav",
+    "bytes": 247728,
+    "sha256": "4777fbd79c823eae14b510730d831e46d12c8143f76c3dcb5af7971db799c56b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessINeedleBridge.wav",
+    "bytes": 277966,
+    "sha256": "cfb931d4b705d95d32944bab9a1ba30cf3d7dbe8d342d274b23c01658047f17b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessITinyClue.wav",
+    "bytes": 229966,
+    "sha256": "f8a49b5e90d958d1385dda3fd55ab1df2b5d6721105a8a4917814c11e3ea7a26",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessOMoonDoor.wav",
+    "bytes": 217006,
+    "sha256": "2d14efe424863d10f780be12e9c9e0595f66e488b3f630a994b8b2d2e0ae5e31",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessORollingStone.wav",
+    "bytes": 247726,
+    "sha256": "bae9527a7d920529d502a921ef25b018fca095d6c2b5e51cb4a6915d6ffa76cc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessORoundGate.wav",
+    "bytes": 288046,
+    "sha256": "c9428779a0ecf012cdfa72dd9f9c4538c7f3d31c5e620c352def94c89f29a8ca",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessULowBridge.wav",
+    "bytes": 277006,
+    "sha256": "16ad945703f3333e01d742a1fa543ed15fa3573cd67657455dbed90f310c6738",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessURainyShield.wav",
+    "bytes": 266954,
+    "sha256": "ac3352bc67a7e62fcc7bfdddd5b1b2e977bfae932ae57e04ad003013b469b86c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/SuccessUUpdraftPath.wav",
+    "bytes": 248686,
+    "sha256": "7bfb31abf96a21c5004a58a0b331fe526f4c01e08d4d84aef17cdda484714895",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TapToUsePower.wav",
+    "bytes": 117194,
+    "sha256": "a1b25fa6ff6028813fbe9bae36670fd2c14025ad186bcc8b2714c612eed012ca",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailAPower.wav",
+    "bytes": 259246,
+    "sha256": "0fcebc74f2815d8a43983f18e4b865ad38fef48ee2d9977ebe52cc358097fe63",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailARecord.wav",
+    "bytes": 296234,
+    "sha256": "f1eb0b1c63cb1671866c5aacb578c4046961ca5f76d8bd3ff976efce80e5b38a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailEPower.wav",
+    "bytes": 285646,
+    "sha256": "80918cdd5e80f07f90136ef63c0c6af16f9ad97e9786fe1ea6e3d2fc2ba8cb26",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailERecord.wav",
+    "bytes": 275566,
+    "sha256": "8ca2a0bdbbab3852d6542b3d801550425280592fbc147ec604f05d0168253ef3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailIPower.wav",
+    "bytes": 303406,
+    "sha256": "2edd7745bffa54792fc194bb76e5a2e3a0c84d3d1dbe1aaf643851087162c391",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailIRecord.wav",
+    "bytes": 321646,
+    "sha256": "d478717a72231367c3e929b9680b6d0a1d61aa945169a0a2c6fdb736b3bff127",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailOPower.wav",
+    "bytes": 314446,
+    "sha256": "bc3da9da9a0ce4adeed0f7d20401477aab48e3029c434a85e7cdc78164552109",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailORecord.wav",
+    "bytes": 304366,
+    "sha256": "a0cdf799c6a7ed37f20541b3112e460f3b91a4cbfccd1283accfa86ecdf4d1c4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailUPower.wav",
+    "bytes": 293806,
+    "sha256": "a0935b5c9d82fd7f373396f41ea1767e922a5e09cbc1c5b16066af9b328c639d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrailURecord.wav",
+    "bytes": 316846,
+    "sha256": "12a4c49a79972804a9ca780e65136a2471dad53350120c00a0c14b59d8b9401d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrainA.wav",
+    "bytes": 233806,
+    "sha256": "da68e929a752d992f9a41cc769797e8bf24929d12249cbd417ab2c73c919ddd5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrainE.wav",
+    "bytes": 228526,
+    "sha256": "8b8652c98b8076693132a6681feab6f4a5e34f6b8817783aa6e7557a4ffe831b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrainI.wav",
+    "bytes": 237194,
+    "sha256": "4546c55c4005045093f579e30b7de1c9e77a6a85568731f871b139bd44f7005d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrainO.wav",
+    "bytes": 230474,
+    "sha256": "471acac5a677ea8593b03acc04adbd8697f1ae3d62000a04efb886f134331762",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TrainU.wav",
+    "bytes": 240074,
+    "sha256": "b80eb0003d2bdab256a02d4ae862dcc5f1702e1dbc9f89dc7be582e450fdd34b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/TryAgainVoice.wav",
+    "bytes": 142126,
+    "sha256": "52a342c3dc9be832de7aedb043b373d94fa152068b676d6dd542f4a6b0dd695d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/U.wav",
+    "bytes": 38926,
+    "sha256": "5ccd7a8a1197d8f7f408dba1e00432660160a5934b59f26dbc64c496f75220d6",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UseAArmor.wav",
+    "bytes": 193006,
+    "sha256": "900ee9d5370637e28d9dbfd6d59df21a59187ff063f81db521e113e440536de2",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UseEEcho.wav",
+    "bytes": 229006,
+    "sha256": "93eb11c2b29c8ced12ca23310509af77bd0bb0c283006269daab928fb81fac9d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UseIInsight.wav",
+    "bytes": 241966,
+    "sha256": "6a768e12ee15a484aecf7f5d813563397ffe794cb95b6b44c7ee6544c75424df",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UseOOrb.wav",
+    "bytes": 212206,
+    "sha256": "4b9ef7769a118ab687c39d68775fdb45dd335712c0c242ab26ced0e85a637d3f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UseUUplift.wav",
+    "bytes": 230446,
+    "sha256": "ae88bca6507f643ce8842ea4031abb07b93a47e404ac1a8dc644563d324feaea",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UUpliftMouth.wav",
+    "bytes": 303886,
+    "sha256": "33275c20a9ad0a54429717f62fd0a287854ead5b30afdcd7edf4852dc55b6d28",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/UUpliftWaiting.wav",
+    "bytes": 335086,
+    "sha256": "4b799ec2c6f6fa27fa2e7e5cef12a8114621ddb121256fde5f5929250a989116",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage1/classic-milo/ValleyUnlocked.wav",
+    "bytes": 220846,
+    "sha256": "bdd5f33af9e40deb984d75b0d3094bb86941044a6fe6607e50f192ec1c5bd289",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeChoiceRetry.wav",
+    "bytes": 169514,
+    "sha256": "3848978e441b91e36c350dedae210c89c5ddd0b85b633399de30c65b59efc6c7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeFirstPiece.wav",
+    "bytes": 90314,
+    "sha256": "1bfb7ac5b197a701dc2384d80eb16ccbea4dbadfbc08908c5e0f38f59265d3ef",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeJoinPieces.wav",
+    "bytes": 132554,
+    "sha256": "d7e0cd16c2837b892e78068308e73e91b37ee55845ffe7bae60413d5e87ba866",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeListenBack.wav",
+    "bytes": 192046,
+    "sha256": "93db6d157361e71b4bebaf758783d88d943ad320cd1aa01882d60b41401a63b0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgePickPiece.wav",
+    "bytes": 131086,
+    "sha256": "6887421d719b64af0b61d8e9c658b5f3d473aad9b8dad9fef28675ac60e62cd5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeReadyGo.wav",
+    "bytes": 191566,
+    "sha256": "510ec4ed784cde3372aa26c16be18f0961fb5810b05500c80ebf7a8b8001775f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeStoryGoal.wav",
+    "bytes": 309166,
+    "sha256": "a259a89118057a8b7146a240ec610141cbdc01deddcb4c5b1b363f68644c6596",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeStoryMilo.wav",
+    "bytes": 529966,
+    "sha256": "22a0b4a28bb77c5675506c302eb64d3adc8a4ddcdcaa704e1c141450a67c9122",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeStoryScene.wav",
+    "bytes": 426286,
+    "sha256": "51bd33359f25d6a89cea7ab08f476565df00a13571757e0b61a1d0f5f2a5ff54",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BridgeVowelPiece.wav",
+    "bytes": 112366,
+    "sha256": "5f3a862471059b390c1f1c3c71510b693a46efe410b27738af2a1a815cbb366b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BrookChoiceAgain.wav",
+    "bytes": 237646,
+    "sha256": "9dc8ff555205a26fd813e597bccc8c89ced9eb9db9f8d9f33d9021ae7e93f8e5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BrookChooseM.wav",
+    "bytes": 190126,
+    "sha256": "bb8a8a5e6d72a5f7c7e659772e4c6bf8f2d5a05da6294c37b57e70e4677f6815",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BrookGuidedDone.wav",
+    "bytes": 292394,
+    "sha256": "2ab220ddab6518ff022a0d6c82c5533e009da0613cdf9133b4665971137cb971",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/BrookMissingPlank.wav",
+    "bytes": 317326,
+    "sha256": "be13e5027a2dc5c03b6fe742cfa9936c3e352abe1aec2ac23d2550b291b3a0f6",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-1-Intro.wav",
+    "bytes": 305326,
+    "sha256": "51b5b2214931770a4f26d1035d3a5a7dc75edf961a42928879e004c60d75893f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-1-Success.wav",
+    "bytes": 211246,
+    "sha256": "4772872263c657227d7b60985c84bca573265abdea8719ef4070b5bbbd3203ed",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-10-Intro.wav",
+    "bytes": 344686,
+    "sha256": "a2804d3ca9e7057ce805d17615baae47b73b9f612843564247d558f825864ab1",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-10-Success.wav",
+    "bytes": 224686,
+    "sha256": "7752d06551d60ab8c7284e933ecd7debeef0624eb88819fe1c19ad0be04eb0ae",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-11-Intro.wav",
+    "bytes": 323086,
+    "sha256": "574a081706e2669d07f2cd0e13e7944013d7ce2d92beafcc5e9c819d909b4f96",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-11-Success.wav",
+    "bytes": 241486,
+    "sha256": "c8e25099e365c4bd161d0ccb46196b535b2e692acdf0c8feb420d94dec19408f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-12-Intro.wav",
+    "bytes": 297166,
+    "sha256": "2f63e9b8520657361ea57c5818dfb8c02765a4bc6405941c2261e5f239152a6b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-12-Success.wav",
+    "bytes": 209326,
+    "sha256": "cc50dc57db966d62b2254b0ca60b9d1422c3736b531b749a48a0c21d29352c33",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-13-Intro.wav",
+    "bytes": 276046,
+    "sha256": "99167916a1e969209a3f2bce04b628f77d4c150e3fdf771a7885745dfc968932",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-13-Success.wav",
+    "bytes": 219886,
+    "sha256": "4410d9c1fc5ab5a2bb9d4a6bff3f94188763f99046a749daf43fc83b8ba7fbfc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-14-Intro.wav",
+    "bytes": 264046,
+    "sha256": "6571a751122fc8a039956659745745c0254eeac4c6942df1cd4bad7fc4534858",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-14-Success.wav",
+    "bytes": 238606,
+    "sha256": "bcad693564c3f5217873e747116b80d3ad914b43c8a90f6bf362a907208fb810",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-15-Intro.wav",
+    "bytes": 319246,
+    "sha256": "94de98d2c7ede873990a5c2a33af55adb4d4cbf0c7d8793f0c58951e8610a50b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-15-Success.wav",
+    "bytes": 338926,
+    "sha256": "87f2b37b60d69d17b92ff51231cebd849ca7cd9c1c34e4b951eb71a3a61f522e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-2-Intro.wav",
+    "bytes": 250126,
+    "sha256": "2d73bff638fdd0fd3525cdbf7b2475fae39982f112eb9b722bd907f0ab8fc40f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-2-Success.wav",
+    "bytes": 164686,
+    "sha256": "4b6faa79dd84f47d81895a8f962e311a0588e04d9b2ffb8a4cef325f5eaa5bad",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-3-Intro.wav",
+    "bytes": 306766,
+    "sha256": "e083afebdc9351b0f4d82a457a7097a7ab89e7aa9eb4b0dd30cf5ab2258f8b0a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-3-Success.wav",
+    "bytes": 190126,
+    "sha256": "4cce5b7e51beaa0f9d4619f978814ab3e16b6d3a4062d75371f28c78e5d4e635",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-4-Intro.wav",
+    "bytes": 280846,
+    "sha256": "f3f04de8b92bc7ea2c56e19799a70d961adce868abddc9eba9f97c8f38007869",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-4-Success.wav",
+    "bytes": 208846,
+    "sha256": "415b88638a077104c35a96e7c3700cd7496847bb8629cf05c8962edf81b4c815",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-5-Intro.wav",
+    "bytes": 258286,
+    "sha256": "cde08c7504ea57e8e1cb4ecb25d18e8f6c9f91501f0e9ebae015109fe2bdce8a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-5-Success.wav",
+    "bytes": 216526,
+    "sha256": "dece7b33e6e7ba8d1e4435d82e4c676162d4fd79552ffb52ff0d8fa8cfb087bf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-6-Intro.wav",
+    "bytes": 276554,
+    "sha256": "6578bd4adbc5ccb2be72faf1cea42de9b005e7248db13d214111de9a960449f5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-6-Success.wav",
+    "bytes": 203566,
+    "sha256": "0ac1f4dd335477b28103176bbee2709a3b27f7076e0716aabe2673d5a57ae291",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-7-Intro.wav",
+    "bytes": 236206,
+    "sha256": "6a0d7c23bb09161c9a06396a9a1dc1ecde351db1fa708514a3dbfad2e5162a83",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-7-Success.wav",
+    "bytes": 176686,
+    "sha256": "b80bb8c34af5d56933ea4105bd3c1a49369ca9e7c95983d7652c3027e2829ecd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-8-Intro.wav",
+    "bytes": 262606,
+    "sha256": "f9f8852d42085fa3939d3e5c4567bda57b0693a1d8c55e56823426481868fa01",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-8-Success.wav",
+    "bytes": 193966,
+    "sha256": "e1e6c2ad889a430400346e99184356f207e915a44d033c81d92da59f43923541",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-9-Intro.wav",
+    "bytes": 245326,
+    "sha256": "1cc6c2ee4bd8c47d95a2143df52cb4f6977e58164e0e066542a9cf7736427901",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/crossing-9-Success.wav",
+    "bytes": 208846,
+    "sha256": "422c7bcb5f18a08da5fdc6e4c6236d080accf8fff2fe254dd67d8bc03981c9ea",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceBA.wav",
+    "bytes": 34126,
+    "sha256": "4f16a9090c322670f55abb8a581ab324c5ab71572abf01ef8aa794a3f2f487c2",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceBE.wav",
+    "bytes": 40366,
+    "sha256": "236db9c9fb70fe13b15acddc7dc2ab81cddb99cbefc328fb3bdebecce3bff402",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceBI.wav",
+    "bytes": 53806,
+    "sha256": "a047e353397dc3d4d4c1f2cec06f61800d0fd02623ba182a287b07c2ac46ea98",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceBO.wav",
+    "bytes": 53354,
+    "sha256": "90d35fa3f7457dc800d6841745a5ea83530ee603a27789326da23817a3f1db3e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceBU.wav",
+    "bytes": 88366,
+    "sha256": "668506dabb83ade9d49c57871bede72cb636fd1b014a02bc97012923b1b50849",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceCA.wav",
+    "bytes": 79726,
+    "sha256": "ba1c7e30d36ddab16d819f0dc644f70fc6632c9a00542661f2ac647d5b704d7d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceCE.wav",
+    "bytes": 82606,
+    "sha256": "d43c10d76d5ce0ca440dd7f44bb8662b894a4477808c1461247d3ecc7edebfe3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceCI.wav",
+    "bytes": 82606,
+    "sha256": "290781e80b831b190d3cebd8e0b536f0448b73ed8e2e1065647d672aa3000dd5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceCO.wav",
+    "bytes": 83114,
+    "sha256": "c3a242b3f7ddd3423f08fed1b1a845734585a5919ebe01ba246dbbfe848f444f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceCU.wav",
+    "bytes": 83566,
+    "sha256": "e15344de2fd1af4984ac1fd465769db1da3a5b9f642088ee46c4d46c3243d7d8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceDA.wav",
+    "bytes": 87434,
+    "sha256": "a31582289a7183e7877f9386db8209d8ba19fa8a7107c58ef855af66f78260e4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceDE.wav",
+    "bytes": 85486,
+    "sha256": "a5e2bff032ad42fc570ae4afc1af1f9af7ff6bb8a1ffbe2eb9f031e69e357f85",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceDI.wav",
+    "bytes": 81646,
+    "sha256": "95a008e42e5bbaf6da38064401e1073eb58daec32b79bc2ff93c118a595248b8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceDO.wav",
+    "bytes": 86926,
+    "sha256": "de13b57de3c22c24cc7f53e63f9d56df3a07a445bd71a9ebceef7f1fe5efcc62",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceDU.wav",
+    "bytes": 91246,
+    "sha256": "0830a4f45d3553569131531efac9c042928618e8616377e4c7660cdd9b51b395",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceFA.wav",
+    "bytes": 83086,
+    "sha256": "19053ed58e8e14c129f21c340a16a76aac579a3ae95cbf48b95cba2a99cdfd2f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceFE.wav",
+    "bytes": 39406,
+    "sha256": "aa6941fdaf76fa90c47af2b0323ec79e73fc65abd389255d0c140cef0c23a7b2",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceFI.wav",
+    "bytes": 46126,
+    "sha256": "98bb16d6cb81555fcbbf34244a0b5262ce77d9698bb8c99519011556e1c3fa84",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceFO.wav",
+    "bytes": 38446,
+    "sha256": "3440cac0a193b183235ca6c89d6b94e2a1f1d6a82728daf17ecab9527f7c990d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceFU.wav",
+    "bytes": 57674,
+    "sha256": "69e3c1ef1d076c331dc6ec1557c7a4eacc41a43d078ca31d24f1c07ed572c191",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceGA.wav",
+    "bytes": 44206,
+    "sha256": "6adc2ecf887ef4a52974c071ddfc43e0c96b4a23fb411752181f6ac19a8a0cfd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceGE.wav",
+    "bytes": 49994,
+    "sha256": "da19942cfb0b231900f229a05e22af6c8257558d70a93267495380dea49228b0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceGI.wav",
+    "bytes": 49994,
+    "sha256": "da19942cfb0b231900f229a05e22af6c8257558d70a93267495380dea49228b0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceGO.wav",
+    "bytes": 46126,
+    "sha256": "593b2085a441b4c69e339665f0a42947d5c81531f556f7501e2f33c0ac7a4e40",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceGU.wav",
+    "bytes": 34634,
+    "sha256": "62cafb8672aa031603ba1226d619c957cbc8c6701ee53ce049d9da06c7265b44",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceHA.wav",
+    "bytes": 30766,
+    "sha256": "7f278b67d1271997d28cda9992ef206e5bca85444b7d4066eaed2e4bfe54768c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceHE.wav",
+    "bytes": 28846,
+    "sha256": "b673374abd105ee33364f4930f57fcf4d28761f48e4a3aa53f1b0882688fecdf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceHI.wav",
+    "bytes": 33674,
+    "sha256": "1dd72936dea9eeefaa9b3540fa10b96389b513fd63db87b96dd6a1baa865b234",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceHO.wav",
+    "bytes": 34126,
+    "sha256": "4c2e8ffe8e4d1e2201d1b4692c958631b3a5a7b0df5b5d7bc1fd55e6c3677278",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceHU.wav.wav",
+    "bytes": 28846,
+    "sha256": "7ca7d3b5ec49867424cb7f6e70895d2f652ec6647ef4fa97a664ea56202ec8cb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceJA.wav.wav",
+    "bytes": 36554,
+    "sha256": "7edc96cb916445abed1d2f96c4c84194cf7175d1ddd4e8457366b85b992f3ad1",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceJE.wav",
+    "bytes": 35114,
+    "sha256": "217102f7347fe5f4f1af250b400040d2aaadf4594b4e7949a4c19c8f6c74d177",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceJI.wav",
+    "bytes": 63930,
+    "sha256": "8f1ad7dea992252e3a77d7cc351db738ee2152a0b1e4253cb63c35cebffc333f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceJO.wav",
+    "bytes": 54330,
+    "sha256": "770b8e033df7580ec002114769c2ed68130f1165c15787f7289571cb3455fe73",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceJU.wav",
+    "bytes": 62010,
+    "sha256": "f7dd61f51c61f35fd89bcc85f72270733815a9f852600fb1f14b66a4e1875110",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceKA.wav",
+    "bytes": 65850,
+    "sha256": "a76393b1c2b99e33aa354c1141f5d7efbadb82a71657e6a7eaa79c1349762a77",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceKE.wav",
+    "bytes": 44730,
+    "sha256": "5bb549346f31c01b6764e9de0cb83a4ce148c5cc99f500fe773ec6b7949844aa",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceKI.wav",
+    "bytes": 38970,
+    "sha256": "1cb8f57678e74154adf43c06ec33a610c9f4a681f084826101b263990d6ab851",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceKO.wav",
+    "bytes": 42810,
+    "sha256": "d7cbd3bdd6ff5f302194ae9ec32d376c3b6918b2d1cda91b1d6ccb16e0bab994",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceKU.wav",
+    "bytes": 42810,
+    "sha256": "11cbf51170ab7bbfdaeb7b9b0b19bab2452dff835e04c05a544067b5d76b451a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceLA.wav",
+    "bytes": 52410,
+    "sha256": "f1e909f9da0d51fe8237c688d890770d5fcda3c888eab4cbc232b752f260a241",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceLE.wav",
+    "bytes": 48570,
+    "sha256": "d24e037b62374246f4eefb8e1b22d17626835509034de80217804e33de6ade6b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceLI.wav",
+    "bytes": 29370,
+    "sha256": "4ef3252f804a13555fc6becf78664aff31d645ccae03a8ccd68054e0aa5e0662",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceLO.wav",
+    "bytes": 25530,
+    "sha256": "a54f758fa1fba8fae987b42efa74a3ea3bc6e6b9d4d118a7b7c07df4e94e730a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceLU.wav",
+    "bytes": 46650,
+    "sha256": "481fb86af781e3a5c7b4a3d82d318182110aed0dfb13506bcc50ff7f405a0b97",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceMA.wav",
+    "bytes": 33210,
+    "sha256": "7269ff9c4dd700c43d3c1bab7c93cd547edb299ce199ad454980ca6d30cad3cc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceME.wav",
+    "bytes": 44730,
+    "sha256": "73f30b92d91d696f69ddc7a6a2f00b17405fbbdcb64fcf4ccc83db22ea7397c1",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceMI.wav",
+    "bytes": 40890,
+    "sha256": "3efea604f79bec5391d9fb200ef7377a4de82640a8415e87e4b0da61c2ae1477",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceMO.wav",
+    "bytes": 42810,
+    "sha256": "072fb01fc4d97e34c39dcdf10f12f9a1feee8abedc24273329c7064d07c19096",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceMU.wav",
+    "bytes": 40890,
+    "sha256": "c750c35257309a4ba0a0c66ab0e64c4b8717d8a161fd35ece59efaf04d1c936a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceNA.wav",
+    "bytes": 33210,
+    "sha256": "3d9ec3c7c4e7db88958a4c222a7fdbf852ea47be56a68d385cf5cce9584f7fb8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceNE.wav",
+    "bytes": 37486,
+    "sha256": "da59adec28fe03ff44f1d02302917e2c575a47c351d27db572ffde535003d451",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceNI.wav",
+    "bytes": 32686,
+    "sha256": "ee064948ab58d11bf8aac74ec5b52bcd22c17be07437b3812983d5943a9644bd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceNO.wav",
+    "bytes": 39886,
+    "sha256": "be5397a2053140be145648a67a30607ec37c1bd89fbdd4167e82c496a6c7f842",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceNU.wav",
+    "bytes": 41326,
+    "sha256": "b619ffc2b508e4fc75730c83b09aa9729f399f8ec67ec18eb1b0c208a9ea27ee",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronouncePA.wav",
+    "bytes": 30766,
+    "sha256": "27c5654333302f4d43ee6f9777f307bfd637abdf700e7606d423e241f25062fb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronouncePE.wav",
+    "bytes": 29806,
+    "sha256": "a38ce8e8ee68f0627373b7dda49e01323503a522884f06a8788c9e9172ea686e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronouncePI.wav",
+    "bytes": 31246,
+    "sha256": "af489b4f4e6953d0cc9421aaa6525fe16103c9fa14eb8bcb0d2175ff7ba8cc9d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronouncePO.wav",
+    "bytes": 35566,
+    "sha256": "77e3978cb67c87a9da7097e69d98ad804df7d84b64c544e6e0fbcfb3c7619d67",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronouncePU.wav",
+    "bytes": 34126,
+    "sha256": "639bda0d7ae1dbd76aa945172dc9075827da0fa414a52741e12e7c2a77f133ac",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceQA.wav",
+    "bytes": 34128,
+    "sha256": "d8e11176f98607ecb28abd471ebd2086a95b85a8370bc0101a758512f0b90865",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceQE.wav",
+    "bytes": 38926,
+    "sha256": "a2b6d97932b442aeb7324b7ebb40ca6e20e607a3b7b2bdca94bc102d366240d5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceQI.wav",
+    "bytes": 37486,
+    "sha256": "778446054f7a2524db68ab1588a794aaac9ca1a65b58f9eedf2e9f469b7b0375",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceQO.wav",
+    "bytes": 36526,
+    "sha256": "7d5c376e4171bdae5e22d860cf8d9baecaf27ac341772adf12fb5a13e72a064f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceQU.wav",
+    "bytes": 41806,
+    "sha256": "1eb2eef86fcf949b301f8ad1b77cffcd3a70d74bb6242c41cf9cec3ea633870e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceRA.wav",
+    "bytes": 36046,
+    "sha256": "5803c49e7cde58d8a7e935477cd3e7c1e549b09295abf0bfc2a48e173823f9a4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceRE.wav",
+    "bytes": 32206,
+    "sha256": "36b53076a09ada68d4301e0d5df973cd2ad796a63c1bcef2a778c26c30aced3d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceRI.wav",
+    "bytes": 38926,
+    "sha256": "6e8e36859ae63e5f17f2fd8a790ae08b254aa4a2f29d0c94cc7fd5ef4224553d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceRO.wav",
+    "bytes": 84046,
+    "sha256": "291d571b85d3139a149c84daff4bac14377605f678c39b3ef5ba6743a47ee3af",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceRU.wav",
+    "bytes": 79726,
+    "sha256": "547196f15f10193aac969c04bb6c100779afd3e11e2a5191fa97f2db67e7b94d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceSA.wav",
+    "bytes": 50926,
+    "sha256": "0ec417e218a5628d334384b23b685b0aa4e059abc82347ccded5b95f8ea79438",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceSE.wav",
+    "bytes": 35566,
+    "sha256": "7ce857e21e38a8e9eee49971b1bef7f2478a9fa65feabfc8a5788ce4c1885b61",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceSI.wav",
+    "bytes": 72046,
+    "sha256": "61400135eabe60fbbff0c19c25e72c029c464ba35732ee321d0ce5bed401d22f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceSO.wav",
+    "bytes": 32206,
+    "sha256": "8532d3052deebfb18b618d3c7f289a832ce9658af086fc333dcf0919f03a3a86",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceSU.wav",
+    "bytes": 41834,
+    "sha256": "3430d5f5bae791bc743675ae7f15aefbd80c0f8f6bc744fcd9fede3f98c34967",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceTA.wav",
+    "bytes": 27406,
+    "sha256": "2aaa637624d46a8ae4b1c328bb255faed9fc7d2024117b5a530a9f34b835bff4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceTE.wav",
+    "bytes": 82606,
+    "sha256": "18a3140350336d1457cb4863f4e84a08e2e75ea70a191c9da9ece1278dc56c1d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceTI.wav",
+    "bytes": 31726,
+    "sha256": "898e0f3af29e190ac9c50cde40cf7c290fb73c2227418239040d06cdad623f23",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceTO.wav",
+    "bytes": 69166,
+    "sha256": "8fdd7db3d0d6ddbb55b82185beabcd94de2e47171bc11ee7e56e25172213620e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceTU.wav",
+    "bytes": 71086,
+    "sha256": "12ebad77bc6016e0c4b45af92ea2773b207a9ea2ab58d794df2a34f8600257e6",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceVA.wav",
+    "bytes": 83576,
+    "sha256": "6ac90081a99a4441bd993d2fdd600adeb60b6b0d91a6dab8430ea9df67a32b1a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceVE.wav",
+    "bytes": 34606,
+    "sha256": "8e8c50807393a83bafea256d60df179427d8030db01a7dad2e137546901a62df",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceVI.wav",
+    "bytes": 79246,
+    "sha256": "e3397954425a5e79b4de9fd75745ef5e1efb1d8e09eb13a8b927d9c1e4541580",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceVO.wav",
+    "bytes": 75406,
+    "sha256": "783498449e9d8881f20707d5199d39ef4c3dbfa0fd942f844aa87d28786ffc52",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceVU.wav",
+    "bytes": 35096,
+    "sha256": "44fc0c18d8870bd8dc69124024abff6bddb0877bd3265924512f7cdc588dcd2f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceWA.wav",
+    "bytes": 80686,
+    "sha256": "1afc35ee85bd144ae7c6148eda7da75d1c2f2d99894c0ba4f637d22fedd3a569",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceWE.wav",
+    "bytes": 30296,
+    "sha256": "8aceed438243f7cc502c6d78b5820b15a4bd13ee8a28ed9e75eb42d034f41e73",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceWI.wav",
+    "bytes": 22616,
+    "sha256": "7c3fbf59d4a9ddc5002d657487d26f9d60806cf16213a6e08726b51dbf90a0be",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceWO.wav",
+    "bytes": 36058,
+    "sha256": "78c791547bf82ff9bf0e383637a2d98a56203ae97de2ac86f0dd7510e2d8c3c0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceWU.wav",
+    "bytes": 36538,
+    "sha256": "ee10a87e9a087d78cc6d974033c1e0b1e03d90e8a4734c8d228ac8c9783bb727",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceXA.wav",
+    "bytes": 36526,
+    "sha256": "17be37353e0c6cc7dadbc824ab4560bda0b52017b349dc3c4de7e45585b256c0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceXE.wav",
+    "bytes": 37486,
+    "sha256": "ad1eb56f3dc4078dc9cf0ae2891adf99f64d6704f74aa814da56269032488f4d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceXI.wav",
+    "bytes": 34126,
+    "sha256": "08aa50325b8b0ca2fd261c9a04417fd19ea145151ba59030ef960f8e6fdad3b0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceXO.wav",
+    "bytes": 36046,
+    "sha256": "1d0fe21c2d5df9b9dfd40fb50011ee48fdd6124627c5ba703b04d5a525fc3c07",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceXU.wav",
+    "bytes": 37966,
+    "sha256": "f7c356ace0edc069ca64a2a883422ddd3d8bffaa920cae35708b699ad5605423",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceYA.wav",
+    "bytes": 57166,
+    "sha256": "e1af95be0e4c21b6b7a4e23c576e0ad181bb23f25d0531ac8b86b17e82e05081",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceYE.wav",
+    "bytes": 27896,
+    "sha256": "d475ae6c975081a09a5246346aa47045ee15206a4a7d245317f2248290a5c417",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceYI.wav",
+    "bytes": 37006,
+    "sha256": "4a82deec9a5fca4392ea2a3ebf5d9a3ad878b4821eec68e14e248dfe261a9950",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceYO.wav",
+    "bytes": 37006,
+    "sha256": "48464031dad6089b2ad125ec96b69b36c91c5c70a7e625b6a0c5f540a262c1de",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceYU.wav",
+    "bytes": 37486,
+    "sha256": "023a62b26dc2d2e751b162da48525205b6064b0495e737b3b4a086799ccbac72",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceZA.wav",
+    "bytes": 35566,
+    "sha256": "5d58e04a1986cff2ea3e17d1dd68c2ef7dfd3d2c8f29bfa496e2a4ccf7d8091f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceZE.wav",
+    "bytes": 36526,
+    "sha256": "4a30d6543c0e93f33f41ba39fd91926fcf218f1ca18cb9bf5dbf15d8d4137aaf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceZI.wav",
+    "bytes": 39886,
+    "sha256": "41bb51944e0822c5ca3de0d1c7064b9f3c53b14325e94b74fc4f79a44519a08d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceZO.wav",
+    "bytes": 42794,
+    "sha256": "05e3b583a7d830d9a9a2be27b21a02b470ad6c75ef2043a9e3b89918cd24b403",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/PronounceZU.wav",
+    "bytes": 37966,
+    "sha256": "658120b60709ac5a544a2c7d444aa3c3d38663af6f4d6e15cc79d39f62ef4c26",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-B.wav",
+    "bytes": 53806,
+    "sha256": "ea4d79fdb2a2ff26cc1c7da3778cbce73acd6dde3833e22a0104a0bb76a1047c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-C.wav",
+    "bytes": 38926,
+    "sha256": "44564fe54fc12b734c13bea7f30708813600b979ad10e106ae26a1f99520b236",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-D.wav",
+    "bytes": 49966,
+    "sha256": "1ad36113e785df5123b770cad2cf40ac7ed7d927816eeb52002fc4e4b5ce94ae",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-F.wav",
+    "bytes": 33646,
+    "sha256": "f906094f0c3026568e5dc36cc7f998d2ec4aadbcacf4b6d845042691481edfe8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-G.wav",
+    "bytes": 52846,
+    "sha256": "b4a60b30aeda8fa8088b95945530304bef85a4a8862b2fe9201ff8f43ed3c21c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-H.wav",
+    "bytes": 31726,
+    "sha256": "c7abe6cb06e0f1863f9697498878eeb8901c294e17b263a50e5a7a0ef196b551",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-J.wav",
+    "bytes": 17806,
+    "sha256": "b5bf9bdd94da45464336ab54fe44211a8e6a47e61f37fdb21d9d2d504a29b19d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-K.wav",
+    "bytes": 38474,
+    "sha256": "f903953cdce8890515e68bbefb641ee8a8c8233195f4ee57e8152fcec1aee38f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-L.wav",
+    "bytes": 32686,
+    "sha256": "b96168986277d98983424568c02d38b3c568b43aabb5e99f154afe25dfb59988",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-M.wav",
+    "bytes": 40874,
+    "sha256": "b0be68b3215c5a302fd76fcd900321f7d4e972ea598c42e2a0c044885b05b89d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-N.wav",
+    "bytes": 44206,
+    "sha256": "feb7ab1314dbc78f976646954467814a2d5fdc2da036d73bb76e55f0416972ac",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-P.wav",
+    "bytes": 48074,
+    "sha256": "de5a2e53a3a610c16bbe13684b911cc0106262764c86b272496bb0962059c117",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-Q.wav",
+    "bytes": 30794,
+    "sha256": "a86b2439cc1d9e073a7bf0868ab16f889c4555ffc0ec9742a176d400f28ab1d3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-R.wav",
+    "bytes": 32206,
+    "sha256": "400e7d432852e37932e6223a9dbca8658330e3d16d73209b5ea59af53f793007",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-S.wav",
+    "bytes": 91726,
+    "sha256": "8d903f013cd78a6de93bb8ca2b2d891392852fdec00480b96a1bc98df1b50465",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-T.wav",
+    "bytes": 40366,
+    "sha256": "3ce8d80306389db32cfe124eb9a251b664394caae87eecababf3341351482634",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-V.wav",
+    "bytes": 51914,
+    "sha256": "193a40afab3d519a4c7d12c5b3515f3a53be5934c7004786d215b50a6ccfa2ec",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-W.wav",
+    "bytes": 40846,
+    "sha256": "d05f6b4ce4d4cdb4d9248aaeedca742fd475da5d946a1c206555c580c730b387",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-X.wav",
+    "bytes": 33646,
+    "sha256": "6196cb749097db54ae130677382f22330844ed5b33fbf534a03f842ef70764b3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-Y.wav",
+    "bytes": 36046,
+    "sha256": "c02ad2b53c1ffc6e4b668ab32283410297743f55a0c2bfe3816dbe8a2e84e2c8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/SoundShelf-Z.wav",
+    "bytes": 40366,
+    "sha256": "96bfda1a8e12a3feb5dbd4634c369559311f72ec7fb7cd1fca124976bed17b2d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-1-Intro.wav",
+    "bytes": 331726,
+    "sha256": "681e21e2be4abd051b50b905cfc780f6ba8cc15900cc9146e439e3a2717c0064",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-1-Success.wav",
+    "bytes": 212206,
+    "sha256": "1b320695bf245d607de378d492412978ecaa1fc478c91c9ce59feb0468266b2b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-2-Intro.wav",
+    "bytes": 343246,
+    "sha256": "fadd0d2cab0761163d84440ae9a6705a7c17fb763f719ab507dc01bab0d1c90a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-2-Success.wav",
+    "bytes": 209806,
+    "sha256": "93b7d08a732a4163edfdfb24ea3a513524f2f65efe1096ff28026f16f0b2c42b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-3-Intro.wav",
+    "bytes": 282314,
+    "sha256": "9ed3d65f8074bb9645b384f2363c989eb49e8240c3fd079a816fd8c83b472e83",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-3-Success.wav",
+    "bytes": 201166,
+    "sha256": "0228a0e6297702ec233e5e6617237cf32e55a04be0109c48a85434580852a09a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-4-Intro.wav",
+    "bytes": 283274,
+    "sha256": "cd377d8e70ac1d255b97fef65a40496500e96655823e7c6d1042098439bea68b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-4-Success.wav",
+    "bytes": 204526,
+    "sha256": "4fc685c2bb18c1658350a9a095e3c537f191489dc8b55bba079fa4d84f6afeae",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-5-Intro.wav",
+    "bytes": 312046,
+    "sha256": "25327fa5a05a91131ec8db49f271bd2560bc6c96e51e0c0a83024cb6d18c88ad",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/workshop-5-Success.wav",
+    "bytes": 207406,
+    "sha256": "9a4ce5c9110d5ca6bc3de324aa4136a89794d984b0cbccc387b0f534ccbf66a6",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopAVowel.wav",
+    "bytes": 167566,
+    "sha256": "85d84da7c7f84ea0f146fcff541151328be11f8cbf272f72d035a5e9bc09595e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopJoinMA.wav",
+    "bytes": 407566,
+    "sha256": "f370007f7cb0238590bc5927e836ce925c7d59b4a92740b579fa390f786c5cec",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopLinkPraise.wav",
+    "bytes": 255886,
+    "sha256": "ffcc08c9d18903b88bd5d4c8a9e7fb35097ceff051a11fded10abb57a9997f4d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopMASlide.wav",
+    "bytes": 216046,
+    "sha256": "45e7d8cd18d14995a878063107f7a8ea46ac3ef8bebefe60f0dc2d82455d9d73",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopMFirst.wav",
+    "bytes": 305326,
+    "sha256": "807fedfbd8e6468a2d90ed4a343634899b13d90905de68f5b8d8c01bdfde66be",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopPracticeDone.wav",
+    "bytes": 241966,
+    "sha256": "aee3e62b6c80b527ee12bc6f35cdc287df37cb1a0ef88b57be232ffcf199d233",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage2/classic-milo/WorkshopWelcome.wav",
+    "bytes": 381166,
+    "sha256": "9779c222545e00597120a727ea7e13f6cfdb9db0c481579bd172970607b31bda",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown1Intro.wav",
+    "bytes": 178606,
+    "sha256": "c1aa70c28d045157821ee05fbc0ec452421e08829a25c6d64cb6d7013d8865dd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown1Success.wav",
+    "bytes": 133966,
+    "sha256": "7b897fcbfc581aef7e6fff1dabe50c205b9a00c53b94530c4f609075bc13f0c7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown2Intro.wav",
+    "bytes": 218446,
+    "sha256": "ec8418f790c2637927d1ec50da1e42c3dce8b528878b914c3b553c01b2df8ac8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown2Success.wav",
+    "bytes": 121966,
+    "sha256": "5e861477be9050853f2d483662aa35a25d4d2dbc6c0ae5ef922fc81156d7de14",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown3Intro.wav",
+    "bytes": 241006,
+    "sha256": "8620158b9565198700dcb87218a99d8deca8ad2cefde499a3df2d2add756e74a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Crown3Success.wav",
+    "bytes": 186286,
+    "sha256": "f35de0ad42985d2fb5f80307d69c52bd658796a1ce0a3b9bdef63a57d2a556dc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc10Intro.wav",
+    "bytes": 202606,
+    "sha256": "05e702f2ff7334fef428b8a198bb0036625a55a13bf60fa505a5a6b89fd53618",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc10Success.wav",
+    "bytes": 148366,
+    "sha256": "95cc72ec54819595fe9ca60626f863dbd6b39a2ad9f43e1aa89c6d611450d98c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc11Intro.wav",
+    "bytes": 259754,
+    "sha256": "87f63c290010d89edba396f864817aa479d48a09b498c0725fbcb5b875184a25",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc11Puzzle.wav",
+    "bytes": 92686,
+    "sha256": "b6665a3c516f15154d4adf411ddd32f06fa48f339436ee4ffebeec4edb44847a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc11Success.wav",
+    "bytes": 122926,
+    "sha256": "aead5c9ec0bc872e7c92a2e8f193f3302cbfa6851fd93f8c80458d3d36d1b538",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc12Intro.wav",
+    "bytes": 215086,
+    "sha256": "5cdb6dd6830d12ff50a37a412182fbd6f3978a7b3b9fbf8670d35a22a39caa76",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc12Puzzle.wav",
+    "bytes": 113326,
+    "sha256": "6ae954a2bf7dc404d638101298e934fafb1a8844198de261523d96c671fc5bcb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc12Success.wav",
+    "bytes": 149354,
+    "sha256": "01a9f97da1c436393e5bbf12f424a8ea58dccc0739e9502d65672ef65ee80046",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc13Intro.wav",
+    "bytes": 188206,
+    "sha256": "50e86719375d629e6f04aa6315f81e1ae23bb0dabfaa778238d8cc8ea217b6a0",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc13Puzzle.wav",
+    "bytes": 108554,
+    "sha256": "738ba52dfba81836fd3f83a16036ab80026b507bb195c5b28b7363ff1984bd75",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc13Success.wav",
+    "bytes": 161806,
+    "sha256": "221f061139dfac6163b40ba71e114904135e8767e68ad5cdb2a464fa74be26ad",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc14Intro.wav",
+    "bytes": 221806,
+    "sha256": "3d442abb9cb361d1120670e6227fcce6a888c648a1678596115c449a1ea9ef0d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc14Puzzle.wav",
+    "bytes": 179086,
+    "sha256": "c86a4c12c719f41e833e7e4b2b4cbe764f2c32e4f942efb978e8e3c88bbc1637",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc14Success.wav",
+    "bytes": 148366,
+    "sha256": "28ef303b537fc5bf8aff9ae3379aa82593c555ab514c829c57c921e5b74aee64",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc15Intro.wav",
+    "bytes": 275086,
+    "sha256": "de06e60ebd451f660a1c1ef639e55d2f22a9be61185e2951587178ec62893514",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc15Puzzle.wav",
+    "bytes": 185806,
+    "sha256": "2d494a34ae0e4ae14cd35cc5c4e9cbc022caea312213e390c158283e6afb85c3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc15Success.wav",
+    "bytes": 134954,
+    "sha256": "630faf54810fbc13cdb045174ed36a743f3889b2177a37115829e24454358993",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc16Intro.wav",
+    "bytes": 395566,
+    "sha256": "391f18a15fcf4113f15e26272e09a71d6bd2e023352985e59a2363304acbfc62",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc16Success.wav",
+    "bytes": 130606,
+    "sha256": "2db1f4dbcf30fbbf65aeeece601ccb95a62cf037dcf3b791ce07344cbc738547",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc17Intro.wav",
+    "bytes": 211274,
+    "sha256": "7fd9c3dbaabf1f66e2df5af25391d3cbe06a86f767b88186f7a98716aea68905",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc17Puzzle.wav",
+    "bytes": 122926,
+    "sha256": "0e039dad19eada8d524a1dfabad97f647f6e99fc12271afd9e10ba5bf985186d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc17Success.wav",
+    "bytes": 130126,
+    "sha256": "6d9b90dcf462b01479584bf9f120dcf88449d7557150346c884442bcb3f9ae94",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc18Intro.wav",
+    "bytes": 207914,
+    "sha256": "abef8c9de6fc4bb8215d1ea832ee7209b873c2cb902cfe5a30d44c3b8f836fa7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc18Puzzle.wav",
+    "bytes": 126766,
+    "sha256": "350809a126b39487d2a77b01723da383880ac66fad2a11087006877d138a67d8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc18Success.wav",
+    "bytes": 151754,
+    "sha256": "aca2fb056f82eaf3fa08c1d7b45b47007598478e925b2d67d21adc8e630474fb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc19Intro.wav",
+    "bytes": 214126,
+    "sha256": "1c1eedb398276592ee026119ac74edfd347e70778a4412a7f42ca6cc8e0a56c8",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc19Success.wav",
+    "bytes": 134474,
+    "sha256": "b4190fb11e82d8159640dfb8da00f7bc677a786bfdd3017860c8e17eff315cb6",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc1Intro.wav",
+    "bytes": 207914,
+    "sha256": "cedd56c905dc40b0c5fbe0af624a52335400b992578bdf31b54619c79e04b32f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc1Puzzle.wav",
+    "bytes": 190126,
+    "sha256": "e0cacf0863ca89c17138c11914304dab14413779ced7bdc7514d425df25cdbb5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc1Success.wav",
+    "bytes": 92206,
+    "sha256": "8aadc0439bf923cbe7db88b6d92400476a9eb5ecace8037fda049b55d9068383",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc2Intro.wav",
+    "bytes": 204046,
+    "sha256": "1084d4b1cb19fc1bf8ece5c7347b6d941037da6f39a98777467ee32f2dc7d9d9",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc2Puzzle.wav",
+    "bytes": 122926,
+    "sha256": "25f81db60d665ae5afdf9228e2c2b2b02efdd07701bab7d6584716cc4b690302",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc2Success.wav",
+    "bytes": 117646,
+    "sha256": "e92f3e37bd17c54ce8a59fe85f251f54c76b0a48aaeafee638b458bae6ce7014",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc3Intro.wav",
+    "bytes": 190606,
+    "sha256": "0bd2d1d21677f04f3c2bdc65cc5ba595304c3d6665a990e8b56e0e40256a798d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc3Puzzle.wav",
+    "bytes": 138286,
+    "sha256": "1c9d47f85e3d82a4f89eb26c928f98e53c2f41360b22c3d6d6da38fddecdef83",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc3Success.wav",
+    "bytes": 151754,
+    "sha256": "12dac197ab6e670f58821c9d50b9cc27e54eb828400fad158e5d488210055406",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc4Intro.wav",
+    "bytes": 207886,
+    "sha256": "f7ddfd5760f86f13d39684c6bbe9c51420952565198f8c4887d2016db3349eb5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc4Puzzle.wav",
+    "bytes": 170954,
+    "sha256": "d23079690bd0dda3cec0652382becf82847ba6a47ab2e3f9ee1e7469031fe25c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc4Success.wav",
+    "bytes": 152686,
+    "sha256": "a4fb8440ba502564016962da0b3e78551c838d71380a8180cdeaa7efd3c9cb71",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc5Intro.wav",
+    "bytes": 197326,
+    "sha256": "464ec7c1ee4fbbe55020ba1d8ad0bbaf34ab1f7e2c49010538d249592935eae2",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc5Puzzle.wav",
+    "bytes": 184846,
+    "sha256": "73c4ad04fffcee9ed37be9bc7c6ce3858deaf6cad366a52beb29e1ea47011556",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc5Success.wav",
+    "bytes": 161354,
+    "sha256": "f889e24e4a68ac45f6cf38d8c6710d36f475bc1f91d41cc38ff8957959621904",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc6Intro.wav",
+    "bytes": 178126,
+    "sha256": "4534963e6138cf0cfc9ee34c86edb1a9d35a2a2b0d120aa2639a966476dd04a3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc6Puzzle.wav",
+    "bytes": 203566,
+    "sha256": "587c9cd45ab4da628e8e4e6b1e7f6b8f9b8b6c5740804ac45e51468bd3046b28",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc6Success.wav",
+    "bytes": 107566,
+    "sha256": "429c2d2359afcf5182846449770d58ec37b790a2ec68dc7b2adb35b4d1d4ad45",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc7Intro.wav",
+    "bytes": 247726,
+    "sha256": "bf447eed2ebf3df032eb1b946286913713a39501100673edc0c7b5e1bb1afe17",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc7Puzzle.wav",
+    "bytes": 165194,
+    "sha256": "970ba2c5c4c6369392b2a36565a4661da6044cabd4cfeeaea51359d3c8dcee37",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc7Success.wav",
+    "bytes": 109966,
+    "sha256": "88c4200fcba5a171956de57180e911aefa2c076e880c1c01c2bfba449ac10936",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc8Intro.wav",
+    "bytes": 223274,
+    "sha256": "93a81ebe233b16ece78f42788ef305ce28799974e06aab56d835e3e29b62760c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc8Puzzle.wav",
+    "bytes": 103754,
+    "sha256": "d8b76a5521443c7c1c3fc3ddefb25629e9da97e26c170a343a0c9ab2eb906304",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc8Success.wav",
+    "bytes": 149806,
+    "sha256": "696d249c4b7a31f242bdde260aaa6588ebbe906ee1808269ff6af9abfc326707",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc9Intro.wav",
+    "bytes": 168526,
+    "sha256": "02628fb38b6f4355b9670800c0fef4fa08ff0874a4402a615410c371110bae5a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc9Puzzle.wav",
+    "bytes": 195406,
+    "sha256": "d7327a4b3af40316a88c8e6033e7094b3bf68106b0e9868c87f9a0c0cffd81dd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/Cvc9Success.wav",
+    "bytes": 143086,
+    "sha256": "16eb05afd10199c27c88aba8c2d6d7b23a230dd2e312c8db375f406c72a93a71",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcListenMiddle.wav",
+    "bytes": 120554,
+    "sha256": "ed3e06cb9e7b583723f84f97b09280f1eb68a06ec4bff1ff5b0c890729b8d48c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReadReady.wav",
+    "bytes": 136394,
+    "sha256": "28f8461cae9d1f091d80da25f0690fb1c8bd1987ac0aeaec7fe6a05f2c6b55cf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-A.wav",
+    "bytes": 144526,
+    "sha256": "da6ee3d4a6d34ef3285841875440ce841857449e865808c39e8b6c38f978998d",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-BAG.wav",
+    "bytes": 145006,
+    "sha256": "0521b590b21b8bc8aefbc27a4ac0921836318ce6661ef880130d5e8d26f8255e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-BED.wav",
+    "bytes": 145486,
+    "sha256": "828cf40ba16fb38f641aacb6309f60724951341eb1210960094741f454a97c6c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-BUG.wav",
+    "bytes": 149806,
+    "sha256": "08f70cfac71359c00b13432a89204f9d697167409db6b1341a21b2d66b14c0ef",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-CUP.wav",
+    "bytes": 162766,
+    "sha256": "b2dabdd2deaf7d39ee612b9e58fd081ac97f72faa7848928fc5965c79c8d1dd2",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-FAN.wav",
+    "bytes": 144526,
+    "sha256": "798b1f6d82dbf9748b8647be6380ff63151c958899da0cf9b77baa443eef3a29",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-GEM.wav",
+    "bytes": 150766,
+    "sha256": "5fa98badd8a1fb33b403c34c52d601d0c4a93f591eca3d242f4081405aaa86e9",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-HAT.wav",
+    "bytes": 151246,
+    "sha256": "1ade9cb17095dd3c13c4ea9ac7fea3ad51fc214e775fcb32977ec1404c5912b7",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-HEN.wav",
+    "bytes": 172846,
+    "sha256": "152c6ec91aabb5b64a0bff0117b9e8a7723a73cfdbcc41f786d2077cc3a75d9e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-LID.wav",
+    "bytes": 140686,
+    "sha256": "ea524c6040882ec634eec841fe3650a862c39656f64091ab84e460bc3523ffcc",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-LOG.wav",
+    "bytes": 157006,
+    "sha256": "7f43b59b99ddd67655a38051773ae267d0e0f39bbd57b489137ac634165d140b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-MA.wav",
+    "bytes": 147406,
+    "sha256": "75f0e7b1e3e2535d339607f00105b933bdf0bdc38e43639de83c2b36d05b4fbd",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-MAP.wav",
+    "bytes": 172846,
+    "sha256": "331467bd72d29335e960d3f3237bdab22f278193e524d1154247a2f1659e981e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-NET.wav",
+    "bytes": 149806,
+    "sha256": "124f660525118f22b4d57409823bfa26f335d1bad8434f3624921d0308881b30",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-PEN.wav",
+    "bytes": 142606,
+    "sha256": "4aa316b816ed57a5ee2a3c54cde55fafcf9c3e8f4b3fde268c56464d3213f694",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-PIG.wav",
+    "bytes": 146446,
+    "sha256": "1d8a0cc6188aec100850fc9f38adf39f49fe2224ba6dd04e83f50a064bd3b9e3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-POT.wav",
+    "bytes": 169966,
+    "sha256": "ab35b9ddf7bb9b77237f9b23dc5ebb4f285e4c99f42fba002f5e6f991410dbd3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-RUG.wav",
+    "bytes": 177166,
+    "sha256": "6d5e4b6e6a723a8288d34f2c57998c567f2d34a20205d05ca8be3d46ab678c14",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-SUN.wav",
+    "bytes": 148366,
+    "sha256": "9bed18f3ee209617705ec0bb8bdfce194d8d3979c6cc379e1278b116abc9471b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-TIN.wav",
+    "bytes": 145966,
+    "sha256": "4456aa2006025838fbc1a731173ea5d9e49a5478ce6a73af123b3be8b6b7f15b",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcReady-TOP.wav",
+    "bytes": 157486,
+    "sha256": "55e68220b766b161801fa862501ea22f90a00bc2fdca6c5370e6aca265f59762",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcSlideSounds.wav",
+    "bytes": 98926,
+    "sha256": "f2ace6d67bb22f49f860ce6e9d74ea39852105d64e256f9bbd787ebc6a3fd3d4",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcStoryGoal.wav",
+    "bytes": 253006,
+    "sha256": "02ab3a6dc7714254bda6ab0350ab9e097a05525a7f8af93271299137fc9f4b71",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcStoryMilo.wav",
+    "bytes": 524234,
+    "sha256": "18d4ca032bac00a3986d89f79dc2e370cbe3e4aed725d798bc3c1ffb899fccee",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcStoryScene.wav",
+    "bytes": 405166,
+    "sha256": "16ce3cada153a2389c834deab0d7406ca961624a9498d44cee69460380b70188",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcThreeSounds.wav",
+    "bytes": 178606,
+    "sha256": "d5596ae9b71cc435a0a15975217f1d04a751ef9771f487075743189d48ff695c",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/CvcTryNextSound.wav",
+    "bytes": 140206,
+    "sha256": "fabfbd7dbbda466951c3ed8e659a382c388bf4808ed445614a36bce542b99928",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceBAG.wav",
+    "bytes": 79726,
+    "sha256": "f50e031a8a71b2fca3e962ffc3cdc39a41cc5107c3f64c94cc7cb139975a5790",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceBED.wav",
+    "bytes": 85994,
+    "sha256": "9f85def533f48814318e80c0d57f69d570c062c494a3277191a23cf0f0b81cf3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceBUG.wav",
+    "bytes": 78766,
+    "sha256": "8d32f136d8592ac7782fd064b822deda7227ea60e5f92ff83957e957a57a1adb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceCUP.wav",
+    "bytes": 53326,
+    "sha256": "8fa4449d5c2b6dbf80ef7ae71cb13d652f79bfb5e6902c7bf543ff8e67b52418",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceFAN.wav",
+    "bytes": 37486,
+    "sha256": "90f52ea25bb7c2a48d5de8a3c63de1b30f938576fe3892d98b6ea1f9026cf045",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceGEM.wav",
+    "bytes": 42314,
+    "sha256": "4e31409fa76f50b06f06e66c5a2a7b462c89a9d8ee30922e4012bccaa9954baf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceHAT.wav",
+    "bytes": 85966,
+    "sha256": "5a3ba6c86f8fbe00d52e52b2437648c878aeafd93d6f6435a175195b5b30b2d3",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceHEN.wav",
+    "bytes": 69194,
+    "sha256": "3bce2612a053dda08bdf29e66dc24a057a60981a1dcc55fdefa5e02232e5ae74",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceLID.wav",
+    "bytes": 86446,
+    "sha256": "3c7674cffb605f8b7052c97cf1dbff1b3b473880f85c7faa32302f840bab5439",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceLOG.wav",
+    "bytes": 80686,
+    "sha256": "53c266be71fc772ffaaf59e6c86cca9ba2f1216b0d31d8a2239a31b6dc8b663e",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceMAP.wav",
+    "bytes": 32686,
+    "sha256": "9d354066e34722305c3c3ef1fc3b6073fdf938dd945ffccf8cd1f678e601acb5",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceNET.wav",
+    "bytes": 50926,
+    "sha256": "75ec22dd30f6c287c6d5d7985a8fa285d73ee112c34111f10873bef931a481fb",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronouncePEN.wav",
+    "bytes": 33166,
+    "sha256": "88dc563f00612882cf88432c1b408585a751a34a7b1ddcc04a1f38145450485a",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronouncePIG.wav",
+    "bytes": 79246,
+    "sha256": "8be475499fc7e65dfd92d07918b4e3941a7fcd9fcb8dcf5ab41492e5d3ecdd15",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronouncePOT.wav",
+    "bytes": 60526,
+    "sha256": "ea6f946622add7895496eaa0de0972bf49ddcfe8eb5623303b690667d6c7c3bf",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceRUG.wav",
+    "bytes": 67726,
+    "sha256": "5d9f50ad7d0c43e5e127450a329ff714ff0ce94054b09a3bd8ce74497446a50f",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceSUN.wav",
+    "bytes": 86926,
+    "sha256": "ed386bb0cc2454aab549fe3fdeee21e91ef49d1ef8ad8657af21d2bf3b1deb44",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceTIN.wav",
+    "bytes": 34126,
+    "sha256": "060ecdf135932a09cd6ceb6afcc3c346d601abdcc1277e8011a08a33d3cfbd89",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  },
+  {
+    "path": "frontend/public/audio/stage3/classic-milo/PronounceTOP.wav",
+    "bytes": 39886,
+    "sha256": "21a4c8152286598246dae9271eab99db338a32d42c3305bc805653029836ce17",
+    "educatorReview": "not_verified",
+    "disposition": "preserve_pending_review"
+  }
+]

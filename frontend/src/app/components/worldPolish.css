@@ -1,0 +1,96 @@
+/* The route owns scrolling; scenes size to the space below navigation. */
+.chronicle-book{opacity:1!important;transition:transform .55s cubic-bezier(.22,.7,.22,1),filter .4s}
+.chronicle-book .book-cover{backface-visibility:hidden}
+.world-is-opening button{pointer-events:none}
+.is-entering-story{animation:story-enter .5s ease-in forwards;pointer-events:none}
+@keyframes story-enter{to{transform:scale(1.14);opacity:0}}
+.book-mission,.chronicle-trail,.chronicle-keepsake{animation:book-enter .5s ease-out both}
+.chronicle-trail{animation-delay:.08s}.chronicle-keepsake{animation-delay:.16s}
+@media(prefers-reduced-motion:reduce){.is-entering-story{animation-duration:1ms}.book-mission,.chronicle-trail,.chronicle-keepsake{animation:none}}
+.world-is-leaving{pointer-events:none;animation:world-depart .45s ease-in forwards!important}
+.world-is-leaving .storybook-spread{animation:book-shut .45s ease-in forwards}
+@keyframes world-depart{to{opacity:0;transform:translateY(12px) scale(.975)}}
+@keyframes book-shut{to{transform:rotateY(18deg) scale(.85)}}
+@media(prefers-reduced-motion:reduce){.world-is-leaving,.world-is-leaving .storybook-spread{animation-duration:1ms!important}}
+.chronicle-home,.camp-world,.book-world,.camp-lesson{min-height:0;box-sizing:border-box;overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable}
+.chronicle-home,.camp-world{scrollbar-gutter:auto}
+.chronicle-home-scene{min-height:690px;height:100%;display:flex;flex-direction:column}
+.chronicle-home-scene{min-height:0;height:auto;min-height:100%}
+.chronicle-home{container-type:size}
+.book-world{container-type:size}
+@container (min-width: 900px) and (max-height: 680px){
+  .book-world .book-world-header{padding-top:6px;padding-bottom:6px}
+  .book-world .book-mission{height:105px}
+  .book-world .chronicle-trail{height:260px}
+  .book-world .chronicle-landmark{height:140px}
+  .book-world .chronicle-keepsake{padding:10px 20px;margin-top:12px}
+}
+@container (min-width: 900px) and (max-height: 680px){
+  .chronicle-home .chronicle-home-scene{min-height:570px;height:100%}
+  .chronicle-home .world-welcome{height:80px;padding-top:5px}
+  .chronicle-home .chronicle-carousel{justify-content:flex-start;flex:1;min-height:0}
+  .chronicle-home .book-carousel-stage{height:260px;margin-top:3px}
+  .chronicle-home .chronicle-book{scale:.78;top:-16px}
+  .chronicle-home .book-carousel-footer{margin-top:0;gap:5px}
+  .chronicle-home .world-footer{margin:0;padding:5px 20px 12px}
+  .chronicle-home .world-place--stickers,.chronicle-home .world-place--sound{top:62%}
+}
+@media(min-width:900px){.chronicle-home-scene{min-height:600px;height:100%}.chronicle-home .world-welcome{flex-shrink:0}.chronicle-home .book-carousel-stage{height:310px}.chronicle-home .world-footer{flex-shrink:0}}
+.adventure-backdrop{min-height:100%;height:100%}
+.chronicle-home .adventure-backdrop{min-height:100%}
+.world-welcome{width:100%;padding-top:16px}
+.chronicle-carousel{margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center}
+.book-carousel-stage{height:325px;flex:none}
+.world-footer{margin-top:10px;padding-bottom:15px}
+.book-carousel-footer{margin-top:8px}
+.world-place--camp,.world-place--progress{top:24%}
+.world-place--stickers,.world-place--sound{top:62%}
+.world-place>.landmark-art{height:135px}
+.world-primary{background:#f59a00;border-color:#ffe4a2;box-shadow:0 4px 0 #bf790e;color:#fff!important}
+.world-primary:hover:not(:disabled){background:#e68b00}
+.world-primary:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #bf790e}
+.chronicle-book.is-opening{animation:home-book-focus .55s cubic-bezier(.2,.7,.2,1) forwards;z-index:20!important;pointer-events:none}
+@keyframes home-book-focus{to{transform:translateY(-20px) scale(1.22) rotateY(0);filter:drop-shadow(0 20px 35px #284a4055)}}
+.storybook-spread,.storybook-words{animation:none}
+.storybook-spread{perspective:1800px;transform-style:preserve-3d}
+.storybook-opening-cover{position:absolute;inset:0 0 0 50%;z-index:12;transform-origin:left center;backface-visibility:hidden;background:var(--chronicle-color);color:white;border:5px double #f6d887;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;animation:cover-unfold 1.1s ease-in-out forwards;pointer-events:none;box-shadow:10px 6px 20px #24463840}
+.storybook-opening-cover .landmark-art{width:65%;height:180px}.storybook-opening-cover h2{font-size:28px;text-align:center;font-weight:500}.storybook-opening-cover span,.storybook-opening-cover p{font-size:13px}
+@keyframes cover-unfold{0%,20%{transform:rotateY(0)}100%{transform:rotateY(-180deg)}}
+.storybook-turning-leaf{position:absolute;top:0;bottom:0;left:50%;width:50%;z-index:10;transform-origin:left center;transform-style:preserve-3d;animation:leaf-forward .8s ease-in-out forwards;pointer-events:none}
+.storybook-turning-leaf.is-back{animation-name:leaf-backward}
+.leaf-front,.leaf-back{position:absolute;inset:0;backface-visibility:hidden;background:#fffdf2;padding:45px 30px;box-shadow:5px 0 20px #5c482433;display:flex;flex-direction:column;justify-content:center}
+.leaf-front h2{font-size:26px;font-weight:500}.leaf-front p{font-size:20px;line-height:1.6}.leaf-back{transform:rotateY(180deg);background:var(--chronicle-light)}
+@keyframes leaf-forward{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
+@keyframes leaf-backward{from{transform:rotateY(-180deg)}to{transform:rotateY(0)}}
+.chronicle-trail{height:330px;max-width:1000px}
+.chronicle-trail-road path{stroke:#f4f0dd;stroke-width:42}
+.chronicle-trail-road .chronicle-trail-gold{stroke:#c4cfc0;stroke-width:25;stroke-dasharray:none}
+.chronicle-trail-road .chronicle-trail-gold.is-lit{stroke:#ffc84a;stroke-dasharray:1;animation:road-reveal .9s ease both}
+.chronicle-trail-road .chronicle-trail-flow{stroke:#fff8d7;stroke-width:3;stroke-dasharray:3 16;animation:road-travel 2s linear infinite}
+@keyframes road-reveal{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes road-travel{to{stroke-dashoffset:-38}}
+.chronicle-stop{transform:translateX(-50%);margin-top:-42px;min-width:120px;z-index:2}
+.chronicle-stop>span{height:84px;width:76px;box-sizing:border-box}
+.chronicle-stop--story{left:18%;top:76%}.chronicle-stop--practice{left:50%;top:52%}.chronicle-stop--check{left:82%;top:24%}
+.chronicle-landmark{left:18%;top:0;width:180px;height:170px}
+.reading-round .reading-summary{display:flex!important;flex-direction:column;align-items:center;text-align:center;gap:12px;max-width:700px;margin:24px auto;padding:24px}
+.reading-round .reading-summary h2,.reading-round .reading-summary p{margin:0;max-width:500px}
+.reading-round .reading-summary .reading-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.reading-round .reading-summary .milo-companion{flex-shrink:0}
+.camp-sound-shelf--shields{background:linear-gradient(transparent 88%,#c6b1e2 88%,#c6b1e2 92%,transparent 92%);border-bottom:7px solid #ad97cd}
+.camp-world--inside .camp-sound-shelf--shields .camp-sound-token{background:#f1ffe1;border-color:#fff;box-shadow:0 6px 0 #b3d889}
+.camp-sound-shelf--shields .camp-token-letter svg{stroke:#f2ab16;fill:#fff4ba}
+.camp-learning-window{background:white;border-color:#e3d8fa;box-shadow:0 8px 0 #bdace0}
+.camp-picture-stage{background:#edffc9;border-bottom:4px solid #a4db55;border-radius:0 0 45% 45% / 0 0 24px 24px}
+.camp-lesson .camp-learning-window{margin-top:10px}
+.camp-lesson .camp-picture-stage{height:160px}.camp-lesson .camp-focus-picture{height:155px;width:180px}
+.camp-lesson .camp-lesson-narration{min-height:95px}.camp-lesson .camp-lesson-narration>.milo-companion{width:110px!important;height:110px!important}
+.camp-lesson-controls{margin-top:18px}.camp-replay{margin:12px auto 0;flex-wrap:wrap}.camp-word-phrase{margin-bottom:14px}
+.river-shimmer{animation:river-glide 4s ease-in-out infinite}.ambient-leaves{animation:leaf-drift 9s ease-in-out infinite}.dojo-lantern{transform-box:fill-box;transform-origin:top center;animation:lantern-sway 4s ease-in-out infinite alternate}
+@keyframes river-glide{50%{transform:translate(-12px,14px);opacity:.35}}@keyframes leaf-drift{50%{transform:translate(28px,20px) rotate(2deg);opacity:.5}}@keyframes lantern-sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@media(min-width:900px) and (max-height:800px){.chronicle-home-scene{min-height:610px}.world-welcome{padding-top:8px}.world-welcome .milo-companion{width:75px!important;height:75px!important}.book-carousel-stage{height:285px}.chronicle-book{scale:.85;top:-5px}.chronicle-heading h2{font-size:23px}.world-place>.landmark-art{height:100px}.world-sign{font-size:14px}.world-footer{margin:0}.chronicle-open-book{margin-top:10px}.storybook-spread{min-height:380px}.storybook-words{padding:28px}.storybook-story{font-size:18px}.book-world-header{padding-top:10px;padding-bottom:10px}}
+@media(max-width:680px){.chronicle-home-scene{height:auto;min-height:100%}.chronicle-carousel{margin-top:20px;flex:none}.world-footer{margin-top:16px}.world-place>.landmark-art{height:65px}.chronicle-trail{height:360px}.chronicle-stop strong{font-size:12px}.chronicle-stop small{font-size:10px}.chronicle-landmark{width:115px;height:130px;left:12%}.storybook-opening-cover{inset:0;width:100%;transform-origin:left center}.storybook-turning-leaf{left:0;width:100%}.leaf-front{padding:25px}.camp-lesson .camp-lesson-narration>.milo-companion{width:75px!important;height:75px!important}.camp-lesson .camp-lesson-narration{padding:10px}.camp-record{min-width:200px}.reading-round .reading-summary{padding:18px}.camp-sound-shelf--shields{background:none}}
+@media(prefers-reduced-motion:reduce){.chronicle-book.is-opening,.storybook-opening-cover,.storybook-turning-leaf{animation-duration:1ms}.chronicle-trail-road .chronicle-trail-flow,.river-shimmer,.ambient-leaves,.dojo-lantern{animation:none}.chronicle-trail-road .chronicle-trail-gold.is-lit{animation:none}}
+.chronicle-book.is-opening{animation:book-calm-fade .55s ease forwards}
+.is-entering-story,.world-is-leaving{animation:world-calm-fade-out .45s ease forwards!important;transform:none!important}
+@keyframes book-calm-fade{to{opacity:0;filter:brightness(1.08)}}

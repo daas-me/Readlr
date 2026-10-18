@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "curriculumVersion": "readlr2-eng02-esil-draft-1",
+  "status": "provisional",
+  "runtimeAvailable": false,
+  "updatedAt": "2026-10-13",
+  "scope": {
+    "grade": 1,
+    "targetLanguage": "English",
+    "groupId": "ENG-02",
+    "graphemes": ["e", "s", "i", "l"],
+    "cumulativeGraphemes": ["m", "a", "t", "e", "s", "i", "l"],
+    "prerequisiteGroups": ["ENG-01"]
+  },
+  "sources": [
+    {
+      "id": "deped-dm-064-2025-annex-a",
+      "url": "https://www.deped.gov.ph/wp-content/uploads/DM_s2025_064r.pdf",
+      "supports": ["English ARAL group sequence", "ENG-02 letters e-s-i-l", "cumulative phonics instruction"]
+    },
+    {
+      "id": "deped-matatag-reading-literacy-grade1",
+      "url": "https://www.deped.gov.ph/wp-content/uploads/MATATAG-Reading-and-Literacy-CG.pdf",
+      "supports": ["letter-sound correspondence", "sound contrast", "blending", "decoding and encoding"],
+      "boundary": "The competencies do not approve Readlr's English word bank, recordings, pictures, or assessment thresholds."
+    }
+  ],
+  "content": [
+    { "id": "eng02.grapheme.e", "type": "grapheme", "display": "e", "target": "short-e (provisional)", "approval": "pending" },
+    { "id": "eng02.grapheme.s", "type": "grapheme", "display": "s", "target": "/s/ (provisional)", "approval": "pending" },
+    { "id": "eng02.grapheme.i", "type": "grapheme", "display": "i", "target": "short-i (provisional)", "approval": "pending" },
+    { "id": "eng02.grapheme.l", "type": "grapheme", "display": "l", "target": "/l/ (provisional)", "approval": "pending" },
+    { "id": "eng02.word.it", "type": "word", "display": "it", "pattern": "VC", "approval": "pending" },
+    { "id": "eng02.word.sat", "type": "word", "display": "sat", "pattern": "CVC", "approval": "pending" },
+    { "id": "eng02.word.sit", "type": "word", "display": "sit", "pattern": "CVC", "approval": "pending" },
+    { "id": "eng02.word.set", "type": "word", "display": "set", "pattern": "CVC", "approval": "pending" },
+    { "id": "eng02.word.met", "type": "word", "display": "met", "pattern": "CVC", "approval": "pending" },
+    { "id": "eng02.word.let", "type": "word", "display": "let", "pattern": "CVC", "approval": "pending" },
+    { "id": "eng02.word.lit", "type": "word", "display": "lit", "pattern": "CVC", "approval": "pending" }
+  ],
+  "skills": [
+    { "id": "eng02.sound.discriminate", "category": "oral_sound_awareness", "prerequisites": [] },
+    { "id": "eng02.vowel.e-i", "category": "vowel_contrast", "prerequisites": [] },
+    { "id": "eng02.letter.e", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng02.letter.s", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng02.letter.i", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng02.letter.l", "category": "letter_sound_correspondence", "prerequisites": [] },
+    { "id": "eng02.blend.it", "category": "blending", "prerequisites": ["eng01.letter.t", "eng02.letter.i"] },
+    { "id": "eng02.decode.cvc", "category": "decoding_encoding", "prerequisites": ["ENG-01", "eng02.letter.e", "eng02.letter.s", "eng02.letter.i", "eng02.letter.l"] },
+    { "id": "eng02.connected_text", "category": "connected_text", "prerequisites": ["eng02.decode.cvc"] },
+    { "id": "eng02.meaning.sit", "category": "vocabulary", "prerequisites": ["eng02.decode.cvc"] }
+  ],
+  "activities": [
+    { "id": "ENG02-ESIL-D01", "mode": "teaching", "targets": ["eng02.letter.e"], "evidenceCeiling": "practiced" },
+    { "id": "ENG02-ESIL-D02", "mode": "teaching", "targets": ["eng02.letter.s"], "evidenceCeiling": "practiced" },
+    { "id": "ENG02-ESIL-D03", "mode": "teaching", "targets": ["eng02.letter.i"], "evidenceCeiling": "practiced" },
+    { "id": "ENG02-ESIL-D04", "mode": "teaching", "targets": ["eng02.letter.l"], "evidenceCeiling": "practiced" },
+    { "id": "ENG02-ESIL-P01", "mode": "practice", "targets": ["eng02.sound.discriminate", "eng02.vowel.e-i"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG02-ESIL-B01", "mode": "guided", "targets": ["eng02.blend.it"], "evidenceCeiling": "completed_with_help" },
+    { "id": "ENG02-ESIL-B02", "mode": "guided", "targets": ["eng02.decode.cvc"], "candidateWords": ["sat", "sit", "set"], "evidenceCeiling": "completed_with_help" },
+    { "id": "ENG02-ESIL-A01", "mode": "adventure", "targets": ["eng02.decode.cvc", "eng02.connected_text", "eng02.meaning.sit"], "evidenceCeiling": "completed_with_help", "separateAdventureCompletion": true },
+    { "id": "ENG02-ESIL-I01", "mode": "independent_check", "targets": ["eng02.letter.e", "eng02.letter.s", "eng02.letter.i", "eng02.letter.l", "eng02.vowel.e-i"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG02-ESIL-I02", "mode": "independent_check", "targets": ["eng02.decode.cvc"], "candidateWords": ["met", "let"], "evidenceCeiling": "independent_candidate" },
+    { "id": "ENG02-ESIL-R01", "mode": "delayed_review", "targets": ["eng02.letter.e", "eng02.letter.s", "eng02.letter.i", "eng02.letter.l", "eng02.decode.cvc"], "candidateWords": ["lit"], "evidenceCeiling": "independent_candidate" }
+  ],
+  "mediaRequirements": [
+    { "target": "eng02.grapheme.e", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng02.grapheme.s", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng02.grapheme.i", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng02.grapheme.l", "kinds": ["isolated_phoneme", "mouth_cue", "letter_card"], "approval": "pending" },
+    { "target": "eng02.word.it", "kinds": ["segmented_audio", "continuous_blend", "whole_word"], "approval": "pending" },
+    { "target": "eng02.word.sat", "kinds": ["segmented_audio", "continuous_blend", "whole_word"], "approval": "pending" },
+    { "target": "eng02.word.sit", "kinds": ["segmented_audio", "continuous_blend", "whole_word", "meaning_image"], "approval": "pending" },
+    { "target": "eng02.word.set", "kinds": ["segmented_audio", "continuous_blend", "whole_word"], "approval": "pending" }
+  ],
+  "publicationGates": {
+    "sourceReviewed": true,
+    "educatorSignoff": false,
+    "languageModelApproved": false,
+    "wordBankApproved": false,
+    "mediaApproved": false,
+    "independentRubricApproved": false,
+    "accessibilityReviewed": false,
+    "usabilityReviewed": false
+  },
+  "migration": {
+    "mapLegacyProgressToSkills": false,
+    "preserveAdventureProgress": true,
+    "preserveRewards": true,
+    "featureFlagDefault": false,
+    "requiresApprovedPrerequisiteGroup": true
+  }
+}

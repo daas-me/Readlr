@@ -95,7 +95,7 @@ export function VowelAdventureMap({ completedCount = 0, unlockThrough = 0, initi
   };
   return <div className="vowel-adventure">
     <header className="adventure-topbar">
-      <button onClick={onBack} aria-label="Back to stages"><ArrowLeft size={20} /><span>Stages</span></button>
+      <button onClick={onBack} aria-label="Back home"><ArrowLeft size={20} /><span>Home</span></button>
       <span><Star size={17} />{room ? `${Math.min(5, completed)} / 5 powers` : `${Math.max(0, completed - 5)} / 15 trails`}</span>
       <button onClick={() => { stopAudio(); setRoom(!room); }} disabled={room && completed < 5 && unlockThrough < 6}><DoorOpen size={19} /><span>{room ? "Valley" : "Dojo"}</span></button>
     </header>

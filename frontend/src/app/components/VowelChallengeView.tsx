@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowLeft, Volume2, Mic, Headphones, Check } from "lucide-react";
+import { ArrowLeft, Volume2, Mic, MicOff, Headphones, Check } from "lucide-react";
 import { VowelPowerSymbol } from "./VowelPowerSymbol";
 import { CharacterCompanion, type CharacterState } from "./CharacterCompanion";
 import "./vowelChallenge.css";
@@ -12,8 +12,9 @@ interface Props {
   characterState: CharacterState; training: boolean; ready: boolean;
   recording: boolean; recorded: boolean; celebrating: boolean;
   preparing?: boolean;
+  fallbackAvailable?: boolean;
   onSkip?: () => void;
-  onBack: () => void; onReplay: () => void; onRecord: () => void;
+  onBack: () => void; onReplay: () => void; onRecord: () => void; onPracticeWithoutMic?: () => void;
 }
 
 export function VowelChallengeView(p: Props) {
@@ -63,8 +64,9 @@ export function VowelChallengeView(p: Props) {
             <button className="vowel-play__replay" onClick={p.onReplay} disabled={busy} title="Hear the vowel again" aria-label="Hear the vowel again"><Volume2 size={24} /></button>
             <button className="vowel-play__record" data-recording={p.recording} data-celebrating={p.celebrating} disabled={busy} onClick={p.onRecord}><ActionIcon size={25} /><span>{label}</span></button>
           </div>
+          {p.fallbackAvailable && p.ready && p.onPracticeWithoutMic && <button className="voice-fallback" onClick={p.onPracticeWithoutMic}><MicOff size={19}/>Practice without microphone</button>}
           <div className="vowel-play__status" role="status">
-            {p.preparing ? "Wait for your turn..." : p.recording ? <><span className="vowel-play__record-dot" />Milo is listening...</> : p.recorded && !p.celebrating ? "That's your voice!" : p.celebrating ? "Your voice brings the valley to life." : p.ready ? "Your turn!" : "Your turn is coming."}
+            {p.preparing ? "Wait for your turn..." : p.recording ? <><span className="vowel-play__record-dot" />Milo is listening...</> : p.recorded && !p.celebrating ? "That's your voice. Listen and compare." : p.celebrating ? "Practice complete. Pronunciation was not scored." : p.ready ? "Your turn!" : "Your turn is coming."}
           </div>
         </footer>
       </main>

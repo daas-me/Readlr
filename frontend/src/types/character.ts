@@ -55,8 +55,24 @@ export interface Character {
   updated_at: string;
 }
 
-export interface CharacterState {
+export interface CharacterStoreState {
   currentCharacter: Character | null;
   isLoading: boolean;
   error: string | null;
+}
+
+export interface CreateCharacterRequest {
+  name: string;
+  template: CharacterTemplate;
+  appearance: CharacterAppearance;
+  personality: CharacterPersonality;
+  voice: CharacterVoice;
+  behaviors?: CharacterBehavior[];
+}
+export interface UpdateCharacterRequest {
+  name?: string;
+  appearance?: Partial<CharacterAppearance>;
+  personality?: Partial<CharacterPersonality>;
+  voice?: Partial<CharacterVoice>;
+  behaviors?: CharacterBehavior[];
 }

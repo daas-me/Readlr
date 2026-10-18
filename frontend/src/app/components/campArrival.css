@@ -1,0 +1,18 @@
+/* Keep the world stationary while the Camp interlude covers its viewport. */
+.chronicle-home.world-is-leaving[data-destination=camp]:has(.camp-arrival){animation:none!important;transform:none;overflow:clip}
+.camp-arrival{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#d9f7f1;overflow:clip;animation:camp-curtain-in .18s ease-out both}
+.camp-arrival-scene{position:relative;width:min(380px,90%);height:260px;flex-shrink:0}
+.camp-arrival-scene>.landmark-art{position:absolute;width:220px;height:210px;right:0;top:0}
+.camp-arrival-milo{position:absolute;left:0;bottom:38px}
+.camp-arrival-letters{position:absolute;bottom:0;left:50%;display:flex;gap:12px;transform:translateX(-50%)}
+.camp-arrival-letters span{display:grid;place-items:center;width:44px;height:48px;border:2px solid white;border-radius:8px;background:#7357bc;color:white;box-shadow:0 4px 0 #503a94;font-size:28px;font-weight:500;animation:camp-letter-hop .65s ease-in-out both}
+.camp-arrival-letters span:nth-child(2){background:#ffc44d;color:#573b0d;box-shadow:0 4px 0 #d79117;animation-delay:.12s}
+.camp-arrival-letters span:nth-child(3){background:#eb6294;box-shadow:0 4px 0 #b2396b;animation-delay:.24s}
+.camp-arrival>p{font-size:22px;font-weight:500;color:#245b50;margin:24px 16px;text-align:center}
+@keyframes camp-curtain-in{from{opacity:0}to{opacity:1}}
+.camp-arrival-progress{width:min(240px,70%);height:14px;flex-shrink:0;padding:2px;border:2px solid #fff;border-radius:8px;background:#b9e5da;box-shadow:0 3px 0 #88bdb0;overflow:hidden}
+.camp-arrival-progress>span{display:block;width:100%;height:100%;border-radius:4px;background:#138d7d;transform-origin:left center;animation:camp-progress-fill var(--camp-arrival-duration,1100ms) linear both}
+@keyframes camp-progress-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes camp-letter-hop{0%{opacity:0;transform:translate(-24px,8px)}40%{opacity:1;transform:translate(0,-16px) rotate(-7deg)}70%{transform:translate(0,0) rotate(3deg)}100%{opacity:1;transform:none}}
+@media(max-height:450px){.camp-arrival-scene{height:200px}.camp-arrival-scene>.landmark-art{height:160px}.camp-arrival-milo{bottom:15px}.camp-arrival>p{margin:12px;font-size:18px}}
+@media(prefers-reduced-motion:reduce){.camp-arrival,.camp-arrival-letters span,.camp-arrival-progress>span{animation:none}}

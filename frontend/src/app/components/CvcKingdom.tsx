@@ -66,7 +66,7 @@ export function CvcKingdom({learnerId,unlockThrough=0,onBack,onProgress,onActivi
   const positions=CASTLE_STOPS;
   return <div className="cvc-root cvc-kingdom">
     {entering&&<div className="cvc-realm-entry" role="status"><div className="cvc-entry-door cvc-entry-door--left"/><div className="cvc-entry-door cvc-entry-door--right"/><div className="cvc-entry-title"><Crown size={42}/><p>The final adventure</p><h1>CVC Kingdom</h1><button onClick={()=>setEntering(false)}>Enter the kingdom<ArrowRight size={18}/></button></div></div>}
-    <nav className="cvc-nav"><button onClick={view==="map"?onBack:()=>setView("map")}><ArrowLeft size={18}/>{view==="map"?"Stages":"Castle map"}</button><span><Sparkles size={17}/> {points} magic points</span><button aria-label={view==="book"?"Castle map":"My storybook"} title={view==="book"?"Castle map":"My storybook"} onClick={()=>setView(view==="book"?"map":"book")}><BookOpen size={18}/><span>My storybook</span></button></nav>
+    <nav className="cvc-nav"><button onClick={view==="map"?onBack:()=>setView("map")}><ArrowLeft size={18}/>{view==="map"?"Home":"Castle map"}</button><span><Sparkles size={17}/> {points} magic points</span><button aria-label={view==="book"?"Castle map":"My storybook"} title={view==="book"?"Castle map":"My storybook"} onClick={()=>setView(view==="book"?"map":"book")}><BookOpen size={18}/><span>My storybook</span></button></nav>
     {saveError&&<p className="cvc-error" role="alert">Your progress could not be saved on this device. Keep this page open.</p>}
     {!learnerId&&<p className="cvc-session-note">Guest adventure: progress lasts for this visit.</p>}
     {view==="map"?<div className="cvc-map-scroll" ref={viewport}>

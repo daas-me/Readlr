@@ -1,29 +1,52 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { STICKERS, isStickerEarned } from "../src/app/components/stickers.ts";
 
-test("chapter collections retain all reward milestones and totals", () => {
-  const progress = {1:20,2:8,3:0};
-  const chapters = [1,2,3].map(stage => STICKERS.filter(sticker => sticker.stageId===stage));
-  assert.equal(chapters.flat().length, STICKERS.length);
-  assert.deepEqual(chapters.map(items=>items.filter(sticker=>isStickerEarned(sticker,progress)).length),[23,1,0]);
-  assert.equal(STICKERS.filter(sticker=>isStickerEarned(sticker,{})).length,0);
-  assert.equal(STICKERS.filter(sticker=>isStickerEarned(sticker,{1:20,2:20,3:20})).length,STICKERS.length);
-});
-test("sticker collection provides keyboard-accessible details and guarded frame actions", () => {
+test("current Sticker Book uses the authored first-open ritual and curriculum rewards", () => {
   const source = readFileSync(new URL("../src/app/components/StickerBook.tsx",import.meta.url),"utf8");
-  assert.ok(source.includes('onSelect={setSelected}'));
-  assert.ok(source.includes('<DialogTitle>'));
-  assert.ok(source.includes('disabled={!frame.unlocked || frame.equipped || wearing!==null || !equipFrame}'));
-  const album = readFileSync(new URL("../src/app/components/StickerAlbum.tsx",import.meta.url),"utf8");
-  assert.ok(album.includes('useReducedMotion()'));
-  assert.ok(album.includes('album-leaf-back'));
-  assert.ok(album.includes('busy.current||to<0||to>=count'));
+  assert.match(source,/Tap the book to unwrap your first sticker/);
+  assert.match(source,/patchLearnerCurriculumState\(learnerId,\{stickerBookOpened:true\}\)/);
+  assert.match(source,/Collected by \{learnerName\}/);
+  assert.match(source,/\['mango','Mango Sound'\].*\['apple','Apple Sound'\].*\['top','Top Sound'\]/s);
+  assert.match(source,/earned:state\.guidedStops\.includes\(`gate:\$\{word\}`\)/);
+  assert.match(source,/completedBooks\.includes\(chapter\.id\)/);
 });
-test("voice achievement counts recordings within the current learner's key range", () => {
-  const source = readFileSync(new URL("../src/app/components/Achievements.tsx",import.meta.url),"utf8");
-  assert.ok(source.includes('`learner:${learnerId}:`'));
-  assert.ok(source.includes('IDBKeyRange.bound(prefix,'));
-  assert.ok(source.includes('if (!learnerId) return Promise.resolve(0)'));
+test("current achievements use account curriculum state rather than old recording storage", () => {
+  const source = readFileSync(new URL("../src/app/components/CurriculumAchievements.tsx",import.meta.url),"utf8");
+  assert.match(source,/state\.soundRecordings\.length/);
+  assert.match(source,/completedBooks\.includes\(/);
+  assert.doesNotMatch(source,/IDBKeyRange|readlr_attempt_records|completedByStage/);
+});
+
+test("sticker cover and album are never mounted together during arrival", () => {
+  const source=readFileSync(new URL("../src/app/components/StickerBook.tsx",import.meta.url),"utf8");
+  assert.match(source,/!albumOpen&&<button className=\{`sticker-table-book/);
+  assert.match(source,/\{albumOpen&&<div className="sticker-album-reveal"/);
+  assert.doesNotMatch(source,/unwrapping\|\|albumOpen/);
+  const css=readFileSync(new URL("../src/app/components/stickerAlbum.css",import.meta.url),"utf8");
+  assert.doesNotMatch(css,/is-revealing-album|sticker-cover-open/);
+});
+
+test("every sticker reward has a distinct die-cut illustration", () => {
+  const art=readFileSync(new URL("../src/app/components/RewardStickerArt.tsx",import.meta.url),"utf8");
+  const pairs=art.slice(art.indexOf('BOOK_STICKER_DESIGNS'),art.indexOf('] as const'));
+  const designs=[...pairs.matchAll(/'([a-z]+)'/g)].map(match=>match[1]);
+  assert.equal(designs.length,20);
+  assert.equal(new Set(designs).size,20);
+  for(const design of ['mango','apple','top',...designs])assert.ok(art.includes(`${design}:<>`),`Missing ${design} art`);
+  assert.match(art,/feMorphology.*operator="dilate"/);
+  const book=readFileSync(new URL("../src/app/components/StickerBook.tsx",import.meta.url),"utf8");
+  assert.doesNotMatch(book,/LandmarkArt|starter-letter/);
+});
+
+test("shared illustrations keep the die-cut border exclusive to stickers",()=>{
+  const art=readFileSync(new URL("../src/app/components/RewardStickerArt.tsx",import.meta.url),"utf8");
+  assert.match(art,/finish==='sticker'\?<filter/);
+  assert.match(art,/:<IllustrationSurface/);
+  for(const file of ['ReadingAnchorArt','AdventureArt','AwardSculpture']){
+    const source=readFileSync(new URL(`../src/app/components/${file}.tsx`,import.meta.url),"utf8");
+    assert.match(source,/finish="object"/);
+  }
+  const awards=readFileSync(new URL("../src/app/components/CurriculumAchievements.tsx",import.meta.url),"utf8");
+  assert.equal((awards.match(/<AwardSculpture /g)||[]).length,2);
 });

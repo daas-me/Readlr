@@ -1,0 +1,9 @@
+.reward-sticker-art{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 2px 0 #d7cfdf) drop-shadow(0 5px 3px #38234b30)}
+.storybook-object-art{overflow:visible}
+.illustrated-landmark>.landmark-art,.illustrated-landmark>svg .storybook-object-art{width:100%;height:100%}
+.paper-sticker>div>span:has(.reward-sticker-art){max-width:140px;filter:none}
+.paper-sticker>div:has(.reward-sticker-art){height:128px;border:0;border-radius:0}
+.paper-sticker.is-uncollected>div>span:has(.reward-sticker-art){filter:grayscale(1);opacity:.28}
+.curriculum-sticker-preview>.reward-sticker-art{width:210px;height:190px;transform:rotate(-5deg)}
+.curriculum-sticker-preview:has(.reward-sticker-art){height:210px}
+@media(prefers-reduced-motion:reduce){.paper-sticker:hover>div>span:has(.reward-sticker-art){transform:none}}

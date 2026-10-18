@@ -18,6 +18,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 export function useFrames() {
   const { token } = useAuth();
   const [frames, setFrames] = useState<FrameOption[]>([]);
+  const [avatars,setAvatars]=useState<Array<{avatar:string;name:string;hint:string;unlocked:boolean}>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchFrames = useCallback(async () => {
@@ -32,6 +33,7 @@ export function useFrames() {
       if (res.ok) {
         const data = await res.json();
         setFrames(data.frames);
+        setAvatars(data.avatars??[]);
       }
     } catch (err) {
       console.error("Failed to fetch frames:", err);
@@ -41,6 +43,7 @@ export function useFrames() {
   }, [token]);
 
   useEffect(() => {
+    setFrames([]);setAvatars([]);setIsLoading(true);
     fetchFrames();
     window.addEventListener("readlr:frames-changed", fetchFrames);
     return () => window.removeEventListener("readlr:frames-changed", fetchFrames);
@@ -72,7 +75,7 @@ export function useFrames() {
     [token]
   );
 
-  const equippedAssetKey = frames.find((f) => f.equipped)?.asset_key ?? null;
+  const equippedAssetKey = frames.find((f) => f.equipped)?.asset_key ?? 'indigo-classic';
 
-  return { frames, isLoadingFrames: isLoading, equipFrame, equippedAssetKey, refetchFrames: fetchFrames };
+  return { frames, avatars, isLoadingFrames: isLoading, equipFrame, equippedAssetKey, refetchFrames: fetchFrames };
 }

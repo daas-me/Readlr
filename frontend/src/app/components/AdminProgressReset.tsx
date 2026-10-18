@@ -6,7 +6,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescripti
 const RESET_STAGES = [
   { id: 1, name: 'Valley of Vowels', detail: 'Dojo training and vowel trails', Icon: Mountain },
   { id: 2, name: 'Blending Bridges', detail: 'Workshop training and bridge challenges', Icon: Link2 },
-  { id: 3, name: 'CVC Kingdom', detail: 'Word challenges and crown finale', Icon: Crown },
+  { id: 3, name: 'CVC Kingdom', detail: 'Legacy words and expanded Kingdom chapter unlocks', Icon: Crown },
 ];
 
 export function AdminProgressReset({ token, target, name }: { token: string; target: string; name: string }) {

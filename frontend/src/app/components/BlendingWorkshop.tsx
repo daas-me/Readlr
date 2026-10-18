@@ -84,7 +84,7 @@ export function BlendingWorkshop({ learnerId, unlockThrough = 0, soundLibraryUnl
 
   return <div className="bridge-adventure">
     <header className="bridge-nav">
-      <button onClick={onBack}><ArrowLeft size={19} />Stages</button>
+      <button onClick={onBack}><ArrowLeft size={19} />Home</button>
       <span><Star size={17} />{Math.max(progress.points, Math.max(0, (earnedProgress(learnerId)[2] ?? 0) - 5) * 100)} points</span>
       <button onClick={()=>setRoom(!room)}>{room ? <Route size={19} /> : <Hammer size={19} />}{room ? "Journey map" : "Workshop"}</button>
     </header>

@@ -1,86 +1,77 @@
-import { useMemo, useState, type CSSProperties } from "react";
-import { StickerAlbum } from "./StickerAlbum";
-import { ArrowLeft, ArrowRight, BookOpen, Check, Crown, Lock, Sparkles, Star, Zap } from "lucide-react";
-import { POINT_STICKERS, getTrailPoints } from "./trailRewards";
-import { STICKERS, isStickerEarned, type Sticker } from "./stickers";
-import { AvatarFrame } from "./AvatarFrame";
-import { useFrames, type FrameOption } from "../hooks/useFrames";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
-import "./rewardsCollection.css";
+import { useEffect, useState } from 'react';
+import { ArrowLeft, BookOpen, Check, Lock, Sparkles } from 'lucide-react';
+import { emptyLearnerCurriculumState, patchLearnerCurriculumState, readLearnerCurriculumState, type LearnerCurriculumState } from '../../hooks/learnerCurriculumState';
+import { READING_CHAPTERS } from './aralCurriculum';
+import { CHRONICLES } from './chronicleContent';
+import { BOOK_STICKER_DESIGNS, RewardStickerArt } from './RewardStickerArt';
+import { StickerAlbum, type AlbumSticker } from './StickerAlbum';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
+import './rewardsCollection.css';
 
-interface Correction { word: string; stageId: number; attemptNumber: number; timestamp: string; selfCorrected: boolean }
-function loadSelfCorrections(): Correction[] {
-  try {
-    const records = JSON.parse(localStorage.getItem("readlr_attempt_records") || "[]");
-    return Array.isArray(records) ? records.filter(record => record?.selfCorrected === true && typeof record.word === "string") : [];
-  } catch { return []; }
-}
-interface StickerBookProps { onBack: () => void; completedByStage?: Record<number, number>; avatar?: string }
-const PAGES = [
-  { id: 1, title: "Valley of Vowels", color: "#b45309", tint: "#fff4d6", icon: Star },
-  { id: 2, title: "Blending Bridges", color: "#6550c5", tint: "#eeebff", icon: Zap },
-  { id: 3, title: "CVC Kingdom", color: "#087f68", tint: "#ddf7eb", icon: Crown },
-];
-
-export function StickerBook(props: StickerBookProps) {
-  const { frames, equipFrame, isLoadingFrames } = useFrames();
-  return <StickerBookView {...props} frames={frames} equipFrame={equipFrame} loadingFrames={isLoadingFrames}/>;
+interface StickerBookProps {
+  onBack:()=>void;
+  learnerId?:number|null;
+  learnerName?:string;
+  completedBooks?:string[];
+  curriculumState?:LearnerCurriculumState;
+  completedByStage?:Record<number,number>;
+  avatar?:string;
+  expandedKingdom?:boolean;
 }
 
-export function StickerBookView({ onBack, completedByStage = {}, avatar = "", frames = [], equipFrame, loadingFrames = false }: StickerBookProps & {
-  frames?: FrameOption[]; equipFrame?: (id:number)=>Promise<boolean>; loadingFrames?:boolean;
-}) {
-  const [chapter, setChapter] = useState(1);
-  const [selected, setSelected] = useState<Sticker | null>(null);
-  const [wearing, setWearing] = useState<number | null>(null);
-  const [frameMessage, setFrameMessage] = useState("");
-  const corrections = useMemo(loadSelfCorrections, []);
-  const page = PAGES[chapter-1];
-  const Icon = page.icon;
-  const collected = STICKERS.filter(sticker=>isStickerEarned(sticker,completedByStage));
-  const pageStickers = STICKERS.filter(sticker=>sticker.stageId===chapter);
-  const pageEarned = pageStickers.filter(sticker=>isStickerEarned(sticker,completedByStage)).length;
-  const next = pageStickers.find(sticker=>!isStickerEarned(sticker,completedByStage));
-  const pageFrames = frames.filter(frame=>frame.unlock_stage_number===chapter);
-  const trailPoints = getTrailPoints(completedByStage[1] ?? 0);
-  const nextBonus = POINT_STICKERS.find(sticker=>sticker.points>trailPoints);
-  const style = {"--reward-color":page.color,"--reward-tint":page.tint} as CSSProperties;
-  async function wear(id:number) {
-    if (!equipFrame || wearing!==null) return;
-    setWearing(id); setFrameMessage("");
-    try { setFrameMessage(await equipFrame(id) ? "Your new frame is on!" : "Your frame could not be changed. Please try again."); }
-    catch { setFrameMessage("Your frame could not be changed. Please try again."); }
-    finally { setWearing(null); }
-  }
-  return <main className="rewards-page sticker-collection" style={style}>
-    <div className="rewards-inner">
-      <div className="rewards-topline"><button className="rewards-back" onClick={onBack}><ArrowLeft size={17}/>Stages</button><span><BookOpen size={17}/>My collection</span></div>
-      <header className="rewards-heading"><div><p className="rewards-eyebrow">Little treasures, big adventures</p><h1>My Sticker Book</h1></div><p>Look at everything you have brought to life.</p></header>
-      <section className="rewards-overview" aria-label="Sticker collection progress">
-        <div className="album-stack" aria-hidden="true"><Star size={34}/></div>
-        <div className="rewards-count"><strong>{collected.length}<span> / {STICKERS.length}</span></strong><p>stickers collected</p></div>
-        <div className="rewards-summary-track"><div><span>Your adventure album</span><b>{Math.round(collected.length/STICKERS.length*100)}%</b></div><progress value={collected.length} max={STICKERS.length} aria-label="Album completion"/></div>
-        <div className="rewards-next"><Sparkles size={20}/><div><small>{collected.length===STICKERS.length?"A complete collection":"More magic ahead"}</small><b>{STICKERS.length-collected.length===0?"Every treasure is yours!":`${STICKERS.length-collected.length} treasures to discover`}</b></div></div>
-      </section>
-      <nav className="rewards-tabs album-tabs" aria-label="Sticker chapters">{PAGES.map(item=>{const PageIcon=item.icon;return <button key={item.id} aria-pressed={chapter===item.id} onClick={()=>{setChapter(item.id);setFrameMessage("");}}><PageIcon size={18}/><span className="album-tab-title">{item.title}</span><span>{STICKERS.filter(sticker=>sticker.stageId===item.id&&isStickerEarned(sticker,completedByStage)).length}/{STICKERS.filter(sticker=>sticker.stageId===item.id).length}</span></button>;})}</nav>
-      <section className="album-chapter" aria-label={page.title}>
-        <header className="album-chapter-heading"><div><span className="album-chapter-icon"><Icon size={23}/></span><div><p>Chapter {chapter}</p><h2>{page.title}</h2></div></div><span>{pageEarned} of {pageStickers.length} collected</span></header>
-        <div className="album-layout">
-          <StickerAlbum key={chapter} stickers={pageStickers} title={page.title} progress={completedByStage} onSelect={setSelected}/>
-          <aside className="album-sidebar" aria-label="Chapter rewards">
-            <div className="album-next-reward"><p className="rewards-eyebrow">{next?"Your next treasure":"Chapter complete"}</p><span className="album-next-art" aria-hidden="true">{next?.emoji ?? pageStickers[pageStickers.length-1].emoji}</span><h3>{next?.name ?? "All stickers collected!"}</h3><p>{next?`Complete level ${next.at} in ${page.title}.`:"Every memory has a place in your book."}</p></div>
-            {chapter===1&&<div className="album-points"><Star size={21}/><div><b>{trailPoints} trail points</b><p>{nextBonus?`${nextBonus.points-trailPoints} to ${nextBonus.name}`:"Every valley bonus collected"}</p></div></div>}
-            <div className="album-frames"><h3><Crown size={18}/>Stage frames</h3>{loadingFrames?<p>Loading your frames...</p>:pageFrames.length===0?<p>Frame details are unavailable right now.</p>:pageFrames.map(frame=><div className="album-frame" key={frame.id}>
-              <AvatarFrame assetKey={frame.asset_key} size={56}><span className="frame-avatar">{avatar || <Icon size={23}/>}</span></AvatarFrame><div><b>{frame.name}</b><button disabled={!frame.unlocked || frame.equipped || wearing!==null || !equipFrame} onClick={()=>void wear(frame.id)}>{frame.equipped?<><Check size={13}/>Wearing</>:!frame.unlocked?<><Lock size={13}/>Finish Stage {chapter}</>:wearing===frame.id?"Saving...":"Wear frame"}</button></div>
-            </div>)}<p role="status">{frameMessage}</p></div>
-          </aside>
-        </div>
-        <footer className="album-pagination"><button className="rewards-back" aria-label="Previous chapter" disabled={chapter===1} onClick={()=>setChapter(chapter-1)}><ArrowLeft size={18}/></button><span>Chapter {chapter} of 3</span><button className="rewards-back" aria-label="Next chapter" disabled={chapter===3} onClick={()=>setChapter(chapter+1)}><ArrowRight size={18}/></button></footer>
-      </section>
-      <details className="correction-collection"><summary><Sparkles size={20}/><span>Self-Correction Stars</span><b>{corrections.length}</b></summary>{corrections.length===0?<p>No stars yet. Each brave new try is a step forward.</p>:<div className="correction-grid">{corrections.map((record,index)=><article key={`${record.timestamp}-${index}`}><Star size={24}/><h3>{record.word}</h3><p>Stage {record.stageId} / Try {record.attemptNumber}</p></article>)}</div>}</details>
-    </div>
-    <Dialog open={selected!==null} onOpenChange={open=>{if(!open)setSelected(null);}}><DialogContent className="sticker-detail" style={style}>{selected&&<>
-      <span className="sticker-detail-art" aria-hidden="true">{selected.emoji}</span><DialogTitle>{selected.name}</DialogTitle><DialogDescription>{isStickerEarned(selected,completedByStage)?`Collected in ${page.title}. This treasure is yours!`:`Complete level ${selected.at} in ${page.title} to collect this sticker.`}</DialogDescription><span className="sticker-detail-state">{isStickerEarned(selected,completedByStage)?<><Check size={17}/>Collected</>:<><Lock size={17}/>Still to discover</>}</span>
-    </>}</DialogContent></Dialog>
+export function StickerBook(props:StickerBookProps) {
+  return <StickerBookView {...props}/>;
+}
+
+export function StickerBookView({onBack,learnerId,learnerName='Reader',completedBooks=[],curriculumState=emptyLearnerCurriculumState()}:StickerBookProps) {
+  const previouslyOpened=Boolean(learnerId&&readLearnerCurriculumState(learnerId).stickerBookOpened);
+  const [albumOpen,setAlbumOpen]=useState(false);
+  const [unwrapping,setUnwrapping]=useState(false);
+  useEffect(()=>{
+    const timer=window.setTimeout(()=>setUnwrapping(true),1200);
+    return()=>window.clearTimeout(timer);
+  },[]);
+  useEffect(()=>{
+    if(!unwrapping)return;
+    const timer=window.setTimeout(()=>{
+      setAlbumOpen(true);
+      if(learnerId)patchLearnerCurriculumState(learnerId,{stickerBookOpened:true});
+    },450);
+    return()=>window.clearTimeout(timer);
+  },[unwrapping,learnerId]);
+  return <main className={`sticker-table-scene ${albumOpen?'has-open-album':''}`}>
+    {!albumOpen&&<button className={`sticker-table-book ${unwrapping?'is-opening':''}`} onClick={()=>setUnwrapping(true)} disabled={unwrapping} aria-label="Open my Sticker Book">
+      <span className="sticker-table-band">My Sticker Book</span><Sparkles/><strong>{learnerName}'s collection</strong>
+      <small>{previouslyOpened?'Opening your book...':'Tap the book to unwrap your first sticker'}</small>
+    </button>}
+    <div className="sticker-table-props" aria-hidden="true"><i/><i/><i/></div>
+    {!albumOpen&&<button className="sticker-table-back" onClick={onBack}><ArrowLeft/>Back to my world</button>}
+    {albumOpen&&<div className="sticker-album-reveal"><CurrentStickerAlbum onBack={onBack} learnerName={learnerName} completedBooks={completedBooks} state={curriculumState}/></div>}
   </main>;
+}
+
+function CurrentStickerAlbum({onBack,learnerName,completedBooks,state}:{onBack:()=>void;learnerName:string;completedBooks:string[];state:LearnerCurriculumState}) {
+  const [selected,setSelected]=useState<AlbumSticker|null>(null);
+  const starter:AlbumSticker[]=([['mango','Mango Sound'],['apple','Apple Sound'],['top','Top Sound']] as const).map(([word,title])=>({
+    id:`gate:${word}`,title,earned:state.guidedStops.includes(`gate:${word}`),art:<RewardStickerArt design={word}/>,
+    requirement:`Finish the ${word} sound stop in Book 1, The First Gate.`,
+    achievement:`You explored ${word[0]}, the first sound in ${word}, and finished its sound stop in The First Gate!`,
+  }));
+  const bookStickers:AlbumSticker[]=READING_CHAPTERS.flatMap((chapter,index)=>[
+    {id:`${chapter.id}:blend`,title:`${CHRONICLES[index].skill} Helper`,earned:state.guidedStops.includes(`${chapter.id}:blend`)||completedBooks.includes(chapter.id),art:<RewardStickerArt design={BOOK_STICKER_DESIGNS[index][0]}/>,requirement:`Finish the sound-joining stop in Book ${index+1}, ${chapter.title}.`,achievement:`You joined sounds into words in ${chapter.title}. This sticker celebrates your word practice!`},
+    {id:`${chapter.id}:complete`,title:CHRONICLES[index].prize,earned:completedBooks.includes(chapter.id),art:<RewardStickerArt design={BOOK_STICKER_DESIGNS[index][1]}/>,requirement:`Complete Book ${index+1}, ${chapter.title}, including its final checkpoint.`,achievement:`You completed ${chapter.title} and its final reading checkpoint. You earned the ${CHRONICLES[index].prize} sticker!`},
+  ]);
+  const stickers=[...starter,...bookStickers];
+  const earned=stickers.filter(sticker=>sticker.earned).length;
+  return <section className="rewards-page sticker-collection is-album-open"><div className="rewards-inner">
+    <header><button className="reading-icon activity-back-button" onClick={onBack} aria-label="Back to my world"><ArrowLeft/></button><div><p>{learnerName}'s collection</p><h1>My Sticker Book</h1><span>{earned} of {stickers.length} reading treasures found</span></div><Sparkles/></header>
+    <StickerAlbum stickers={stickers} title="The Reading Chronicles" onSelect={setSelected} cover={<><BookOpen/><h2>Little sounds.<br/>Wonderful stories.</h2><p>Collected by {learnerName}</p><small>Every sticker remembers something you practiced.</small></>}/>
+    </div>
+    <Dialog open={selected!==null} onOpenChange={open=>{if(!open)setSelected(null);}}><DialogContent className="sticker-detail curriculum-sticker-detail">{selected&&<>
+      <div className={`curriculum-sticker-preview ${selected.earned?'':'is-locked'}`} aria-hidden="true">{selected.art}</div>
+      <DialogTitle>{selected.title}</DialogTitle>
+      <DialogDescription>{selected.earned?selected.achievement:selected.requirement}</DialogDescription>
+      <span className="sticker-detail-state">{selected.earned?<><Check size={18}/>Collected</>:<><Lock size={18}/>Still to discover</>}</span>
+    </>}</DialogContent></Dialog>
+  </section>;
 }

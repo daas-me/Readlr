@@ -13,6 +13,7 @@ import {
 import { getAllStages } from '../../database/models/stage.model.js';
 import { updateLearner } from '../../database/models/learner.model.js';
 import { FrameResponse } from './frames.types.js';
+import { curriculumRewardAccess, FRAME_REWARDS, rewardHint } from './curriculum-rewards.js';
 
 export async function getFramesForUser(
   userId: number,
@@ -24,10 +25,13 @@ export async function getFramesForUser(
     getAllStages(),
   ]);
   const unlockedSet = new Set(unlockedIds);
+  const rewards=await curriculumRewardAccess(userId);
+  const earned=frames.filter(frame=>FRAME_REWARDS[frame.asset_key]&&rewards.has(FRAME_REWARDS[frame.asset_key])&&!unlockedSet.has(frame.id));
+  for(const frame of earned){await unlockFrameDB(userId,frame.id);unlockedSet.add(frame.id);}
 
   // Default frames (no unlock_stage_id) are free for everyone; grant them lazily
   // for users who registered after the frame was seeded.
-  const missingDefaults = frames.filter((f) => f.unlock_stage_id === null && !unlockedSet.has(f.id));
+  const missingDefaults = frames.filter((f) => f.unlock_stage_id === null && !FRAME_REWARDS[f.asset_key] && !unlockedSet.has(f.id));
   if (missingDefaults.length > 0) {
     await Promise.all(missingDefaults.map((f) => unlockFrameDB(userId, f.id)));
     missingDefaults.forEach((f) => unlockedSet.add(f.id));
@@ -43,7 +47,7 @@ export async function getFramesForUser(
       unlock_stage_id: frame.unlock_stage_id,
       unlock_stage_number: stage?.stage_number ?? null,
       unlock_stage_title: stage?.title ?? null,
-      design_notes: frame.design_notes,
+      design_notes: FRAME_REWARDS[frame.asset_key]?rewardHint(FRAME_REWARDS[frame.asset_key]):'Ready to wear',
       unlocked: unlockedSet.has(frame.id),
       equipped: frame.id === equippedFrameId,
     };
@@ -51,6 +55,7 @@ export async function getFramesForUser(
 }
 
 export async function equipFrame(learnerId: number, userId: number, frameId: number): Promise<void> {
+  await getFramesForUser(userId,null);
   const unlockedIds = await getUnlockedFrameIds(userId);
   if (!unlockedIds.includes(frameId)) {
     throw new Error('Frame is not unlocked');

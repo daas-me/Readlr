@@ -1,0 +1,20 @@
+
+  VITE v6.4.2  ready in 3912 ms
+
+  ➜  Local:   http://127.0.0.1:5179/
+  ➜  press h + enter to show help
+7:48:23 AM [vite] (client) hmr update /@fs/C:\Users\saban\Readlr\frontend\src\app\components\FirstGateGames.tsx, /src/styles/index.css
+7:48:38 AM [vite] (client) hmr update /src/app/components/firstGateGames.css
+7:48:39 AM [vite] (client) hmr update /src/app/components/NavigationHeader.tsx, /src/styles/index.css
+7:48:39 AM [vite] (client) hmr update /src/app/App.tsx, /src/styles/index.css
+7:50:06 AM [vite] (client) hmr update /@fs/C:\Users\saban\Readlr\frontend\src\app\components\FirstGateGames.tsx, /src/styles/index.css
+7:50:06 AM [vite] (client) hmr update /src/app/components/AdminDashboard.tsx, /src/styles/index.css
+7:55:09 AM [vite] (client) hmr update /@fs/C:\Users\saban\Readlr\frontend\src\app\components\ChronicleBlendLesson.tsx, /src/styles/index.css
+7:55:31 AM [vite] (client) hmr update /@fs/C:\Users\saban\Readlr\frontend\src\app\components\SoundLearningCamp.tsx, /src/styles/index.css
+7:55:48 AM [vite] (client) hmr update /src/styles/index.css, /src/app/components/ReadingJourney.tsx, /@fs/C:\Users\saban\Readlr\frontend\src\app\components\FirstGateGames.tsx
+7:55:54 AM [vite] (client) hmr update /src/app/components/ReadingJourney.tsx, /src/styles/index.css
+7:56:29 AM [vite] (client) hmr update /src/app/components/ReadingJourney.tsx, /src/styles/index.css
+7:56:48 AM [vite] (client) hmr update /src/app/components/ReadingJourney.tsx, /src/styles/index.css
+7:56:48 AM [vite] (client) hmr update /src/app/components/firstGateGames.css
+7:57:27 AM [vite] (client) hmr update /src/app/components/firstGateGames.css
+7:59:02 AM [vite] (client) hmr update /@fs/C:\Users\saban\Readlr\frontend\src\app\components\ChronicleBlendLesson.tsx, /src/styles/index.css

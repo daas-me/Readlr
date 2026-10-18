@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Home, Settings, HelpCircle, User, LogOut, Menu, X, FileText } from "lucide-react";
+import { Home, Settings, HelpCircle, User, LogOut, Menu, X, FileText, TentTree, LockKeyhole } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -22,6 +22,8 @@ interface NavigationHeaderProps {
   onNavigate: (screen: string) => void;
   onLogout?: () => void;
   surveyAssigned?: boolean;
+  learningCampEnabled?: boolean;
+  featureAccess?:{progress:boolean;stickers:boolean;sounds:boolean;achievements:boolean};
 }
 
 export function NavigationHeader({
@@ -31,16 +33,19 @@ export function NavigationHeader({
   onNavigate,
   onLogout,
   surveyAssigned = false,
+  learningCampEnabled = false,
+  featureAccess={progress:true,stickers:true,sounds:true,achievements:true},
 }: NavigationHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { equippedAssetKey } = useFrames();
 
   const menuItems = [
-    { id: "stage-selection", label: "Stages", icon: Home },
-    { id: "dashboard", label: "Progress", icon: User },
-    { id: "settings", label: "Settings", icon: Settings },
-    { id: "help", label: "Help", icon: HelpCircle },
-    ...(surveyAssigned ? [{id:'survey',label:'Survey',icon:FileText}] : []),
+    { id: "stage-selection", label: "Home", icon: Home, unlocked:true },
+    ...(learningCampEnabled ? [{ id: "learning-camp", label: "Camp", icon: TentTree, unlocked:true }] : []),
+    { id: "dashboard", label: "Progress", icon: User, unlocked:featureAccess.progress },
+    { id: "settings", label: "Settings", icon: Settings, unlocked:true },
+    { id: "help", label: "Help", icon: HelpCircle, unlocked:true },
+    ...(surveyAssigned ? [{id:'survey',label:'Survey',icon:FileText,unlocked:true}] : []),
   ];
 
   return (
@@ -48,7 +53,7 @@ export function NavigationHeader({
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-[var(--paper)]/85 backdrop-blur-md border-b border-[var(--hairline)] sticky top-0 z-50"
+        className={`${learningCampEnabled && (currentScreen === 'stage-selection' || currentScreen === 'learning-camp') ? 'world-navigation' : ''} bg-[var(--paper)]/85 backdrop-blur-md border-b border-[var(--hairline)] sticky top-0 z-50`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
@@ -73,7 +78,8 @@ export function NavigationHeader({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onNavigate(item.id)}
+                    onClick={() => item.unlocked&&onNavigate(item.id)}
+                    disabled={!item.unlocked}
                     className={`px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                       active
                         ? "bg-card text-[#4F46E5] border border-[var(--hairline)]"
@@ -82,6 +88,7 @@ export function NavigationHeader({
                   >
                     <Icon className="w-4 h-4" />
                     {item.label}
+                    {!item.unlocked&&<LockKeyhole className="w-3.5 h-3.5" aria-label="Locked"/>}
                   </button>
                 );
               })}
@@ -178,7 +185,7 @@ export function NavigationHeader({
                 <button
                   key={item.id}
                   onClick={() => {
-                    onNavigate(item.id);
+                    if(item.unlocked)onNavigate(item.id);
                     setMenuOpen(false);
                   }}
                   className={`w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left transition-colors ${
@@ -189,6 +196,7 @@ export function NavigationHeader({
                 >
                   <Icon className="w-5 h-5" />
                   {item.label}
+                  {!item.unlocked&&<LockKeyhole className="w-4 h-4 ml-auto" aria-label="Locked"/>}
                 </button>
               );
             })}

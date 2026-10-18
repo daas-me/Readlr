@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Pencil, Check, X, Star, Trophy, Flame, Lock } from "lucide-react";
+import { ArrowLeft, Pencil, Check, X, BookOpenCheck, TentTree, Headphones } from "lucide-react";
 import { useAuth } from "../../modules/auth/auth.context";
 import { useFrames } from "../hooks/useFrames";
 import { AvatarFrame } from "./AvatarFrame";
+import { completedBookOneStarterStops, emptyLearnerCurriculumState, type LearnerCurriculumState } from "../../hooks/learnerCurriculumState";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -16,16 +17,12 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 
-const AVATAR_OPTIONS = [
-  "🦊", "🐻", "🐼", "🐨", "🦁", "🐯",
-  "🐸", "🐧", "🦋", "🐝", "🦄", "🐙",
-  "🐳", "🦕", "🐢", "🐬",
-];
-
 interface ProfilePageProps {
   onBack: () => void;
   onAvatarUpdate: (avatar: string) => void;
   onNameUpdate: (name: string) => void;
+  curriculumState?: LearnerCurriculumState;
+  completedBooks?: string[];
 }
 
 interface LearnerProfile {
@@ -35,25 +32,13 @@ interface LearnerProfile {
   grade: number;
 }
 
-interface StageProgress {
-  stage_id: number;
-  completed_levels: number;
-  total_levels: number;
-  completion_percentage: number;
-}
-
-interface ProgressSummary {
-  stages: StageProgress[];
-  overall_completion_percentage: number;
-}
-
-export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePageProps) {
+export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate, curriculumState=emptyLearnerCurriculumState(), completedBooks=[] }: ProfilePageProps) {
   const { user, token } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-  const { frames, equipFrame, equippedAssetKey } = useFrames();
+  const { equippedAssetKey,frames,avatars,equipFrame,isLoadingFrames,refetchFrames } = useFrames();
+  const [equipping,setEquipping]=useState(false);
 
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
-  const [progress, setProgress] = useState<ProgressSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isPickingAvatar, setIsPickingAvatar] = useState(false);
@@ -70,26 +55,15 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
     const fetchAll = async () => {
       if (!token) return;
       try {
-        const [profileRes, progressRes] = await Promise.all([
-          fetch(`${API_URL}/learner/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_URL}/progress/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const profileRes = await fetch(`${API_URL}/learner/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (profileRes.ok) {
           const data = await profileRes.json();
           setProfile(data.learner);
           setEditedName(data.learner.name);
         } else {
           toast.error("Could not load your profile. Try refreshing!");
-        }
-        if (progressRes.ok) {
-          const data = await progressRes.json();
-          setProgress(data);
-        } else {
-          toast.error("Could not load your progress. Try refreshing!");
         }
       } catch (err) {
         console.error("Failed to fetch profile data:", err);
@@ -179,18 +153,12 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
     setShowAvatarConfirm(false);
   };
 
-  const handleSelectFrame = async (frameId: number, name: string) => {
-    const ok = await equipFrame(frameId);
-    if (ok) {
-      toast.success("Frame equipped!", { description: `Wearing "${name}" now` });
-    } else {
-      toast.error("Could not equip that frame. Try again!");
-    }
-  };
-
-  const totalCompleted = progress?.stages.reduce((sum, s) => sum + s.completed_levels, 0) ?? 0;
-  const totalLevels = progress?.stages.reduce((sum, s) => sum + (s.total_levels ?? 0), 0) ?? 0;
-  const overallPct = progress?.overall_completion_percentage ?? 0;
+  const starterStops=completedBookOneStarterStops(curriculumState);
+  const journeyRows=[
+    {label:'Learning Camp welcome',value:Math.min(3,curriculumState.campOrientationStep),total:3},
+    {label:'First Book 1 treasures',value:starterStops,total:3},
+    {label:'Reading chronicles',value:Math.min(10,completedBooks.length),total:10},
+  ];
 
   if (isLoading) {
     return (
@@ -315,7 +283,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
               className="bg-card rounded-2xl p-6 border border-[#4F46E5]/30 mb-4"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[var(--ink)]">Pick your avatar!</h3>
+                <h3 className="text-[var(--ink)]">Avatars & borders</h3>
                 <button
                   onClick={() => setIsPickingAvatar(false)}
                   className="w-7 h-7 bg-[var(--paper)] rounded-lg flex items-center justify-center hover:bg-[var(--paper-deep)] transition-colors"
@@ -323,63 +291,38 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
                   <X className="w-4 h-4 text-[var(--ink-soft)]" />
                 </button>
               </div>
-              <div className="grid grid-cols-8 gap-2">
-                {AVATAR_OPTIONS.map((emoji) => (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {avatars.map(({avatar:emoji,name,hint,unlocked}) => (
                   <button
                     key={emoji}
+                    disabled={!unlocked||isSaving}
+                    title={unlocked?name:hint}
+                    aria-pressed={displayAvatar===emoji}
                     onClick={() => handlePickAvatar(emoji)}
-                    className={`w-10 h-10 rounded-xl text-2xl flex items-center justify-center transition-all hover:scale-110 ${
+                    className={`min-h-28 rounded-lg text-2xl flex flex-col gap-1 p-3 items-center justify-center border border-purple-200 disabled:opacity-60 ${
                       displayAvatar === emoji
                         ? "bg-[var(--accent-soft)] ring-2 ring-[#4F46E5]"
                         : "bg-[var(--paper)] hover:bg-[var(--paper-deep)]"
                     }`}
                   >
                     {emoji}
+                    <span className="text-sm">{name}</span>{!unlocked&&<small className="text-xs">{hint}</small>}
                   </button>
                 ))}
               </div>
+              {!avatars.length&&<p role="status">Rewards could not load yet. <button onClick={()=>void refetchFrames()}>Try again</button></p>}
 
-              {/* Frame picker */}
-              <div className="mt-5 pt-5 border-t border-[var(--hairline)]">
-                <h3 className="text-[var(--ink)] mb-3">Pick a frame!</h3>
-                <div className="grid grid-cols-5 gap-3">
-                  {frames.map((frame) => (
-                    <button
-                      key={frame.id}
-                      onClick={() => frame.unlocked && handleSelectFrame(frame.id, frame.name)}
-                      disabled={!frame.unlocked}
-                      title={
-                        frame.unlocked
-                          ? frame.name
-                          : `${frame.name} — finish ${frame.unlock_stage_title ?? `Stage ${frame.unlock_stage_number}`} to unlock`
-                      }
-                      className={`flex flex-col items-center gap-1 ${frame.unlocked ? "cursor-pointer" : "cursor-not-allowed"}`}
-                    >
-                      <div className={`relative ${frame.unlocked ? "" : "opacity-40 grayscale"}`}>
-                        <AvatarFrame assetKey={frame.asset_key} size={48}>
-                          <span className="text-lg">{displayAvatar}</span>
-                        </AvatarFrame>
-                        {frame.equipped && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#4F46E5] rounded-full flex items-center justify-center">
-                            <Check className="w-2.5 h-2.5 text-white" />
-                          </div>
-                        )}
-                        {!frame.unlocked && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Lock className="w-4 h-4 text-[var(--ink-soft)]" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-[10px] text-[var(--ink-muted)] text-center leading-tight">
-                        {frame.unlocked ? frame.name : `Stage ${frame.unlock_stage_number}`}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+          <section className="mt-6 border-t border-purple-200 pt-5" aria-label="Avatar borders">
+            <h2 className="text-xl mb-4">Borders</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {frames.map(frame=><button key={frame.id} disabled={!frame.unlocked||equipping} aria-pressed={frame.equipped} className={`flex flex-col items-center gap-3 p-3 rounded-lg border-2 ${frame.equipped?'border-purple-600 bg-purple-50':'border-purple-100'} disabled:opacity-60`} onClick={async()=>{setEquipping(true);const saved=await equipFrame(frame.id);setEquipping(false);if(!saved)toast.error('Your border could not be saved. Please try again.');}}>
+                <AvatarFrame assetKey={frame.asset_key} size={70}><span className="text-3xl">{displayAvatar}</span></AvatarFrame><strong className="text-sm">{frame.name}</strong>{!frame.unlocked&&<small>{frame.design_notes}</small>}
+              </button>)}
+            </div>
+            {!frames.length&&<p role="status">{isLoadingFrames?'Loading your borders...':'Your borders could not load.'} <button onClick={()=>void refetchFrames()}>Retry</button></p>}
+          </section>
             </motion.div>
           )}
-
           {/* Account info */}
           <motion.div
             initial={{ y: 12, opacity: 0 }}
@@ -414,45 +357,39 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate }: ProfilePag
             <h3 className="text-xs uppercase tracking-wider text-[var(--ink-muted)] mb-4">My Progress</h3>
             <div className="grid grid-cols-3 gap-3 mb-5">
               <div className="bg-[var(--tint-amber)] rounded-xl p-4 text-center">
-                <Trophy className="w-6 h-6 text-[#F59E0B] mx-auto mb-2" />
-                <p className="text-2xl text-[var(--ink)]">{totalCompleted}</p>
-                <p className="text-xs text-[var(--ink-muted)] mt-1">Levels Done</p>
+                <BookOpenCheck className="w-6 h-6 text-[#F59E0B] mx-auto mb-2" />
+                <p className="text-2xl text-[var(--ink)]">{completedBooks.length}<span className="text-sm"> / 10</span></p>
+                <p className="text-xs text-[var(--ink-muted)] mt-1">Books Read</p>
               </div>
               <div className="bg-[var(--accent-soft)] rounded-xl p-4 text-center">
-                <Star className="w-6 h-6 text-[#4F46E5] mx-auto mb-2" />
-                <p className="text-2xl text-[var(--ink)]">{overallPct}%</p>
-                <p className="text-xs text-[var(--ink-muted)] mt-1">Overall</p>
+                <TentTree className="w-6 h-6 text-[#4F46E5] mx-auto mb-2" />
+                <p className="text-2xl text-[var(--ink)]">{starterStops}<span className="text-sm"> / 3</span></p>
+                <p className="text-xs text-[var(--ink-muted)] mt-1">First Treasures</p>
               </div>
               <div className="bg-[var(--tint-mint)] rounded-xl p-4 text-center">
-                <Flame className="w-6 h-6 text-[#10B981] mx-auto mb-2" />
-                <p className="text-2xl text-[var(--ink)]">{totalLevels}</p>
-                <p className="text-xs text-[var(--ink-muted)] mt-1">Total Levels</p>
+                <Headphones className="w-6 h-6 text-[#10B981] mx-auto mb-2" />
+                <p className="text-2xl text-[var(--ink)]">{curriculumState.soundRecordings.length}</p>
+                <p className="text-xs text-[var(--ink-muted)] mt-1">Sound Visits</p>
               </div>
             </div>
-            {progress && progress.stages.length > 0 ? (
-              <div className="space-y-3">
-                {progress.stages.map((stage) => (
-                  <div key={stage.stage_id}>
+            <div className="space-y-3">
+                {journeyRows.map((row) => (
+                  <div key={row.label}>
                     <div className="flex justify-between text-xs text-[var(--ink-soft)] mb-1">
-                      <span>Stage {stage.stage_id}</span>
-                      <span>{stage.completed_levels} / {stage.total_levels} levels</span>
+                      <span>{row.label}</span>
+                      <span>{row.value} / {row.total}</span>
                     </div>
                     <div className="h-2 bg-[var(--paper-deep)] rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${stage.completion_percentage}%` }}
+                        animate={{ width: `${Math.round(row.value/row.total*100)}%` }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
                         className="h-full bg-[#4F46E5] rounded-full"
                       />
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <p className="text-sm text-[var(--ink-muted)] text-center py-2">
-                No progress yet — go complete some levels! 🚀
-              </p>
-            )}
+            </div>
           </motion.div>
 
         </div>

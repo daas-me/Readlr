@@ -1,4 +1,4 @@
-export type PracticeOutcome = "recorded" | "voice_detected" | "silence" | "error" | "interrupted";
+export type PracticeOutcome = "recorded" | "voice_detected" | "nonvoice_practice" | "silence" | "error" | "interrupted";
 export type FluencyTier = "Syllabic" | "Halting" | "Fluent";
 export interface PracticeAttempt {
   id: string; studentId: number; sessionId: string; wordId: string; stageId: number;
@@ -32,7 +32,7 @@ export function parsePractice(raw: string | null, studentId: number): PracticeAt
     return data.filter((r): r is PracticeAttempt => r && r.studentId === studentId && typeof r.id === "string" &&
       typeof r.sessionId === "string" && typeof r.wordId === "string" && typeof r.target === "string" && [1,2,3].includes(r.stageId) &&
       Number.isFinite(r.timestamp) && r.timestamp > 0 && Number.isInteger(r.attemptNumber) && r.attemptNumber > 0 &&
-      Number.isFinite(r.totalDurationMs) && r.totalDurationMs >= 0 && ["recorded","voice_detected","silence","error","interrupted"].includes(r.outcome) &&
+      Number.isFinite(r.totalDurationMs) && r.totalDurationMs >= 0 && ["recorded","voice_detected","nonvoice_practice","silence","error","interrupted"].includes(r.outcome) &&
       typeof r.correctiveFeedbackTriggered === "boolean" &&
       (r.wordRecognition === undefined || ["matched","different","uncertain","unavailable"].includes(r.wordRecognition)) &&
       (r.assessmentSource === "not_assessed" ? r.accuracy === null && r.asrConfidence === null && r.tier === null && r.selfCorrected === null :

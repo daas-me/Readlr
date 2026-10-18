@@ -42,6 +42,7 @@ interface SettingsProps {
 
 interface SettingsPayload {
   milo_voice: MiloVoice;
+  narration_mode: "full" | "concise";
   sound_volume: number;
   voice_feedback: boolean;
   daily_reminders: boolean;
@@ -85,6 +86,7 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
 
   const [volume, setVolume] = useState(()=>getLearningSettings().sound_volume);
   const [miloVoice, setMiloVoice] = useState(()=>getLearningSettings().milo_voice);
+  const [narrationMode, setNarrationMode] = useState(()=>getLearningSettings().narration_mode);
   const [voiceFeedback, setVoiceFeedback] = useState(()=>getLearningSettings().voice_feedback);
   const [notifications, setNotifications] = useState(()=>getLearningSettings().daily_reminders);
   const [achievementAlerts, setAchievementAlerts] = useState(()=>getLearningSettings().achievement_alerts);
@@ -120,6 +122,7 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
           const data = await settingsRes.json();
           updateLearningSettings(data.settings);
           setMiloVoice(getLearningSettings().milo_voice);
+          setNarrationMode(getLearningSettings().narration_mode);
           setVolume(data.settings.sound_volume);
           savedVolume.current = data.settings.sound_volume;
           setVoiceFeedback(data.settings.voice_feedback);
@@ -190,6 +193,14 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
     setMiloVoice(value);
     if (await saveSettings({ milo_voice: value })) toast.success("Milo's voice saved");
     else { setMiloVoice(previous); toast.error("Could not save. Try again!"); }
+  };
+
+  const handleNarrationChange = async (value: "full" | "concise") => {
+    if (savingPreferenceRef.current || volumeSaveTimeout.current) return;
+    const previous = narrationMode;
+    setNarrationMode(value);
+    if (await saveSettings({ narration_mode: value })) toast.success("Milo's guidance updated");
+    else { setNarrationMode(previous); toast.error("Could not save. Try again!"); }
   };
 
   const handleToggleSetting = async (
@@ -388,6 +399,24 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
                     {miloVoice === "milo" ? "Milo's new voice is on its way. You'll hear Classic Milo for now." : "Keep Milo's original recorded voice."}
                     {" "}If a recording is unavailable, a computer voice will read the line.
                   </p>
+                </div>
+                <div className="py-3.5">
+                  <label htmlFor="milo-guidance" className="block text-[var(--ink)] mb-2">Milo's guidance</label>
+                  <Select value={narrationMode}
+                    disabled={savingPreference || volumePending || !token}
+                    onValueChange={value => void handleNarrationChange(value as "full" | "concise")}>
+                    <SelectTrigger id="milo-guidance" className="settings-select">
+                      <SelectValue>{narrationMode === "concise" ? "Concise" : "Full"}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="settings-select-menu" sideOffset={6}>
+                      <SelectItem value="concise" textValue="Concise guidance" className="settings-select-option">
+                        <span className="settings-option-copy"><strong>Concise <small>Default</small></strong><span>Short reminders during activities</span></span>
+                      </SelectItem>
+                      <SelectItem value="full" textValue="Full guidance" className="settings-select-option">
+                        <span className="settings-option-copy"><strong>Full guidance</strong><span>Complete instructions and reminders</span></span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="py-3.5">
                   <div className="flex items-baseline justify-between mb-2">

@@ -3,8 +3,8 @@
  * Handles game levels, story scenes, stage selection, and game logic
  */
 
-export { GameLevel } from './components/GameLevel.js';
-export { StageSelection } from './components/StageSelection.js';
-export { LevelMap } from './components/LevelMap.js';
-export { StoryScene } from './components/StoryScene.js';
-export { PhonemeBank } from './components/PhonemeBank.js';
+export { GameLevel } from '../../app/components/GameLevel.js';
+export { StageSelection } from '../../app/components/StageSelection.js';
+export { LevelMap } from '../../app/components/LevelMap.js';
+export { StoryScene } from '../../app/components/StoryScene.js';
+export { PhonemeBank } from '../../app/components/PhonemeBank.js';

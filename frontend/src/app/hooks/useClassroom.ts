@@ -4,6 +4,8 @@ export interface ClassroomPolicy {
   mode: 'open' | 'stage' | 'stages' | 'paused' | 'survey';
   stages?: number[];
   unlockThrough?: Record<number, number>;
+  readingUnlockThrough?: number;
+  readingOpenChallenges?: number[];
   soundLibrary?: boolean;
   stage: number | null;
   message: string;

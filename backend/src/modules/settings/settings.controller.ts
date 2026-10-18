@@ -41,6 +41,13 @@ export async function handleUpdateMySettings(req: Request, res: Response) {
       updates.milo_voice = body.milo_voice;
     }
 
+    if (body.narration_mode !== undefined) {
+      if (body.narration_mode !== 'full' && body.narration_mode !== 'concise') {
+        return res.status(400).json({ error: 'narration_mode must be full or concise' });
+      }
+      updates.narration_mode = body.narration_mode;
+    }
+
     if (body.sound_volume !== undefined) {
       const volume = Number(body.sound_volume);
       if (!Number.isInteger(volume) || volume < 0 || volume > 100) {
