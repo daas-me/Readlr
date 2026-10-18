@@ -12,6 +12,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  freshLogin: boolean;
   register: (email: string, password: string, confirmPassword: string, role: 'learner' | 'teacher', name: string, adminInvitation?:string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -25,6 +26,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [freshLogin, setFreshLogin] = useState(false);
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('auth_token');
   });
@@ -103,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         // Store token and user
+        setFreshLogin(true);
         localStorage.setItem('auth_token', data.token);
         setToken(data.token);
         setUser(data.user);
@@ -140,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Store token and user
+      setFreshLogin(true);
       localStorage.setItem('auth_token', data.token);
       setToken(data.token);
       setUser(data.user);
@@ -153,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const logout = useCallback(() => {
+    setFreshLogin(false);
     localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
@@ -168,6 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     token,
     isLoading,
     isAuthenticated: !!user && !!token,
+    freshLogin,
     register,
     login,
     logout,

@@ -17,6 +17,7 @@ import { NavigationHeader } from "./components/NavigationHeader";
 import { StudentSurvey } from "./components/StudentSurvey";
 import { Landing } from "./components/Landing";
 import { WelcomeScreen } from "./components/WelcomeScreen";
+import { useFrames } from './hooks/useFrames';
 import { ReadingWorldTour } from './components/ReadingWorldTour';
 import { CampOrientation } from './components/CampOrientation';
 import { shouldShowWorldTour, WORLD_TOUR_COMPLETED } from '../hooks/readingWorldTour';
@@ -284,7 +285,8 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
 }
 
 function AppContent() {
-  const { isAuthenticated, user, token, isLoading: isAuthLoading, logout } = useAuth();
+  const { isAuthenticated, user, token, freshLogin, isLoading: isAuthLoading, logout } = useAuth();
+  useFrames();
   useDarkMode();
   useLearningSettings(token, user?.id);
   const initialRoute = parseAppPath(window.location.pathname);
@@ -335,8 +337,8 @@ function AppContent() {
   const [replayCampOrientation,setReplayCampOrientation]=useState(false);
   useEffect(()=>{setWorldTourOpen(false);setReplayCampOrientation(false);},[learnerId]);
   useEffect(()=>{
-    if(currentScreen==='stage-selection'&&learnerId&&!curriculumState.loading&&shouldShowWorldTour(curriculumState.state))setWorldTourOpen(true);
-  },[currentScreen,learnerId,curriculumState.loading,curriculumState.state]);
+    if(currentScreen==='stage-selection'&&learnerId&&!curriculumState.loading&&shouldShowWorldTour(curriculumState.state,freshLogin))setWorldTourOpen(true);
+  },[currentScreen,learnerId,curriculumState.loading,curriculumState.state,freshLogin]);
   const finishWorldTour=()=>{
     if(learnerId){
       const latest=readLearnerCurriculumState(learnerId);
@@ -458,7 +460,7 @@ function AppContent() {
           setLearnerName(data.name||user.name||'Reader');
           setLearnerAvatar(data.avatar||'🦊');
           setLearnerId(data.id);
-          setCurrentScreen("welcome");
+          setCurrentScreen(freshLogin ? "welcome" : "stage-selection");
         } catch (error) {
           console.error('Unable to prepare learner profile',error);
         } finally {
@@ -468,7 +470,7 @@ function AppContent() {
 
       checkProfile();
     }
-  }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen]);
+  }, [isAuthenticated, user, token, learnerId, hasCheckedLearnerProfile, currentScreen, freshLogin]);
 
   const handleGetStarted = () => {
     setAuthMode('register');

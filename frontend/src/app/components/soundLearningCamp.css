@@ -5,6 +5,7 @@
 .camp-lesson-steps span small{color:#365e4d}
 
 /* Illustrated learning tiles share the object artwork used inside lessons. */
+.camp-world-content{position:relative;isolation:isolate;min-height:100%;padding-bottom:24px}.camp-world .camp-world-content>.adventure-backdrop{height:100%;min-height:100%;inset:0}.camp-world{padding-bottom:0}.camp-bottom-note{position:relative;margin:12px auto 0;padding:12px 20px;max-width:600px;text-align:center;background:#fffdf0;border-radius:6px;color:#51318a}
 .camp-world .camp-illustrated-shelf{max-width:1180px;gap:24px 18px;background:none;border:0}
 .camp-world .camp-illustrated-shelf .camp-sound-token{border:3px solid #7c3aed;border-radius:8px;background:#fff;box-shadow:0 6px 0 #51318a;padding:14px 10px 16px;min-width:0;gap:8px;color:#40225e;overflow:visible}
 .camp-world .camp-illustrated-shelf .camp-sound-token:hover{background:#fff4db;transform:translateY(-4px)}

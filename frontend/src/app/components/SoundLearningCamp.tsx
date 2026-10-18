@@ -47,7 +47,7 @@ export function SoundLearningCamp({onBack,reviewMode=false,learnerId}:{onBack:()
   const goBack=()=>{audio.stop();area?setArea(null):transition.exit(onBack);};
   if(!reviewMode&&learnerId&&readLearnerCurriculumState(learnerId).campOrientationStep<3)return <CampOrientation learnerId={learnerId} onReady={onBack}/>;
   if(selected)return <CampSoundLesson key={`${selected.category}-${selected.word}`} card={selected} reviewMode={reviewMode} onBack={()=>setSelected(null)} onFinish={()=>{setVisited(items=>[...new Set([...items,selected.word])]);setSelected(null);}}/>;
-  return <main className={`camp-world ${area?'camp-world--inside':''} ${transition.leaving?'world-is-leaving':''}`}>
+  return <main className={`camp-world ${area?'camp-world--inside':''} ${transition.leaving?'world-is-leaving':''}`}><div className="camp-world-content">
     <AdventureBackdrop theme={area==='blends'?'bridge':'garden'}/>
     <header className="camp-header"><button className="reading-icon activity-back-button" aria-label={area?'Back to Camp':'Back home'} title={area?'Back to Camp':'Back home'} onClick={goBack}><ArrowLeft/></button><div><p>Learning Camp</p><h1>{area==='vowels'?'The Vowel Dojo':area==='consonants'?'The Consonant Grove':area==='blends'?'The Blending Workshop':'A little wonder. A little practice.'}</h1></div><CharacterCompanion state={audio.isPlaying?'speaking':'idle'} gesture="wave" size={100}/></header>
     {!area?<>
@@ -66,7 +66,7 @@ export function SoundLearningCamp({onBack,reviewMode=false,learnerId}:{onBack:()
       <section className={`camp-sound-shelf camp-illustrated-shelf ${area==='vowels'?'camp-sound-shelf--shields':''}`} aria-label="Choose a letter">{cards.map(card=><button key={card.word} className="camp-sound-token" onClick={()=>setSelected(card)}><span className="camp-token-letter">{area==='vowels'&&<CampSoundShield/>}<span>{card.letter}</span></span><span className="camp-token-art"><ReadingAnchorArt word={card.word}/></span><span className="camp-token-word">{card.word}</span>{visited.includes(card.word)&&<Check className="camp-visited" aria-label="Practiced today"/>}</button>)}</section>
       {area==='consonants'&&<p className="camp-bottom-note">Some sounds stretch, like m and s. Others are quick, like p and t.</p>}
     </>}{message&&<p role="status" className="camp-feedback">{message}</p>}
-  </main>;
+  </div></main>;
 }
 
 export function CampSoundLesson({card,reviewMode,onBack,onFinish}:{card:SoundCard;reviewMode:boolean;onBack:()=>void;onFinish:()=>void}) {

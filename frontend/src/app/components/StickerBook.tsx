@@ -7,6 +7,7 @@ import { BOOK_STICKER_DESIGNS, RewardStickerArt } from './RewardStickerArt';
 import { StickerAlbum, type AlbumSticker } from './StickerAlbum';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
 import './rewardsCollection.css';
+import './stickerCover.css';
 
 interface StickerBookProps {
   onBack:()=>void;
@@ -41,7 +42,9 @@ export function StickerBookView({onBack,learnerId,learnerName='Reader',completed
   },[unwrapping,learnerId]);
   return <main className={`sticker-table-scene ${albumOpen?'has-open-album':''}`}>
     {!albumOpen&&<button className={`sticker-table-book ${unwrapping?'is-opening':''}`} onClick={()=>setUnwrapping(true)} disabled={unwrapping} aria-label="Open my Sticker Book">
-      <span className="sticker-table-band">My Sticker Book</span><Sparkles/><strong>{learnerName}'s collection</strong>
+      <span className="sticker-table-band">My Sticker Book</span>
+      <span className="sticker-cover-art" aria-hidden="true"><span className="cover-star"><RewardStickerArt design="crown"/></span><span className="cover-apple"><RewardStickerArt design="apple"/></span><span className="cover-top"><RewardStickerArt design="top"/></span></span>
+      <strong>{learnerName}'s collection</strong>
       <small>{previouslyOpened?'Opening your book...':'Tap the book to unwrap your first sticker'}</small>
     </button>}
     <div className="sticker-table-props" aria-hidden="true"><i/><i/><i/></div>

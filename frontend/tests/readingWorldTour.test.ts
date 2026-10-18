@@ -17,6 +17,16 @@ test('new learners receive a world tour without granting lesson completion',()=>
   assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState()),true);
 });
 
+test('restoring a session never automatically reopens onboarding',()=>{
+  assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState(),false),false);
+  assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState(),true),true);
+  const hook=readFileSync(new URL('../src/app/hooks/useLearnerCurriculumState.ts',import.meta.url),'utf8');
+  assert.match(hook,/loadedFor!==accountKey/);
+  const app=readFileSync(new URL('../src/app/App.tsx',import.meta.url),'utf8');
+  assert.match(app,/!curriculumState.loading&&shouldShowWorldTour\(curriculumState.state,freshLogin\)/);
+  assert.match(app,/<Help onTutorial=.*setWorldTourOpen\(true\)/);
+});
+
 test('all Camp sound cards have dedicated new object illustrations',()=>{
   const objects=readFileSync(new URL('../src/app/components/CampObjectArt.tsx',import.meta.url),'utf8');
   const stickers=readFileSync(new URL('../src/app/components/RewardStickerArt.tsx',import.meta.url),'utf8');
