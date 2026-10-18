@@ -50,6 +50,7 @@ export function ReadingJourney({learnerId,previewMode=false,reviewMode=false,onB
   const [completed,setCompleted]=useState<string[]>(cachedAccess?.completed??[]);
   const [available,setAvailable]=useState<string[]>(cachedAccess?.available??[]);
   const [practiced,setPracticed]=useState(false);
+  const [openStops,setOpenStops]=useState<string[]>([]);
   const [openChallenges,setOpenChallenges]=useState<number[]>(cachedAccess?.openChallenges??[]);
   const [lesson,setLesson]=useState<SoundCard|'blend'|null>(null);
   const [visited,setVisited]=useState<string[]>(()=>readGuidedReadingStops(learnerId));
@@ -105,11 +106,11 @@ export function ReadingJourney({learnerId,previewMode=false,reviewMode=false,onB
         const local=import.meta.env.DEV?readLocalReadingProgress(learnerId):[];
         const merged=[...new Set([...p.completed,...local])];
         const nextAvailable=[...new Set([...p.available,...availableLocalReadingChapters(merged)])];
-        const nextChallenges=p.openChallenges??[];
+        const nextChallenges=p.openChallenges??[];setOpenStops(p.openStops??[]);
         setCompleted(merged);setAvailable(nextAvailable);setOpenChallenges(nextChallenges);saveReadingAccessSnapshot(learnerId,{completed:merged,available:nextAvailable,openChallenges:nextChallenges});setDeviceProgress(false);setSaveError('');
       }
     }).catch(async error=>{
-      if(!controller.signal.aborted&&import.meta.env.DEV){try{const p=await loadDevelopmentReadingProgress(learnerId,controller.signal);if(controller.signal.aborted)return;setCompleted(p.completed);setAvailable(p.available);setOpenChallenges(p.openChallenges??[]);saveReadingAccessSnapshot(learnerId,{completed:p.completed,available:p.available,openChallenges:p.openChallenges??[]});setDeviceProgress(true);setSaveError(devicePracticeNotice(error));}catch{if(!controller.signal.aborted)setSaveError('Teacher access could not be verified. Please reconnect.');}}
+      if(!controller.signal.aborted&&import.meta.env.DEV){try{const p=await loadDevelopmentReadingProgress(learnerId,controller.signal);if(controller.signal.aborted)return;setCompleted(p.completed);setAvailable(p.available);setOpenChallenges(p.openChallenges??[]);setOpenStops(p.openStops??[]);saveReadingAccessSnapshot(learnerId,{completed:p.completed,available:p.available,openChallenges:p.openChallenges??[]});setDeviceProgress(true);setSaveError(devicePracticeNotice(error));}catch{if(!controller.signal.aborted)setSaveError('Teacher access could not be verified. Please reconnect.');}}
       else if(!controller.signal.aborted)setSaveError(error.message);
     });
     refresh();const timer=window.setInterval(refresh,15000);
@@ -140,7 +141,7 @@ export function ReadingJourney({learnerId,previewMode=false,reviewMode=false,onB
   return <div className="chronicle-journey-shell">
     {saveError&&<p role="status" className="reading-preview">{saveError}</p>}
     {featureReward&&<div className="reading-feature-unlock" role="status"><Sparkles/><div><strong>New places unlocked!</strong><span>{featureReward}</span></div></div>}
-    <ChronicleBookWorld index={chapter} completed={completed.includes(selected.id)} practiceDone={practiceFinished} available={sandbox||available.includes(selected.id)} reviewMode={sandbox} challengesOpen={openChallenges.includes(chapter+1)} onBack={onBack} onFinishBook={finishBook} celebrateStop={mapCelebration}
+    <ChronicleBookWorld index={chapter} completed={completed.includes(selected.id)} practiceDone={practiceFinished} available={sandbox||available.includes(selected.id)} reviewMode={sandbox} openStops={openStops.filter(stop=>stop.startsWith(`${selected.id}:`)).map(stop=>stop.split(':')[1])} challengesOpen={openChallenges.includes(chapter+1)} onBack={onBack} onFinishBook={finishBook} celebrateStop={mapCelebration}
       bookPage={bookPage} onPageChange={setBookPage} visited={chapterVisited} onSound={setLesson} onBlend={()=>setLesson('blend')}
       onPractice={()=>setRound({chapter:selected,checkpoint:false})} onCheckpoint={()=>setRound({chapter:selected,checkpoint:true})}/>
   </div>;

@@ -22,11 +22,12 @@ test('the final gate waits for practice while completed books remain replayable'
   assert.ok(stops.every((_,index)=>!chronicleStopLocked(stops,index,{...access,completed:true})));
 });
 
-test('teacher challenge access cannot skip unfinished book stops',()=>{
+test('teacher whole-book access opens every stop without completing them',()=>{
   const stops=['sun','egg','log','igloo','blend','games','check'].map((id,index)=>({id,done:index===0}));
   const teacherAccess={...access,challengesOpen:true};
   assert.equal(chronicleStopLocked(stops,1,teacherAccess),false);
-  assert.ok(stops.slice(2).every((_,offset)=>chronicleStopLocked(stops,offset+2,teacherAccess)));
+  assert.ok(stops.every((_,index)=>!chronicleStopLocked(stops,index,teacherAccess)));
+  assert.equal(stops.filter(stop=>stop.done).length,1);
 });
 
 test('a trail grows only after its starting stop is completed',()=>{

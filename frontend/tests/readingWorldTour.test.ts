@@ -52,7 +52,10 @@ test('tour uses a clear spotlight and replays Camp without lowering saved progre
   assert.match(camp,/Practise without a microphone/);
   assert.match(camp,/URL.revokeObjectURL/);
   assert.match(camp,/<Dialog open=\{micOpen\}/);
-  assert.match(camp,/Skip this practice/);
+  assert.match(camp,/Skip orientation and open Book 1/);
+  assert.match(camp,/campOrientationStep:3,guidedActivities/);
+  assert.match(camp,/lessons.slice\(step\)/);
+  assert.equal(curriculumUnlocks({...emptyLearnerCurriculumState(),campOrientationStep:3},[]).bookOne,true);
   assert.match(camp,/run!==micRun.current/);
   assert.match(camp,/\{complete&&<div className="camp-orientation-actions"/);
   assert.match(camp,/Try my microphone \(optional\)/);

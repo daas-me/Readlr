@@ -758,7 +758,7 @@ function AppContent() {
           />
         )}
 
-        {currentScreen === "learning-camp" && learnerId && (replayCampOrientation?<CampOrientation learnerId={learnerId} replay onReady={()=>setReplayCampOrientation(false)}/>:<ReadingJourney learnerId={learnerId} initialTab="camp" onBack={handleBackToStages}/>)}
+        {currentScreen === "learning-camp" && learnerId && (replayCampOrientation?<CampOrientation learnerId={learnerId} replay onReady={()=>{setReplayCampOrientation(false);setCurrentScreen('stage-selection');}}/>:<ReadingJourney learnerId={learnerId} initialTab="camp" onBack={handleBackToStages}/>)}
 
         {currentScreen === "story-scene" && (
           <StoryScene
