@@ -1,344 +1,266 @@
+# Readlr - The Reading Chronicles
 
-# Readlr - Interactive Reading Learning Platform
+Readlr is a web-based English reading practice platform for young learners. Milo guides learners through a Reading World with ten illustrated books, a Learning Camp, a Sound Library, collectible stickers, and milestone rewards.
 
-Readlr is an interactive web-based learning platform designed to help young learners develop reading skills through engaging games, interactive components, and personalized learning paths. Built with modern web technologies, it provides a gamified learning experience with visual progress tracking, achievements, and character companions.
+The current experience replaces the earlier three-stage learning interface with a book-and-stop journey. It combines sound exploration, word building, guided practice, and independent final checkpoints. Readlr is an MVP learning application, not a standardized reading assessment or a diagnostic tool.
 
-## Features
+## Learner Experience
 
-- **Profile Setup** - Learners create personalized profiles with custom avatars and names
-- **Level Progression** - Structured learning levels with visual level maps and progress dashboards
-- **Phoneme Bank** - Comprehensive phoneme learning and practice system
-- **Story Scenes** - Interactive story-based learning content
-- **Games & Challenges** - Gamified learning activities with difficulty levels
-- **Achievements & Stickers** - Reward system with achievements and sticker collections
-- **Character Companions** - Personalized learning buddies to guide the learning journey
-- **Teacher Dashboard** - Tools for educators to track and manage learner progress
-- **Fluency Tracking** - Visual heatmaps showing fluency progression
-- **Session Summaries** - Detailed feedback after each learning session
-- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-- **Dark/Light Theme Support** - Customizable theme options via next-themes
+### Reading World and Onboarding
 
-## Technology Stack
+- An illustrated home world connects the books, Learning Camp, Sticker Book, Sound Library, and My Progress.
+- A book carousel shows the current adventure, completed books, and locked destinations.
+- The welcome screen appears on a fresh login; restoring a signed-in session returns to the home experience without replaying the welcome.
+- New learners receive Milo's world tour, with spotlights and contextual guidance for the main destinations.
+- The tour can be revisited from Help rather than restarting automatically on every reload.
+- Three introductory Camp challenges introduce first sounds, sound ordering, and a short word.
+- Microphone setup is offered during orientation. Learners can skip orientation challenges and begin Book 1 without recording those skipped challenges as practiced.
 
-**Frontend:**
-- React 18.3.1 with TypeScript
-- Vite 6.3.5 (build tool)
-- Tailwind CSS 4.1.12 (styling)
-- shadcn/ui (accessible component library based on Radix UI)
+### The Ten Books
 
-**UI & Components:**
-- Material UI icons and components
-- Lucide React (icon library)
-- Motion (animations)
-- React Hook Form (form handling)
+| Book | Adventure | Main Focus |
+| --- | --- | --- |
+| 1 | The First Gate | Join the first sounds; read am, at, and mat |
+| 2 | Lantern Lane | Short a, e, and i |
+| 3 | The Word Market | Build and read consonant-vowel-consonant (CVC) words |
+| 4 | The Secret Garden | Short o and word contrasts |
+| 5 | The Castle Drawbridge | Short u and word building |
+| 6 | Hall of Changing Words | Change a sound to make another word |
+| 7 | The Key Keeper | Beginning and ending sounds |
+| 8 | The Royal Library | Connect words with meaning |
+| 9 | The Vowel Tower | Compare short and long vowels, including silent e and ee |
+| 10 | The Crown Chamber | Bring the journey's word skills together |
 
-**Data Visualization:**
-- Recharts (charts and graphs)
-- Mermaid (diagrams)
-- Canvas Confetti (effects)
+Books use illustrated story spreads and paginated trails. Their stops include sound lessons, sound joining, word activities, and a final gate. Book-specific activities include lantern sorting, market labels, garden word beds, bridge building, changing-word mirrors, sound locks, story repair, vowel comparisons, and a cumulative crown challenge.
 
-**Interactions:**
-- React Router 7.13.0 (routing)
-- React DnD (drag and drop)
-- Embla Carousel (carousels)
-- react-resizable-panels (layout panels)
+Normal progression opens stops in sequence and later books after the preceding final checkpoint is passed. Completing guided practice and passing an independent checkpoint are separate events.
 
-**Utilities:**
-- date-fns (date manipulation)
-- Sonner (toast notifications)
-- class-variance-authority (component variants)
+The English practice sequence is informed by ARAL KS1 learning activity sheets, with Readlr-specific extensions and cumulative review. It is not the official CRLA instrument or a Filipino Marungko course. Curriculum mappings and extension notes live in `frontend/src/app/components/aralCurriculum.ts`.
 
-**Backend:**
-- Express.js 4.18.2 (web framework)
-- TypeScript 5.3.3
-- tsx (TypeScript executor)
-- OpenAI API (Whisper for audio processing)
-- Multer (file uploads)
-- Supabase (hosted PostgreSQL database)
-- CORS (cross-origin requests)
+### Learning Camp
 
-**Package Manager:**
-- npm/pnpm (monorepo support via pnpm-workspace.yaml)
+Learning Camp offers reusable practice outside the book trail:
 
+- Short- and long-vowel exploration.
+- Consonant sounds with illustrated word anchors.
+- Sound joining and interactive letter manipulation.
+- Milo's spoken models and guided listening.
+- Introductory challenges with optional microphone setup and skip controls.
 
-## Getting Started
+Camp practice is retained separately from independent book completion.
+
+### Sound Library
+
+The Sound Library organizes discovered material into short vowels, long vowels, consonants, sound teams, and book words.
+
+Learners can search the collection, select a sound or word at the listening desk, listen to Milo, and record and replay their own voice. Sound teams include supported forward and reverse combinations and animate as their sounds join during playback. Availability follows the learner's book progression.
+
+Illustrations identify the actual sound anchor or word where available; spelling displays cover words without a dedicated illustration instead of repeating an unrelated object.
+
+### Sticker Book, Achievements, and Profiles
+
+- **Sticker Book:** a personalized illustrated cover opens into a page-turning album. Distinct collectible artwork has a sticker finish, and selecting a sticker shows its earning requirement or achievement details.
+- **Achievements:** an award-shelf presentation shows milestones, progress toward them, and viewable reward details.
+- **Avatars and borders:** the profile editor includes character choices and existing decorative borders, with selected items highlighted and unlockable rewards tied to learning milestones.
+- **My Progress:** book completion, Camp participation, and voice-practice activity are presented separately rather than treated as one accuracy score.
+- **Visual identity:** vivid purple and orange accents, white text on primary orange actions, Milo animations, and coordinated illustrations across learning destinations. Sticker treatments are reserved for the collection rather than applied to every illustration.
+
+## Progress and Speech
+
+Learner curriculum state is persisted through the backend and supported by local browser state for continuity. This includes orientation progress and skips, guided stops, sub-activities, resumable practice rounds, and recording metadata.
+
+Independent book checkpoints are server-issued and stored separately from guided activity. They retain word-level recognition outcomes, distinguish skipped or unavailable checks, and support retries where permitted. Book 1 also includes a picture-meaning check.
+
+Speech recognition uses Groq's OpenAI-compatible endpoint with Whisper through the OpenAI JavaScript SDK. The SDK dependency does **not** mean that the current speech flow uses an OpenAI API key. Modeled audio and browser speech synthesis support narration and listening activities.
+
+Recognition is fallible. Noise, permissions, device differences, and network or service availability can affect results. Uncertain or unavailable recognition must not be presented as a successful independent checkpoint. Guided completion is not a pronunciation or fluency score.
+
+Some development-only fallback paths retain practice on the current device. These are not equivalent to server-verified completion and are not the production source of truth.
+
+## Technology
+
+| Area | Implementation |
+| --- | --- |
+| Frontend | React, TypeScript, Vite |
+| Interface | Tailwind CSS, Radix-based UI components, Lucide icons, component-specific CSS |
+| Interaction | Animated book pages, illustrated trails, drag/tap activities, browser audio recording and playback |
+| Backend | Node.js, Express, TypeScript, Multer |
+| Database | Supabase-hosted PostgreSQL with versioned SQL migrations |
+| Authentication | JWT-based application authentication |
+| Speech recognition | Groq-hosted Whisper through the OpenAI-compatible SDK |
+| Workspace | npm workspaces with a root lockfile |
+
+Exact dependency versions are recorded in the workspace manifests and `package-lock.json`.
+
+## Local Setup
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm or pnpm
-- OpenAI API key (for audio processing)
-- A Supabase project and its server-side service-role key
 
-### Installation
+- Node.js 22.18 or later and npm. The frontend test command uses Node's TypeScript stripping support.
+- A Supabase project.
+- A Groq API key for server-side speech recognition.
+- A microphone for recording and spoken checkpoints; listening and non-recording practice can be explored without one.
 
-From the root directory:
+### Install Dependencies
 
-```bash
-npm install
-```
-
-Or with pnpm:
-```bash
-pnpm install
-```
-
-### Development
-
-### Configure Supabase
-
-1. Create a Supabase project.
-2. Run [the initial schema migration](backend/supabase/migrations/202609160001_initial_schema.sql) in its SQL Editor.
-3. Copy `backend/.env.example` to `backend/.env`, then set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. The service-role key must remain on the backend and must never be added to the frontend environment.
-4. Seed the learning stages and levels once with `npm -w backend run seed`.
-
-The backend does not create tables at startup. This keeps schema changes explicit and deployable through Supabase migrations.
-
-#### Run Both Frontend & Backend
-
-From the root directory:
+Run from the repository root:
 
 ```bash
-npm run dev
+npm ci
 ```
 
-This starts both the frontend (port 5173) and backend (port 3000) simultaneously.
+### Configure Environment Files
 
-#### Run Frontend Only
+Create `backend/.env` using `backend/.env.example` and `frontend/.env` using `frontend/.env.example`. These values are placeholders, not working credentials.
+
+Backend:
+
+```dotenv
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_server_side_service_role_key
+JWT_SECRET=your_long_random_secret
+GROQ_API_KEY=your_groq_api_key
+
+READLR2_CAMP_ENABLED=true
+READLR2_CAMP_CURRICULUM_VERSION=readlr-aral-english-1
+READLR2_CAMP_MEDIA_VERSION=readlr-existing-models-tts-1
+```
+
+Frontend:
+
+```dotenv
+VITE_API_URL=http://localhost:3000/api
+VITE_API_BASE=http://localhost:3000
+VITE_READLR2_CAMP_ENABLED=true
+```
+
+Keep the Supabase service-role key, JWT secret, and Groq key on the backend only. Never put secrets in a `VITE_*` variable or commit real environment files.
+
+The curriculum and media version identifiers must match the corresponding database release records. The current backend enables the curriculum unless explicitly disabled; the environment example makes that setting explicit.
+
+### Prepare the Database
+
+Apply the SQL files in `backend/supabase/migrations/` in filename order to a new Supabase project. For an existing database, apply only migrations that have not already been applied.
+
+The initial schema alone is not enough for the current application. Later migrations provide profiles and settings, reward assets, curriculum releases and evidence, reading checkpoints, and persistent learner curriculum state. Some existing storage structures remain for compatibility even though the learner interface now uses ten books.
+
+The backend does not automatically create or migrate tables at startup. Do not use the older development seed script as a substitute for applying the current migrations.
+
+Check the reading rollout configuration after configuring the backend and database:
 
 ```bash
-npm run frontend:dev
+npm run rollout:check --workspace backend
 ```
 
-The application will be available at `http://localhost:5173`
+### Start Development
 
-#### Run Backend Only
+Use two terminals from the repository root.
+
+Backend:
 
 ```bash
 npm run backend:dev
 ```
 
-The server will be available at `http://localhost:3000`
+Frontend:
 
-### Building for Production
-
-Build all workspaces:
 ```bash
+npm run frontend:dev
+```
+
+The default frontend address is `http://localhost:5173`; the API defaults to `http://localhost:3000`. Check API availability at `http://localhost:3000/health`.
+
+If Vite selects another port, update the backend's allowed frontend origin accordingly. The root `npm run dev` uses npm's workspace runner; use the separate commands above to ensure both long-running servers are started.
+
+## Verification
+
+Run from the repository root:
+
+```bash
+npm test --workspace frontend
+npm test --workspace backend
+npm run type-check --workspace frontend
+npm run type-check --workspace backend
 npm run build
 ```
 
-Or individual workspaces:
+Tests cover curriculum consistency, progression, guided activities, speech-result handling, persisted state, and reward rules. Browser checks are also important for book transitions, audio controls, microphone permissions, onboarding, and responsive layouts.
+
+## Deployment
+
+Build outputs are `frontend/dist` and `backend/dist`. The backend production entry point is `backend/dist/server.js`.
+
+For the Render backend deployment, the repository-root commands are:
+
 ```bash
-npm run frontend:build  # Build frontend
-npm run backend:build   # Build backend
+# Build
+npm ci --include=dev
+npm run build --workspace backend
+
+# Start
+npm run start --workspace backend
 ```
 
+Configure the backend environment with the same required keys as local development, set `NODE_ENV=production`, and set `CORS_ORIGIN` to the deployed frontend origin. Multiple allowed origins can be comma-separated. The server reads `PORT` from its environment. Use `/health` for the health-check path.
 
-## Project Structure
+Configure the frontend build with public addresses only:
 
-### Monorepo Architecture
-
-This is a monorepo containing both frontend and backend applications:
-
-```
-readlr/
-├── frontend/           # React application
-├── backend/            # Express.js server
-├── guidelines/         # Project guidelines
-├── package.json        # Root monorepo config
-├── pnpm-workspace.yaml # Workspace definition
-└── README.md           # This file
+```dotenv
+VITE_API_URL=https://your-backend-domain/api
+VITE_API_BASE=https://your-backend-domain
+VITE_READLR2_CAMP_ENABLED=true
 ```
 
-### Frontend Structure
+Build the frontend with `npm run frontend:build`. Its host must serve the client application for browser routes, not only for `/`. Vite environment values are baked into the build, so changing them requires rebuilding the frontend.
 
-The frontend follows a feature-based modular architecture:
+Apply pending database migrations before deploying code that depends on them. Deploy compatible frontend and backend revisions together when API contracts change.
 
-```
-frontend/src/
-├── modules/                 # Feature modules
-│   ├── auth/               # Authentication & onboarding
-│   │   ├── components/
-│   │   │   ├── WelcomeScreen.tsx
-│   │   │   └── LearnerProfile.tsx
-│   │   └── index.ts
-│   ├── game/               # Game & learning features
-│   │   ├── components/
-│   │   │   ├── GameLevel.tsx
-│   │   │   ├── StageSelection.tsx
-│   │   │   ├── LevelMap.tsx
-│   │   │   ├── StoryScene.tsx
-│   │   │   ├── PhonemeBank.tsx
-│   │   │   └── MouthShapeGuide.tsx
-│   │   ├── hooks/          # Game-specific hooks
-│   │   └── index.ts
-│   ├── progress/           # Progress tracking
-│   │   ├── components/
-│   │   │   ├── ProgressDashboard.tsx
-│   │   │   ├── LevelComplete.tsx
-│   │   │   ├── SessionSummary.tsx
-│   │   │   ├── Achievements.tsx
-│   │   │   └── StickerBook.tsx
-│   │   └── index.ts
-│   ├── teacher/            # Teacher features
-│   │   ├── components/
-│   │   │   └── TeacherDashboard.tsx
-│   │   └── index.ts
-│   ├── shared/             # Shared components
-│   │   ├── components/
-│   │   │   ├── NavigationHeader.tsx
-│   │   │   ├── CharacterCompanion.tsx
-│   │   │   ├── Help.tsx
-│   │   │   ├── Settings.tsx
-│   │   │   ├── Diagrams.tsx
-│   │   │   └── FluencyHeatmap.tsx
-│   │   ├── utils/
-│   │   └── index.ts
-│   └── ui/                 # shadcn/ui components
-├── layouts/                # Page layouts
-│   ├── MainLayout.tsx
-│   └── AuthLayout.tsx
-├── hooks/                  # Global custom hooks
-│   └── useMediaQuery.ts
-├── types/                  # Global TypeScript types
-│   └── index.ts
-├── utils/                  # Shared utilities
-├── styles/                 # Global styles
-├── main.tsx               # Entry point
-└── App.tsx                # Root component
+## Browser and Audio Notes
+
+- Use HTTPS in production or localhost during development for microphone access.
+- Recording requires browser permission and an available microphone.
+- Audio playback may require a user gesture; voice and speech-synthesis availability varies by browser.
+- Test the intended devices and browsers rather than assuming identical recording behavior everywhere.
+- A reload should restore a signed-in learner's home experience, not repeatedly replay the welcome or completed onboarding.
+- If books or rewards fail to load, check the API address, allowed origin, authentication, database migrations, and curriculum release configuration before treating the failure as missing progress.
+
+## Project Layout
+
+```text
+Readlr/
+  frontend/
+    src/
+      app/
+        App.tsx             Application routing and learner flow
+        components/         Books, Camp, library, collections, and shared UI
+        hooks/              Application synchronization hooks
+      hooks/                Curriculum state, audio, checkpoints, and local continuity
+      modules/              Authentication and supporting feature modules
+      styles/               Shared styles
+    public/                 Audio, illustrations, and static assets
+    tests/                  Frontend regression tests
+  backend/
+    src/
+      modules/              API routes, controllers, and services
+      config/               Environment configuration
+      database/             Supabase connection and models
+      middleware/           Authentication and request handling
+    scripts/                Setup and rollout utilities
+    supabase/migrations/    Versioned database changes
+    tests/                  Backend and database regression tests
+  guidelines/               Contribution and implementation guidance
+  package.json              Workspace commands
+  package-lock.json         Dependency lockfile
 ```
 
-### Backend Structure
+Key learner components include `ChronicleHome`, `ChronicleBookWorld`, `ReadingJourney`, `SoundLearningCamp`, `CurriculumSoundLibrary`, `StickerBook`, `CurriculumAchievements`, and `ReadingProgressDashboard`.
 
-The backend follows a clean modular architecture:
+For contributions, see `guidelines/Guidelines.md`. Third-party credits are listed in `ATTRIBUTIONS.md`. Historical prototype documents may describe interfaces that predate the current Reading Chronicles experience.
 
-```
-backend/src/
-├── modules/               # Feature modules
-│   ├── audio/             # Audio processing
-│   │   ├── audio.types.ts      # Type definitions
-│   │   ├── audio.service.ts    # Business logic
-│   │   ├── audio.controller.ts # Request handlers
-│   │   ├── audio.route.ts      # Routes
-│   │   └── index.ts
-│   └── health/            # Health checks
-│       ├── health.controller.ts
-│       ├── health.route.ts
-│       └── index.ts
-├── config/                # Configuration
-│   └── env.ts
-├── middleware/            # Express middleware
-├── database/              # Database connection (future)
-├── utils/                 # Utilities
-├── app.ts                 # Express app setup
-└── server.ts             # Entry point
-```
+---
 
-
-## Key Components
-
-### Auth Module
-- **WelcomeScreen** - Landing page for new users
-- **LearnerProfile** - Initial setup screen for learner customization
-
-### Game Module
-- **GameLevel** - Interactive game components for learning
-- **StageSelection** - Stage/chapter selection interface
-- **LevelMap** - Visual representation of learning levels and progress
-- **StoryScene** - Story-based learning content
-- **PhonemeBank** - Phoneme learning and practice interface
-- **MouthShapeGuide** - Visual guide for pronunciation
-
-### Progress Module
-- **ProgressDashboard** - Dashboard showing learner progress and analytics
-- **LevelComplete** - Completion screen after finishing a level
-- **SessionSummary** - Post-session feedback and statistics
-- **Achievements** - Achievement and reward system
-- **StickerBook** - Sticker collection display
-
-### Teacher Module
-- **TeacherDashboard** - Administrative dashboard for educators
-
-### Shared Components
-- **NavigationHeader** - Top navigation bar
-- **CharacterCompanion** - Animated learning buddy
-- **Help** - Help and tutorial system
-- **Settings** - User and application settings
-- **Diagrams** - UML and architecture diagrams
-- **FluencyHeatmap** - Visual fluency progression tracking
-
-### Backend API
-
-**Audio Processing Module**
-- `POST /api/audio/process` - Process audio and analyze phoneme pronunciation
-  - Input: Audio file, target phoneme, optional child ID
-  - Output: Transcription, detected phoneme, score, feedback
-
-**Health Check**
-- `GET /health` - API health status endpoint
-
-
-## Architecture
-
-### Frontend Architecture
-
-The frontend uses a **feature-based modular architecture** where related components, hooks, and utilities are grouped into logical modules (auth, game, progress, teacher, shared).
-
-**Benefits:**
-- Clear separation of concerns
-- Easy to locate feature-related code
-- Scalable for adding new features
-- Reduced dependency coupling
-- Better code organization and maintainability
-
-Each module has:
-- `components/` - React components for the feature
-- `hooks/` - Custom React hooks (if module-specific)
-- `utils/` - Utility functions (if module-specific)
-- `index.ts` - Public API exports
-
-### Backend Architecture
-
-The backend uses a **modular layered architecture** with clear separation between routes, controllers, services, and data models.
-
-**Module Structure:**
-```
-module/
-├── module.types.ts      # TypeScript interfaces and types
-├── module.service.ts    # Business logic
-├── module.controller.ts # Request handlers
-├── module.route.ts      # Express routes
-└── index.ts            # Module exports
-```
-
-**Benefits:**
-- **Separation of Concerns** - Clear responsibility layers
-- **Type Safety** - Centralized type definitions per module
-- **Testability** - Easy to unit test service logic independently
-- **Reusability** - Services can be called from multiple controllers
-- **Scalability** - Easy to add new features following the pattern
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## Contributing
-
-Guidelines for contributing are available in `guidelines/Guidelines.md`
-
-## License
-
-See LICENSE file for details.
-
-## Prototype & Design
-
-The prototype and design specifications are available in:
-- `PROTOTYPE_GUIDE.md` - Prototype documentation
-- `UI_IMPROVEMENTS.md` - UI enhancement guidelines
-- Original Figma design: https://www.figma.com/design/UzOHZ5B43uJwJXRwHTRAK2/Visualize-Capstone-Project
-
-## Acknowledgments
-
-See `ATTRIBUTIONS.md` for third-party libraries and attributions.
+<small>Footnote: The admin side is used only for testing during MVP validation.</small>
