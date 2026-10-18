@@ -59,6 +59,17 @@ test("guest recordings never create persistent attempt records",()=>{
   const tracker=createPracticeTracker(null,1,"lesson-1","a",r=>writes.push(r));tracker.begin();tracker.finish("recorded");assert.equal(writes.length,0);
 });
 
+test("practice without a microphone remains unassessed",()=>{
+  const writes:PracticeAttempt[]=[];
+  const tracker=createPracticeTracker(4,2,"bridge-1","ma",record=>writes.push(record));
+  tracker.begin();tracker.finish("nonvoice_practice");
+  const attempt=writes.at(-1)!;
+  assert.equal(attempt.outcome,"nonvoice_practice");
+  assert.equal(attempt.assessmentSource,"not_assessed");
+  assert.equal(attempt.accuracy,null);
+  assert.deepEqual(parsePractice(JSON.stringify([attempt]),4),[attempt]);
+});
+
 test("only valid assessment evidence survives storage parsing",()=>{
   const assessed=record({assessmentSource:"validated_assessment",accuracy:.8,asrConfidence:.8,tier:"Fluent",selfCorrected:false,totalDurationMs:500});
   assert.deepEqual(parsePractice(JSON.stringify([assessed]),1),[assessed]);
@@ -81,5 +92,5 @@ test("all journey recording screens receive the learner and start capture tracki
   assert.match(source("app/components/BlendingWorkshop.tsx"),/<BridgePractice[^>]*learnerId=\{learnerId\}/);
   assert.match(source("app/components/CvcKingdom.tsx"),/<CvcChallenge[^>]*learnerId=\{learnerId\}/);
   assert.match(source("app/App.tsx"),/<GameLevel\s+learnerId=\{learnerId\}/);
-  assert.match(source("app/App.tsx"),/<UnifiedDashboard\s+learnerId=\{learnerId\}/);
+  assert.match(source("app/App.tsx"),/<ReadingProgressDashboard\s+learnerId=\{learnerId\}/);
 });

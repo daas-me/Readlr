@@ -24,9 +24,9 @@ test("CVC recording uses a target prompt, phase icon and guarded completion", ()
   assert.ok(cvc.includes('"Back to castle map"'));
 });
 
-test("stage selection destinations consistently say Stages", () => {
-  assert.ok(source("VowelAdventureMap.tsx").includes("<span>Stages</span>"));
-  assert.ok(source("NavigationHeader.tsx").includes('id: "stage-selection", label: "Stages"'));
-  assert.ok(source("BlendingWorkshop.tsx").includes(">Stages</button>"));
-  assert.ok(source("CvcKingdom.tsx").includes('?"Stages":"Castle map"'));
+test("home destinations consistently say Home", () => {
+  assert.ok(source("VowelAdventureMap.tsx").includes("<span>Home</span>"));
+  assert.ok(source("NavigationHeader.tsx").includes('id: "stage-selection", label: "Home"'));
+  assert.ok(source("BlendingWorkshop.tsx").includes(">Home</button>"));
+  assert.ok(source("CvcKingdom.tsx").includes('?"Home":"Castle map"'));
 });

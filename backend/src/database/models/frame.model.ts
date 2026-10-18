@@ -11,7 +11,15 @@ export interface Frame {
 }
 
 export async function getAllFrames(): Promise<Frame[]> {
-  return unwrap(await supabase.from('frames').select('*').order('sort_order')) as Frame[];
+  let frames=unwrap(await supabase.from('frames').select('*').order('sort_order')) as Frame[];
+  // Older stage-joined seeds omitted reward borders when those stages were absent.
+  const catalog=[['sunrise-ring','Sunrise Ring'],['indigo-classic','Indigo Classic'],['blue-floral','Blue Floral'],['gold-ornate','Gold Ornate'],['purple-cosmic','Purple Cosmic'],['yellow-ring','Yellow Ring'],['purple-heart','Purple Heart'],['ice-crystal','Ice Crystal'],['purple-star','Purple Star'],['fire-and-water','Fire and Water'],['purple-dragon','Purple Dragon'],['red-ring','Red Ring']];
+  const missing=catalog.flatMap(([asset_key,name],sort_order)=>frames.some(frame=>frame.asset_key===asset_key)?[]:[{asset_key,name,sort_order,unlock_stage_id:null}]);
+  if(missing.length){
+    unwrap(await supabase.from('frames').upsert(missing,{onConflict:'asset_key',ignoreDuplicates:true}).select('id'));
+    frames=unwrap(await supabase.from('frames').select('*').order('sort_order')) as Frame[];
+  }
+  return frames;
 }
 
 export async function getFrameById(id: number): Promise<Frame | undefined> {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { judgeCvcWord, CVC_TARGETS, CVC_TRANSCRIPTION_CONTEXT } from '../../backend/src/modules/audio/cvcRecognition.ts';
+import { judgeCvcWord, CVC_TARGETS, CVC_TRANSCRIPTION_CONTEXT, cvcTranscriptionPrompt } from '../../backend/src/modules/audio/cvcRecognition.ts';
 import { CVC_LESSONS } from '../src/app/components/cvcContent.ts';
 import { createPracticeTracker, type PracticeAttempt } from '../src/hooks/practiceRecords.ts';
 const quality=[{avg_logprob:-.2,no_speech_prob:.01,compression_ratio:1}];
@@ -13,6 +13,15 @@ test('tin context includes the entire curriculum without accepting ten or numera
   assert.equal(judgeCvcWord('tin',' Tin.',quality).status,'matched');
   assert.equal(judgeCvcWord('tin',' 10.',quality).status,'different');
   assert.equal(judgeCvcWord('tin','ten',quality).status,'different');
+});
+test('short-word transcription accepts target-only homophones but rejects other or extra words',()=>{
+  assert.match(cvcTranscriptionPrompt('at'),/word on screen is "at"/);
+  assert.match(cvcTranscriptionPrompt('mat'),/word on screen is "mat"/);
+  assert.equal(judgeCvcWord('at','hat',quality).status,'different');
+  assert.equal(judgeCvcWord('at','add',quality).status,'matched');
+  assert.equal(judgeCvcWord('mat','Matt',quality).status,'matched');
+  assert.equal(judgeCvcWord('am','M',quality).status,'matched');
+  assert.equal(judgeCvcWord('mat','a mat',quality).status,'different');
 });
 test('exact recognized words and repetitions pass, substrings and extra words do not',()=>{
   for(const text of ['Map.','map map!','MAP']) assert.equal(judgeCvcWord('map',text,quality).status,'matched');

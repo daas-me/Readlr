@@ -1,0 +1,252 @@
+.book-world.book-centered-world{container-type:normal!important;padding-bottom:16px;display:flex;flex-direction:column;scrollbar-gutter:auto}
+.book-centered-world>.adventure-backdrop{width:100%;max-width:100%;overflow:hidden}
+.book-trail-page{position:relative;isolation:isolate;overflow:hidden}
+.book-map-landscape{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#bde4ad}
+.book-map-landscape>.adventure-backdrop{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0}
+.book-map-landmark{position:absolute;left:28%;top:20%;width:120px;height:105px;opacity:.95}
+.book-map-landmark>.landmark-art{width:100%;height:100%}
+.book-trail-page>header>div:first-child{background:#fffef5ed;padding:8px 14px;border-radius:6px}
+.book-trail-page .book-map-stop.stop-0{top:52%}
+.book-trail-page>footer{position:relative;background:#fffef5eb;border-radius:6px;padding:8px!important;border:0!important}
+.book-trail-page .book-map-stop strong,.book-trail-page .book-map-stop small{background:#fffef5;box-shadow:0 2px 0 #53795824}
+@media(max-width:700px){.book-map-landmark{left:33%;top:23%;width:85px;height:80px}.book-trail-page>header>div:first-child{padding:6px 8px}}
+.book-centered-world .book-world-header{max-width:1500px;padding:12px 24px}
+.chronicle-volume{width:calc(100% - 48px);max-width:1450px;margin:8px auto 0;flex:1;min-height:0;display:flex;flex-direction:column}
+.chronicle-volume .album-binding{background:var(--chronicle-color,#138d7d);padding:10px 12px 14px;margin-bottom:0}
+.chronicle-volume .album-binding{flex:1;min-height:410px}
+.chronicle-volume .album-paper-stack{height:100%;overflow:clip}
+.chronicle-static-spread{display:flex;height:100%;overflow:hidden}
+.chronicle-static-spread>.chronicle-half{width:50%;flex-shrink:0}
+.chronicle-half{position:relative;height:100%;overflow:hidden}
+.chronicle-half-content{position:absolute;top:0;left:0;width:200%;height:100%}
+.chronicle-half.half-1>.chronicle-half-content{left:-100%}
+.chronicle-half.is-single>.chronicle-half-content{width:100%;left:0}
+.single-page .chronicle-static-spread>.chronicle-half{width:100%}
+.chronicle-volume .album-paper-stack:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:18px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,#53645620,transparent);pointer-events:none;z-index:4}
+.chronicle-volume .single-page .album-paper-stack:after{display:none}
+.chronicle-volume .album-turning-leaf{will-change:transform}
+.chronicle-volume .album-leaf-front,.chronicle-volume .album-leaf-back{box-shadow:0 0 18px #263e4626}
+.chronicle-volume[aria-label] .chronicle-half .chronicle-page{overflow:hidden}
+.chronicle-page{height:100%;background:#fffef8;overflow:auto;color:#2d4444}
+@media(min-width:701px){
+  .chronicle-story-spread{height:100%;min-height:0}
+  .chronicle-story-picture{min-height:0;padding:20px}
+  .chronicle-story-picture>.landmark-art{height:100%;max-height:330px}
+  .chronicle-volume .chronicle-story-spread>div:last-child{padding:18px 32px;min-height:0}
+  .chronicle-volume .chronicle-story-picture{min-height:0;overflow:hidden}
+  .chronicle-volume .chronicle-story-picture>.landmark-art{height:280px;max-height:100%}
+  .chronicle-story-spread h2{margin:8px 0 12px}
+  .chronicle-story-spread p{margin:6px 0}
+  .book-trail-page>header{height:70px;flex-shrink:0}
+  .book-trail-page>header .milo-companion{height:70px!important;width:70px!important}
+  .book-trail-page .book-page-map{min-height:160px!important;margin-bottom:60px!important}
+  .book-trail-page>footer{flex-shrink:0}
+}
+.chronicle-volume .album-page-controls{margin-top:18px;gap:24px}
+.book-centered-world .book-world-header{flex-shrink:0;width:100%}
+.book-trail-page>header .milo-companion{flex-shrink:0}
+.book-trail-page{height:100%;padding:14px 24px!important}
+.book-page-map{min-height:190px!important;margin-bottom:62px!important}
+.book-map-stop{transform:translateX(-50%)!important;margin-top:-55px}
+.chronicle-volume .album-page-controls button{background:#fffef8}
+.chronicle-story-spread{display:grid;grid-template-columns:1fr 1fr;min-height:100%}
+.chronicle-story-picture{position:relative;background:var(--chronicle-light,#d5f2de);display:flex;justify-content:center;align-items:center;padding:30px;box-shadow:inset -15px 0 20px -20px #253b43}
+.chronicle-story-picture>.landmark-art{width:75%;height:330px}
+.chronicle-story-picture>.milo-companion{position:absolute;left:6%;bottom:6%}
+.chronicle-story-spread>div:last-child{padding:40px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;box-shadow:inset 15px 0 20px -20px #253b43}
+.chronicle-story-spread h2{font-size:32px;font-weight:500;margin:10px 0 20px}.chronicle-story-spread p{line-height:1.65}.chronicle-story-spread .reading-secondary{margin-top:15px}.book-page-hint{font-size:13px;color:#648173;margin-top:20px}
+.book-trail-page{min-height:100%;display:flex;flex-direction:column;padding:20px 28px;background:linear-gradient(#fafff8,#ecf8e8)}
+.book-trail-page>header{display:flex;justify-content:space-between;align-items:center;gap:20px}.book-trail-page h2{font-size:26px;font-weight:500;margin:5px 0}.book-trail-page header p{font-size:12px;color:#437869;margin:0}
+.book-page-map{position:relative;flex:1;min-height:330px;margin-bottom:44px}.book-page-map>svg{position:absolute;width:100%;height:100%;inset:0}.book-page-map>.book-route path{fill:none;stroke:#e1bc79;stroke-width:34;stroke-linecap:round}.book-page-map>.book-route .book-map-dashes{stroke:#fff8dc;stroke-width:3;stroke-dasharray:5 15;animation:book-road 3s linear infinite}
+.book-page-map>.chronicle-trail-art{top:-75px;height:calc(100% + 140px);width:calc(100% + 48px);left:-24px;pointer-events:none}
+.book-trail-page>header{position:relative;z-index:1;pointer-events:none}
+.book-trail-page:has(.chronicle-trail-art){background:#d8e7a8}
+.book-trail-page:has(.chronicle-trail-art) .book-map-landscape{background:#d8e7a8}
+.trail-water{animation:book-road 6s linear infinite}
+@media(prefers-reduced-motion:reduce){.trail-water{animation:none}}
+@keyframes book-road{to{stroke-dashoffset:-40}}
+.book-map-stop{position:absolute;transform:translate(-50%,-45%);display:flex;flex-direction:column;align-items:center;width:180px;gap:6px;background:none;border:0;color:#254c41;padding:0}.book-map-stop.stop-0{left:17%;top:70%}.book-map-stop.stop-1{left:50%;top:50%}.book-map-stop.stop-2{left:83%;top:25%}
+.book-map-token{position:relative;display:grid;place-items:center;width:105px;height:110px;border-radius:48% 48% 10px 10px;background:white;border:3px solid #eeb954;box-shadow:0 5px 0 #bf963e;transition:transform .2s}.book-map-token>svg{width:90px;height:90px}.book-map-token>svg.lucide{width:35px;height:35px}.book-map-token>.book-stop-check{position:absolute;right:-5px;bottom:-5px;width:26px!important;height:26px!important;background:#15856c;color:white;border-radius:50%;padding:4px}.book-map-stop:hover:not(:disabled) .book-map-token{transform:translateY(-5px)}.book-map-stop:disabled .book-map-token{background:#e2e7df;border-color:#b6c6b7;box-shadow:0 5px 0 #95a997}.book-map-stop strong{font-size:17px;font-weight:500;background:#fffef8;padding:5px 10px;border-radius:5px}.book-map-stop small{font-size:12px;background:#f7fff0;padding:3px 6px}.book-trail-page>footer{display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;color:#557363;border-top:1px solid #dce7d5;padding-top:12px}
+.chronicle-activity-shell{height:100%;min-height:0;overflow:hidden;background:#d0eee2;padding:12px 18px;perspective:1800px}
+.chronicle-activity-paper{width:100%;max-width:1450px;height:100%;min-height:0;overflow:hidden;margin:0 auto;background:#fffef8;border:10px solid #178d7c;border-bottom-width:16px;border-radius:8px;box-shadow:0 5px 0 #e1d9c0,0 10px 0 #137262;animation:activity-page-arrive .45s ease-out;transform-origin:left center}
+@keyframes activity-page-arrive{from{opacity:0;transform:rotateY(-7deg)}to{opacity:1;transform:none}}
+.chronicle-activity-paper .adventure-backdrop{display:none}.chronicle-activity-paper .reading-journey,.chronicle-activity-paper .camp-lesson{height:100%;min-height:0;max-width:none;margin:0;background:#fffef8!important;padding:16px 24px;overflow:hidden}
+.chronicle-activity-paper .reading-round:has(.reading-play){display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;align-content:stretch}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-heading{min-height:68px}.chronicle-activity-paper .reading-round:has(.reading-play)>progress{margin:5px 0 10px}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-narration{min-height:78px;margin:0 0 8px}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-narration>.milo-companion{width:70px!important;height:70px!important}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-play{min-height:0;height:100%;overflow:hidden;padding:18px;gap:12px}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-round-footer{padding:10px 0 0;min-height:54px}.chronicle-activity-paper .reading-round:has(.reading-play) .gate-voice-rail{height:105px}.chronicle-activity-paper .reading-round:has(.reading-play) .reading-target{font-size:clamp(44px,7vh,60px)}
+.chronicle-activity-paper .reading-heading{background:none;padding:0 0 14px;border-bottom:1px solid #dce6d9}.chronicle-activity-paper .reading-play{border-radius:8px!important;background:#eff8ed!important;border:1px solid #d3e4cd!important;box-shadow:none!important;min-height:280px}.chronicle-activity-paper .reading-summary{background:transparent!important;box-shadow:none!important;border:0!important;margin:20px auto!important}.chronicle-activity-paper .camp-learning-window{max-width:1000px}.chronicle-activity-paper .camp-lesson>.camp-header{padding:0}
+.chronicle-activity-paper .reading-journey:has(.reading-summary){overflow-y:auto;overscroll-behavior:contain;padding-bottom:48px;scrollbar-gutter:stable}
+.book-blending-lesson{height:100%;min-height:0;padding:14px 22px;text-align:center;display:grid;grid-template-rows:44px minmax(100px,1fr) auto auto minmax(170px,1.3fr) 58px auto;align-items:center}.book-blend-toolbar{width:100%;height:44px;display:flex;align-items:center;justify-content:space-between}.book-blend-toolbar>span{padding:5px 10px;border-radius:5px;background:#fffdf3;color:#527566;font-size:12px}.book-blend-scene{display:flex;justify-content:center;align-items:center;gap:32px;min-height:0}.book-blend-scene>.milo-companion{width:min(130px,16vh)!important;height:min(130px,16vh)!important}.book-blend-scene>svg{width:min(180px,22vh);height:min(155px,19vh)}.book-blending-lesson h2{font-size:clamp(23px,3vh,28px);font-weight:500;margin:5px 0}.book-blending-lesson>p{color:#527566;margin:2px}.book-sound-join{display:flex;justify-content:center;gap:35px;margin:14px 0;transition:gap .65s}.book-sound-join.is-joined{gap:2px}.book-sound-join span{font-size:50px;display:grid;place-items:center;width:75px;height:90px;background:#e2f3dc;border-bottom:4px solid #a6d18f;border-radius:8px}.book-blending-lesson .reading-actions{justify-content:center;margin:4px 0}.book-blending-lesson .book-practice-help{margin:0 auto}
+@media(max-width:700px){.chronicle-volume{width:calc(100% - 20px)}.chronicle-volume .album-paper-stack{height:auto;min-height:570px}.chronicle-volume .chronicle-page{min-height:570px}.chronicle-story-spread{grid-template-columns:1fr}.chronicle-story-picture{min-height:210px}.chronicle-story-picture>.landmark-art{height:180px}.chronicle-story-picture>.milo-companion{width:90px!important;height:90px!important}.chronicle-story-spread>div:last-child{padding:22px}.chronicle-story-spread h2{font-size:25px}.book-trail-page{padding:16px 10px}.book-page-map{min-height:390px}.book-map-stop{width:110px}.book-map-token{width:74px;height:80px}.book-map-token>svg{width:68px;height:68px}.book-map-stop strong{font-size:13px;text-align:center}.book-map-stop small{font-size:10px;text-align:center}.book-trail-page h2{font-size:22px}.chronicle-activity-shell{padding:12px 8px}.chronicle-activity-paper{border-width:6px}.chronicle-activity-paper .reading-journey,.chronicle-activity-paper .camp-lesson{padding:16px 12px}.book-blending-lesson{padding:16px}.book-blend-scene{gap:8px}.book-blend-scene>svg{width:140px;height:140px}.book-sound-join{gap:18px}.book-sound-join span{width:60px;font-size:38px}.book-blending-lesson h2{font-size:24px}}
+@media(max-width:700px){.chronicle-volume{flex:none}.chronicle-volume .album-binding{flex:none;min-height:0}.chronicle-volume .album-paper-stack{height:auto}.book-trail-page{min-height:570px;height:auto}.book-page-map{min-height:330px!important}.book-centered-world{display:block}.book-map-stop{margin-top:-40px}}
+@media(prefers-reduced-motion:reduce){.book-map-dashes,.chronicle-activity-paper{animation:none!important}.book-sound-join,.book-map-token{transition:none}}
+
+/* Trail progress grows from the completed stop toward the next destination. */
+.chronicle-volume .book-map-stop{left:var(--stop-x)!important;top:var(--stop-y)!important}
+.chronicle-volume .book-page-map .route-edge{stroke:#8fa77d!important;stroke-width:39;opacity:.22}
+.chronicle-volume .book-page-map .route-track{stroke:#fff9e9!important;stroke-width:31;opacity:.3;stroke-dasharray:8 16}
+.chronicle-volume .book-page-map .route-revealed .route-edge{opacity:.72}
+.chronicle-volume .book-page-map .route-revealed .route-track{opacity:1;stroke-dasharray:none}
+.chronicle-volume .book-page-map .book-route-progress{fill:none;stroke:#fbbf24!important;stroke-width:13;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.chronicle-volume .book-page-map .route-active .book-route-progress{animation:book-route-grow .9s cubic-bezier(.2,.7,.2,1) forwards}
+.chronicle-volume .book-page-map .route-complete .book-route-progress{stroke:#f5b914!important;stroke-dashoffset:0}
+.chronicle-volume .book-page-map>.book-route .theme-route-mask{fill:none;stroke:#fff!important;stroke-width:44;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.chronicle-volume .book-page-map .route-complete .theme-route-mask{stroke-dashoffset:0}
+.chronicle-volume .book-page-map .route-active .theme-route-mask{animation:theme-route-reveal 1.2s steps(14,end) .85s forwards}
+.chronicle-volume.is-turning .route-active .book-route-progress{animation:none!important;stroke-dashoffset:1}
+.chronicle-volume.is-turning .route-active .theme-route-mask{animation:none!important;stroke-dashoffset:1}
+.chronicle-volume.is-turning :is(.book-route-light,.market-delivery-cart,.garden-growing-bud,.drawbridge-moving-hammer,.hall-moving-spark,.keeper-moving-key,.library-moving-quill,.tower-moving-star,.crown-moving-jewel){display:none}
+.chronicle-volume.is-turning :is(.trail-restoration-patch.is-celebrating,.trail-story-area.is-celebrating,.book-map-stop.is-newly-done .book-map-token,.book-stop-sparkles>svg,.book-stop-sparkles>i,.book-map-celebration>i){animation:none!important;opacity:0!important}
+.trail-restoration-patch{opacity:.08;transform-box:fill-box;transform-origin:center;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.trail-restoration-patch.is-restored{opacity:.74}
+.trail-restoration-patch.is-celebrating{animation:trail-land-awaken 1.2s cubic-bezier(.2,.8,.2,1) both}
+.trail-story-area{transform-box:fill-box;transform-origin:center;transition:filter .5s ease,opacity .5s ease}
+.trail-story-area.is-waiting{filter:saturate(.28);opacity:.62}
+.trail-story-area.is-restored{filter:saturate(1.12);opacity:1}
+.trail-story-area.is-celebrating{animation:trail-landmark-awaken .9s cubic-bezier(.2,.85,.25,1) both}
+.orchard-fruit{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.18)}
+.trail-story-area.is-restored .orchard-fruit{opacity:1;transform:scale(1);transition:opacity .3s ease,transform .65s cubic-bezier(.15,1.45,.35,1)}
+.trail-story-area.is-celebrating .orchard-fruit{animation:trail-fruit-grow .8s cubic-bezier(.15,1.5,.35,1) both}
+.trail-story-area.is-waiting .story-flower{transform:scaleY(.45);transform-box:fill-box;transform-origin:center bottom}
+.trail-story-area.is-restored .story-flower{transform:scaleY(1);transition:transform .7s cubic-bezier(.15,1.35,.35,1)}
+.trail-story-area.is-restored .workshop-light{fill:#fde68a;filter:drop-shadow(0 0 7px #fbbf24)}
+.trail-story-area.is-restored .restored-gate{fill:#4f806c;filter:drop-shadow(0 0 8px #fde68a)}
+.lantern-trail-art .lantern-map-glow,.lantern-trail-art .lantern-awaken-detail{opacity:0;transition:opacity .8s ease}.lantern-trail-art .trail-story-area.is-restored .lantern-map-glow,.lantern-trail-art .trail-story-area.is-restored .lantern-awaken-detail{opacity:1}.lantern-trail-art .trail-story-area.is-restored .lantern-map-light,.lantern-trail-art .trail-story-area.is-restored .lantern-workshop-windows>*,.lantern-trail-art .trail-story-area.is-restored .lantern-tower-windows>*{fill:#ffe16c;filter:drop-shadow(0 0 8px #fff0a0)}.lantern-trail-art .trail-story-area.is-restored .lantern-firefly{animation:lantern-firefly 1.8s ease-in-out infinite alternate}.lantern-restoration.is-restored{opacity:.13}.lantern-restoration.is-celebrating{animation:lantern-land-awaken 1.8s cubic-bezier(.2,.8,.2,1) both}
+.market-trail-art .market-map-goods,.market-trail-art .market-map-word{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.35);transition:opacity .45s ease,transform .75s cubic-bezier(.15,1.35,.35,1)}.market-trail-art .trail-story-area.is-restored .market-map-goods,.market-trail-art .trail-story-area.is-restored .market-map-word{opacity:1;transform:scale(1)}.market-trail-art .trail-story-area.is-restored .market-map-awning{fill:#ef5682}.market-trail-art .trail-story-area.is-restored .market-map-stripe{stroke:#fff4cd}.market-trail-art .trail-story-area.is-restored .market-map-label{fill:#fff6bd}.market-restoration.is-restored{opacity:.42}.market-restoration.is-celebrating{animation:trail-land-awaken 1.4s cubic-bezier(.2,.8,.2,1) both}
+.garden-trail-art .garden-map-bloom,.garden-trail-art .garden-map-word{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.25);transition:opacity .45s ease,transform .85s cubic-bezier(.15,1.35,.35,1)}.garden-trail-art .trail-story-area.is-restored :is(.garden-map-bloom,.garden-map-word){opacity:1;transform:scale(1)}.garden-trail-art .trail-story-area.is-restored .garden-map-sign{fill:#fff3bc}.garden-trail-art .trail-story-area.is-restored .garden-map-gate{fill:#4f8b61}.garden-trail-art .trail-story-area.is-restored .garden-map-plant{filter:saturate(1.15)}.garden-restoration.is-restored{opacity:.34}.garden-restoration.is-celebrating{animation:trail-land-awaken 1.7s cubic-bezier(.2,.8,.2,1) both}
+.drawbridge-trail-art .drawbridge-map-flag,.drawbridge-trail-art .drawbridge-map-word{opacity:0;transition:opacity .65s ease}.drawbridge-trail-art .drawbridge-map-plank{transition:fill .55s ease,stroke .55s ease,transform .75s cubic-bezier(.2,1.2,.35,1)}.drawbridge-trail-art .trail-story-area.is-restored :is(.drawbridge-map-flag,.drawbridge-map-word){opacity:1}.drawbridge-trail-art .trail-story-area.is-restored .drawbridge-map-plank{fill:#d58d45;stroke:#fff0b9}.drawbridge-trail-art .trail-story-area.is-restored .drawbridge-map-gate{fill:#55483b}.drawbridge-trail-art .trail-story-area.is-restored .drawbridge-map-door{fill:#d18a43}.drawbridge-restoration.is-restored{opacity:.28}.drawbridge-restoration.is-celebrating{animation:trail-land-awaken 1.75s cubic-bezier(.2,.8,.2,1) both}
+.hall-trail-art .hall-map-rune{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.45);transition:opacity .55s ease,transform .8s cubic-bezier(.2,1.25,.35,1)}.hall-trail-art .hall-map-mirror{transition:fill .7s ease,filter .7s ease}.hall-trail-art .trail-story-area.is-restored .hall-map-rune{opacity:1;transform:scale(1)}.hall-trail-art .trail-story-area.is-restored .hall-map-frame{stroke:#f4ce6a}.hall-trail-art .trail-story-area.is-restored .hall-map-mirror{fill:#a888d5;filter:drop-shadow(0 0 12px #d8b7ff)}.hall-trail-art .trail-story-area.is-restored .hall-map-door{fill:#604287}.hall-trail-art .trail-story-area.is-restored .hall-map-door-rune{fill:#ffe57d;filter:drop-shadow(0 0 10px #ffd960)}.hall-restoration.is-restored{opacity:.48}.hall-restoration.is-celebrating{animation:hall-land-awaken 1.8s cubic-bezier(.2,.8,.2,1) both}
+.keeper-trail-art .keeper-map-key{opacity:.3;transform-box:fill-box;transform-origin:center;transform:scale(.72);transition:opacity .55s ease,transform .85s cubic-bezier(.2,1.25,.35,1)}.keeper-trail-art .keeper-map-door,.keeper-trail-art .keeper-map-final-door{transition:fill .75s ease,filter .75s ease}.keeper-trail-art .trail-story-area.is-restored .keeper-map-key{opacity:1;transform:scale(1)}.keeper-trail-art .trail-story-area.is-restored .keeper-map-frame{stroke:#f0c65c}.keeper-trail-art .trail-story-area.is-restored .keeper-map-door{fill:#94475d;filter:drop-shadow(0 0 12px #ffcf66)}.keeper-trail-art .trail-story-area.is-restored .keeper-map-key :is(path,circle){stroke:#ffe27e}.keeper-trail-art .trail-story-area.is-restored .keeper-map-final-door{fill:#9a485e;filter:drop-shadow(0 0 16px #ffcf66)}.keeper-trail-art .trail-story-area.is-restored .keeper-map-final-key :is(path,circle){stroke:#ffe27e}.keeper-restoration.is-restored{opacity:.5}.keeper-restoration.is-celebrating{animation:keeper-chamber-awaken 1.9s cubic-bezier(.2,.8,.2,1) both}@keyframes keeper-chamber-awaken{0%{opacity:.05;transform:scale(.6)}45%{opacity:.9;transform:scale(1.1)}100%{opacity:.5;transform:scale(1)}}
+.library-trail-art .library-map-book,.library-trail-art .library-map-open-book,.library-trail-art .library-map-quill{transition:fill .7s ease,filter .7s ease,transform .8s cubic-bezier(.2,1.2,.35,1);transform-box:fill-box;transform-origin:center}.library-trail-art .library-map-label{opacity:.45;transition:opacity .6s ease}.library-trail-art .trail-story-area.is-restored .library-map-shelf{fill:#806348;stroke:#e1bd77}.library-trail-art .trail-story-area.is-restored .library-map-book.book-0{fill:#df6682}.library-trail-art .trail-story-area.is-restored .library-map-book.book-1{fill:#4ba6b3}.library-trail-art .trail-story-area.is-restored .library-map-book.book-2{fill:#e2bd5d}.library-trail-art .trail-story-area.is-restored .library-map-book.book-3{fill:#9f79c4}.library-trail-art .trail-story-area.is-restored .library-map-label{opacity:1}.library-trail-art .trail-story-area.is-restored .library-map-open-book{fill:#fff5ca;filter:drop-shadow(0 0 12px #ffe184)}.library-trail-art .trail-story-area.is-restored .library-map-quill{fill:#ef8ba4;stroke:#ef8ba4;transform:rotate(-5deg)}.library-restoration.is-restored{opacity:.48}.library-restoration.is-celebrating{animation:library-shelf-awaken 1.9s cubic-bezier(.2,.8,.2,1) both}@keyframes library-shelf-awaken{0%{opacity:.04;transform:scale(.65)}48%{opacity:.88;transform:scale(1.08)}100%{opacity:.48;transform:scale(1)}}
+@keyframes lantern-firefly{to{opacity:.35;transform:translateY(-5px)}}
+@keyframes trail-land-awaken{0%{opacity:.08;transform:scale(.76)}55%{opacity:.92;transform:scale(1.07)}100%{opacity:.74;transform:scale(1)}}
+@keyframes lantern-land-awaken{0%{opacity:.08;transform:scale(.76)}48%{opacity:.82;transform:scale(1.06)}100%{opacity:.13;transform:scale(1)}}
+@keyframes hall-land-awaken{0%{opacity:.05;transform:scale(.68) rotate(-4deg)}55%{opacity:.9;transform:scale(1.08) rotate(2deg)}100%{opacity:.48;transform:scale(1)}}
+@keyframes trail-landmark-awaken{0%{filter:saturate(.25);opacity:.62}60%{filter:saturate(1.35) drop-shadow(0 0 10px #fff7a8);opacity:1}100%{filter:saturate(1.12);opacity:1}}
+@keyframes trail-fruit-grow{0%{opacity:0;transform:scale(.15)}65%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
+.book-route-light{fill:#fff4a3;stroke:#f59e0b;stroke-width:4;filter:drop-shadow(0 0 7px #fff2a8)}
+@keyframes book-route-grow{to{stroke-dashoffset:0}}
+@keyframes theme-route-reveal{to{stroke-dashoffset:0}}
+
+.book-map-stop.is-newly-done .book-map-token{animation:book-stop-land .7s cubic-bezier(.2,.8,.2,1)}
+.book-stop-sparkles{position:absolute;inset:-35px;pointer-events:none;color:#f59e0b}
+.book-stop-sparkles>svg{position:absolute;width:30px!important;height:30px!important;left:50%;top:50%;transform:translate(-50%,-50%);animation:book-sparkle-pop .9s ease-out both}
+.book-stop-sparkles>i{position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:2px;background:#ffd34d;transform:rotate(var(--angle)) translateY(-52px);animation:book-star-flight 1s ease-out both}
+.book-stop-sparkles>i:nth-child(1){--angle:0deg}.book-stop-sparkles>i:nth-child(2){--angle:60deg}.book-stop-sparkles>i:nth-child(3){--angle:120deg}.book-stop-sparkles>i:nth-child(4){--angle:180deg}.book-stop-sparkles>i:nth-child(5){--angle:240deg}.book-stop-sparkles>i:nth-child(6){--angle:300deg}
+@keyframes book-stop-land{0%{transform:scale(.75)}55%{transform:scale(1.13) rotate(2deg)}100%{transform:none}}
+@keyframes book-sparkle-pop{0%{opacity:0;scale:.4}45%{opacity:1;scale:1.25}100%{opacity:0;scale:1.6}}
+@keyframes book-star-flight{0%{opacity:0;transform:rotate(var(--angle)) translateY(-15px) scale(.4)}35%{opacity:1}100%{opacity:0;transform:rotate(var(--angle)) translateY(-58px) scale(1)}}
+.book-map-celebration{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.book-map-celebration>i{position:absolute;left:50%;top:50%;width:11px;height:11px;background:#fff4a3;clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%);animation:book-map-celebrate 1.25s ease-out both}
+.book-map-celebration>i:nth-child(1){--cx:-34vw;--cy:-18vh}.book-map-celebration>i:nth-child(2){--cx:-25vw;--cy:16vh}.book-map-celebration>i:nth-child(3){--cx:-9vw;--cy:-22vh}.book-map-celebration>i:nth-child(4){--cx:11vw;--cy:19vh}.book-map-celebration>i:nth-child(5){--cx:27vw;--cy:-17vh}.book-map-celebration>i:nth-child(6){--cx:36vw;--cy:9vh}.book-map-celebration>i:nth-child(7){--cx:-38vw;--cy:3vh}.book-map-celebration>i:nth-child(8){--cx:33vw;--cy:-3vh}.book-map-celebration>i:nth-child(9){--cx:-17vw;--cy:-7vh}.book-map-celebration>i:nth-child(10){--cx:17vw;--cy:7vh}
+@keyframes book-map-celebrate{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}30%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--cx)),calc(-50% + var(--cy))) scale(1.25) rotate(150deg)}}
+
+/* A completed activity dissolves back into its storybook map. */
+.chronicle-activity-shell{position:relative}.activity-exit-sparkles{position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0}
+.chronicle-activity-shell.is-completing .activity-exit-sparkles{opacity:0}
+.chronicle-activity-shell.is-completing .chronicle-activity-paper{animation:activity-gentle-exit .85s cubic-bezier(.4,0,.2,1) both}
+.activity-exit-sparkles>i{position:absolute;left:50%;top:50%;width:13px;height:13px;background:#ffd34d;clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%);animation:activity-star-out .52s ease-out both}
+.activity-exit-sparkles>i:nth-child(1){--sx:-36vw;--sy:-30vh}.activity-exit-sparkles>i:nth-child(2){--sx:-12vw;--sy:-42vh}.activity-exit-sparkles>i:nth-child(3){--sx:16vw;--sy:-38vh}.activity-exit-sparkles>i:nth-child(4){--sx:38vw;--sy:-19vh}.activity-exit-sparkles>i:nth-child(5){--sx:34vw;--sy:30vh}.activity-exit-sparkles>i:nth-child(6){--sx:8vw;--sy:40vh}.activity-exit-sparkles>i:nth-child(7){--sx:-19vw;--sy:36vh}.activity-exit-sparkles>i:nth-child(8){--sx:-39vw;--sy:14vh}
+@keyframes activity-gentle-exit{0%{opacity:1;transform:none;filter:none}100%{opacity:0;transform:scale(.985);filter:brightness(1.04)}}
+@keyframes activity-star-out{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}35%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(1.25) rotate(150deg)}}
+
+/* The last leaf mirrors the opening spread and keeps the reward inside the book. */
+.chronicle-closing-picture{background:#dff6c9;overflow:hidden}
+.chronicle-closing-picture:before,.chronicle-closing-picture:after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;border:22px solid #fff6b0;opacity:.55}
+.chronicle-closing-picture:before{left:-80px;top:-70px}.chronicle-closing-picture:after{right:-70px;bottom:-80px}
+.chronicle-sticker-award{position:relative;z-index:1;width:min(260px,62%);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;background:#fff9da;border:8px solid #fff;box-shadow:0 10px 0 #e6bd4f,0 20px 35px #49634c2b;text-align:center;animation:sticker-award-arrive .7s cubic-bezier(.2,.8,.2,1)}
+.chronicle-sticker-award>span{width:58%;height:48%;display:block}.chronicle-sticker-award .landmark-art{width:100%;height:100%}.chronicle-sticker-award>svg{position:absolute;right:8%;top:9%;color:#f59e0b}.chronicle-sticker-award strong{font-size:20px;color:#315f50}.chronicle-sticker-award small{font-size:11px;color:#6c7a65;margin-top:3px}.chronicle-closing-picture>.milo-companion{left:auto;right:2%;bottom:2%}.chronicle-earned-note{display:flex;align-items:center;gap:11px;padding:11px 14px;margin:10px 0 15px;background:#ecfdf5;border:1px solid #72cfa9;border-radius:7px;color:#27634e}.chronicle-earned-note>svg{flex:0 0 auto}.chronicle-earned-note span{display:flex;flex-direction:column}.chronicle-earned-note small{color:#58766a;margin-top:2px}.chronicle-closing-spread .world-primary{display:inline-flex;align-items:center;gap:8px}
+.chronicle-close-cue{max-width:560px;margin:2px 0 13px!important;color:#527067;font-size:14px;line-height:1.45}.chronicle-close-book{min-width:190px}.book-world.is-closing-book{pointer-events:none}.book-world.is-closing-book .chronicle-volume{animation:chronicle-book-close 1.05s cubic-bezier(.55,.02,.36,1) both;transform-origin:center center}.book-world.is-closing-book .book-world-header{animation:chronicle-header-fade .45s ease both}
+@keyframes chronicle-book-close{0%{opacity:1;transform:perspective(1600px) rotateY(0) scaleX(1)}55%{opacity:1;transform:perspective(1600px) rotateY(-3deg) scaleX(.56)}100%{opacity:0;transform:perspective(1600px) rotateY(-12deg) scaleX(.08) scaleY(.94)}}
+@keyframes chronicle-header-fade{to{opacity:0;transform:translateY(-8px)}}
+@keyframes sticker-award-arrive{from{opacity:0;transform:scale(.55) rotate(-10deg)}70%{transform:scale(1.06) rotate(2deg)}to{opacity:1;transform:none}}
+
+/* Forward turns carry a brief trail of light without changing the book's size. */
+.chronicle-turn-sparkles{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden}
+.chronicle-turn-sparkles>i{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#ffd34d;box-shadow:0 0 0 4px #fff7bd80;animation:chronicle-turn-star .78s ease-out both}
+.chronicle-turn-sparkles>i:nth-child(1){--tx:-38vw;--ty:-28vh}.chronicle-turn-sparkles>i:nth-child(2){--tx:-20vw;--ty:34vh}.chronicle-turn-sparkles>i:nth-child(3){--tx:-5vw;--ty:-40vh}.chronicle-turn-sparkles>i:nth-child(4){--tx:14vw;--ty:32vh}.chronicle-turn-sparkles>i:nth-child(5){--tx:34vw;--ty:-26vh}.chronicle-turn-sparkles>i:nth-child(6){--tx:40vw;--ty:10vh}.chronicle-turn-sparkles>i:nth-child(7){--tx:-35vw;--ty:8vh}.chronicle-turn-sparkles>i:nth-child(8){--tx:24vw;--ty:4vh}.chronicle-turn-sparkles>i:nth-child(9){--tx:4vw;--ty:-8vh}
+@keyframes chronicle-turn-star{0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}35%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.2)}}
+
+@media(prefers-reduced-motion:reduce){.chronicle-volume .book-page-map .route-active :is(.book-route-progress,.theme-route-mask){animation:none;stroke-dashoffset:0}:is(.book-route-light,.market-delivery-cart,.garden-growing-bud,.drawbridge-moving-hammer,.hall-moving-spark,.keeper-moving-key,.library-moving-quill,.tower-moving-star){display:none}.book-map-stop.is-newly-done .book-map-token,.book-stop-sparkles>svg,.book-stop-sparkles>i,.book-map-celebration>i,.chronicle-turn-sparkles>i,.chronicle-activity-shell.is-completing .chronicle-activity-paper,.activity-exit-sparkles>i,.chronicle-sticker-award,.trail-restoration-patch,.trail-story-area,.orchard-fruit{animation:none!important;transition:none!important}}
+
+/* Paper margins surround the illustration; the route and stops share one viewport. */
+.chronicle-volume .book-trail-page{background:#fffdf3;padding:16px 24px!important;gap:12px}
+.chronicle-volume .book-trail-page>header{height:auto;min-height:76px;align-items:flex-start}
+.chronicle-volume .book-trail-page>header>div:first-child{padding:0;background:none}
+.chronicle-volume .book-trail-page .book-trail-narration{font-size:14px;line-height:1.5;max-width:760px;color:#526958;margin-top:5px}
+.chronicle-volume .book-trail-page .book-page-map{isolation:isolate;overflow:hidden;border:1px solid #c5c9a9;border-radius:4px;min-height:210px!important;margin:0!important;box-shadow:inset 0 0 0 5px #fffdf35c}
+.chronicle-volume .book-page-map>.chronicle-trail-art{inset:0;width:100%;height:100%}
+.chronicle-volume .book-map-stop.stop-0{top:48%}
+.chronicle-volume .book-map-stop.stop-1{top:40%}
+.chronicle-volume .book-map-stop.stop-2{top:26%}
+.chronicle-volume .book-map-stop{margin-top:-40px;width:175px;gap:4px}
+.chronicle-volume .book-map-token{width:76px;height:80px}
+.chronicle-volume .book-map-token>svg:not(.lucide){width:66px;height:66px}
+.chronicle-volume .book-map-stop strong{font-size:14px;line-height:1.25;padding:4px 7px}
+.chronicle-volume .book-map-stop small{font-size:11px;padding:2px 4px}
+.chronicle-volume .book-page-map .route-edge{stroke:#b3c39b;stroke-width:38}
+.chronicle-volume .book-page-map .route-track{stroke:#fff8e7;stroke-width:32}
+.chronicle-volume .book-page-map .route-waiting .route-edge{opacity:.52}
+.chronicle-volume .book-page-map .route-waiting .route-track{opacity:.9;stroke-dasharray:none}
+.chronicle-volume .book-page-map .lantern-string-bulbs{display:none;fill:none}
+.chronicle-volume .book-page-map .market-route-cobbles{display:none;fill:none}
+.chronicle-volume .book-page-map :is(.garden-route-stem,.garden-route-buds){display:none;fill:none}
+.chronicle-volume .book-page-map :is(.drawbridge-route-rope,.drawbridge-route-planks){display:none;fill:none}
+.chronicle-volume .book-page-map :is(.hall-route-stone,.hall-route-runes,.keeper-route-chain,.keeper-route-teeth,.library-route-ink,.library-route-bookmarks,.tower-route-steps,.crown-route-carpet,.crown-route-jewels){display:none;fill:none}
+.chronicle-volume .book-page-map .book-route--lantern .route-edge{stroke:#302844!important;stroke-width:6;opacity:.82}
+.chronicle-volume .book-page-map .book-route--lantern .route-track{stroke:#a68e66!important;stroke-width:2;opacity:.9;stroke-dasharray:none}
+.chronicle-volume .book-page-map .book-route--lantern .lantern-string-bulbs{display:block;stroke-width:7;stroke-linecap:round;stroke-dasharray:1 18}
+.chronicle-volume .book-page-map .book-route--lantern .lantern-string-bulbs--base{stroke:#91889c;opacity:.55}
+.chronicle-volume .book-page-map .book-route--lantern .lantern-string-bulbs--lit{stroke:#ffe16b;opacity:1;filter:drop-shadow(0 0 5px #ffd34d)}
+.chronicle-volume .book-page-map :is(.book-route--lantern,.book-route--market,.book-route--garden) .book-route-progress{display:none}
+.chronicle-volume .book-page-map .book-route--lantern .book-route-light{r:6px;fill:#fff8b0;filter:drop-shadow(0 0 9px #ffd34d)}
+.chronicle-volume .book-page-map .book-route--market .route-edge{stroke:#6f8077!important;stroke-width:38;opacity:.7}.chronicle-volume .book-page-map .book-route--market .route-track{stroke:#f8e6bb!important;stroke-width:31;opacity:.96}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles{display:block;stroke-linecap:round;stroke-width:9}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--base{stroke:#b9b3a5;opacity:.72}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--base-blue,.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--blue{stroke-dasharray:2 25}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--base-pink,.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--pink{stroke-dasharray:2 25;stroke-dashoffset:13}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--blue{stroke:#187da0;filter:drop-shadow(0 1px 0 #fff9dc)}.chronicle-volume .book-page-map .book-route--market .market-route-cobbles--pink{stroke:#ef5682;filter:drop-shadow(0 1px 0 #fff9dc)}.market-delivery-cart{filter:drop-shadow(0 4px 2px #31564b66)}.chronicle-volume .book-page-map>.book-route .market-delivery-cart path{fill:#187da0;stroke:#fff7d4;stroke-width:3;stroke-linecap:round}.market-delivery-cart circle{fill:#ef5682;stroke:#fff7d4;stroke-width:2}
+.chronicle-volume .book-page-map .book-route--garden .route-edge{stroke:#8b7254!important;stroke-width:16;opacity:.3}.chronicle-volume .book-page-map .book-route--garden .route-track{stroke:#b8a58b!important;stroke-width:7;opacity:.95;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--garden :is(.garden-route-stem,.garden-route-buds){display:block;stroke-linecap:round}.chronicle-volume .book-page-map .book-route--garden .garden-route-stem{stroke-width:7}.chronicle-volume .book-page-map .book-route--garden .garden-route-stem--base{stroke:#9d927f;opacity:.72}.chronicle-volume .book-page-map .book-route--garden .garden-route-stem--grown{stroke:#3b9b54;filter:drop-shadow(0 2px 0 #e6f5bd)}.chronicle-volume .book-page-map .book-route--garden .garden-route-buds{stroke-width:10;stroke-dasharray:1 30}.chronicle-volume .book-page-map .book-route--garden .garden-route-buds--base{stroke:#a8a092;opacity:.75}.chronicle-volume .book-page-map .book-route--garden :is(.garden-route-buds--base-gold,.garden-route-buds--gold){stroke-dashoffset:0}.chronicle-volume .book-page-map .book-route--garden :is(.garden-route-buds--base-pink,.garden-route-buds--pink){stroke-dashoffset:15}.chronicle-volume .book-page-map .book-route--garden .garden-route-buds--gold{stroke:#f4c64f;filter:drop-shadow(0 1px 0 #fff7cf)}.chronicle-volume .book-page-map .book-route--garden .garden-route-buds--pink{stroke:#ef6d9b;filter:drop-shadow(0 1px 0 #fff7cf)}.garden-growing-bud{filter:drop-shadow(0 3px 2px #315c3f66)}.garden-growing-bud circle{fill:#ef6d9b;stroke:#fff8d6;stroke-width:3}.chronicle-volume .book-page-map>.book-route .garden-growing-bud path{fill:none;stroke:#3b9b54;stroke-width:4;stroke-linecap:round}
+.chronicle-volume .book-page-map .book-route--drawbridge .route-edge{stroke:#66503a!important;stroke-width:31;opacity:.62}.chronicle-volume .book-page-map .book-route--drawbridge .route-track{stroke:#a99c89!important;stroke-width:23;opacity:.72;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--drawbridge :is(.drawbridge-route-rope,.drawbridge-route-planks){display:block;stroke-linecap:round}.chronicle-volume .book-page-map .book-route--drawbridge .drawbridge-route-rope{stroke:#5f452f;stroke-width:27;opacity:.72}.chronicle-volume .book-page-map .book-route--drawbridge .drawbridge-route-planks{stroke-width:19;stroke-dasharray:14 5}.chronicle-volume .book-page-map .book-route--drawbridge .drawbridge-route-planks--base{stroke:#aaa39a}.chronicle-volume .book-page-map .book-route--drawbridge .drawbridge-route-planks--built{stroke:#d78e44;filter:drop-shadow(0 2px 0 #fff0b6)}.chronicle-volume .book-page-map .book-route--drawbridge .book-route-progress{display:none}.drawbridge-moving-hammer{filter:drop-shadow(0 3px 2px #3c2b1d66)}.chronicle-volume .book-page-map>.book-route .drawbridge-moving-hammer path:first-child{fill:#8b5a32;stroke:#fff0bd;stroke-width:2}.chronicle-volume .book-page-map>.book-route .drawbridge-moving-hammer path:last-of-type{fill:#e0b060;stroke:#fff0bd;stroke-width:2}
+.chronicle-volume .book-page-map .book-route--hall .route-edge{stroke:#2a2038!important;stroke-width:31;opacity:.8}.chronicle-volume .book-page-map .book-route--hall .route-track{stroke:#766982!important;stroke-width:24;opacity:.85;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--hall :is(.hall-route-stone,.hall-route-runes){display:block;stroke-linecap:round}.chronicle-volume .book-page-map .book-route--hall .hall-route-stone{stroke:#776d80;stroke-width:22}.chronicle-volume .book-page-map .book-route--hall .hall-route-runes{stroke-width:9;stroke-dasharray:2 28}.chronicle-volume .book-page-map .book-route--hall .hall-route-runes--base{stroke:#9a919f;opacity:.62}.chronicle-volume .book-page-map .book-route--hall .hall-route-runes--lit{stroke:#ffe475;filter:drop-shadow(0 0 7px #cc9dff)}.chronicle-volume .book-page-map .book-route--hall .book-route-progress{display:none}.hall-moving-spark{filter:drop-shadow(0 0 8px #ffe476)}.chronicle-volume .book-page-map>.book-route .hall-moving-spark path{fill:#ffe476;stroke:#fff8cf;stroke-width:2}
+.chronicle-volume .book-page-map .book-route--keys .route-edge{stroke:#3b2830!important;stroke-width:30;opacity:.82}.chronicle-volume .book-page-map .book-route--keys .route-track{stroke:#8d6d5c!important;stroke-width:22;opacity:.9;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--keys :is(.keeper-route-chain,.keeper-route-teeth){display:block;stroke-linecap:round}.chronicle-volume .book-page-map .book-route--keys .keeper-route-chain{stroke:#6d4e42;stroke-width:18}.chronicle-volume .book-page-map .book-route--keys .keeper-route-teeth{stroke-width:10;stroke-dasharray:3 24}.chronicle-volume .book-page-map .book-route--keys .keeper-route-teeth--base{stroke:#9b8d7e;opacity:.72}.chronicle-volume .book-page-map .book-route--keys .keeper-route-teeth--gold{stroke:#f2c453;filter:drop-shadow(0 0 6px #ffdf75)}.chronicle-volume .book-page-map .book-route--keys .book-route-progress{display:none}.keeper-moving-key{filter:drop-shadow(0 0 7px #ffdb68)}.chronicle-volume .book-page-map>.book-route .keeper-moving-key circle{fill:none;stroke:#ffe07a;stroke-width:5}.chronicle-volume .book-page-map>.book-route .keeper-moving-key path{fill:none;stroke:#ffe07a;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.chronicle-volume .book-page-map .book-route--library .route-edge{stroke:#193f47!important;stroke-width:27;opacity:.82}.chronicle-volume .book-page-map .book-route--library .route-track{stroke:#9a8970!important;stroke-width:20;opacity:.72;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--library :is(.library-route-ink,.library-route-bookmarks){display:block;stroke-linecap:round}.chronicle-volume .book-page-map .book-route--library .library-route-ink{stroke-width:8}.chronicle-volume .book-page-map .book-route--library .library-route-ink--base{stroke:#778b8c;opacity:.6}.chronicle-volume .book-page-map .book-route--library .library-route-ink--written{stroke:#49b6ba;filter:drop-shadow(0 0 5px #8de8de)}.chronicle-volume .book-page-map .book-route--library .library-route-bookmarks{stroke-width:11;stroke-dasharray:3 31}.chronicle-volume .book-page-map .book-route--library .library-route-bookmarks--base{stroke:#a79a87;opacity:.58}.chronicle-volume .book-page-map .book-route--library .library-route-bookmarks--lit{stroke:#ef7f9e;filter:drop-shadow(0 1px 0 #fff0b7)}.chronicle-volume .book-page-map .book-route--library .book-route-progress{display:none}.library-moving-quill{filter:drop-shadow(0 0 7px #9ae9df)}.chronicle-volume .book-page-map>.book-route .library-moving-quill path:first-child{fill:#f190a7;stroke:#fff3c8;stroke-width:2}.chronicle-volume .book-page-map>.book-route .library-moving-quill path:last-of-type{fill:none;stroke:#fff3c8;stroke-width:2;stroke-linecap:round}
+.chronicle-volume .book-page-map .book-route--tower .route-edge{stroke:#33294f!important;stroke-width:30;opacity:.9}.chronicle-volume .book-page-map .book-route--tower .route-track{stroke:#65587d!important;stroke-width:22;opacity:.95;stroke-dasharray:none}.chronicle-volume .book-page-map .book-route--tower .tower-route-steps{display:block;stroke-linecap:square;stroke-width:15;stroke-dasharray:10 13}.chronicle-volume .book-page-map .book-route--tower .tower-route-steps--base{stroke:#9187a0;opacity:.7}.chronicle-volume .book-page-map .book-route--tower .tower-route-steps--lit{stroke:#ffe16a;filter:drop-shadow(0 0 7px #ffd84c)}.chronicle-volume .book-page-map .book-route--tower .book-route-progress{display:none}.tower-moving-star{filter:drop-shadow(0 0 9px #fff0a1)}.chronicle-volume .book-page-map>.book-route .tower-moving-star path{fill:#ffe679;stroke:#fff8c9;stroke-width:2}
+.tower-trail-art .trail-story-area.is-waiting{opacity:.6}.tower-trail-art .trail-story-area.is-restored .tower-map-floor{fill:#7563a0;stroke:#d0b9eb}.tower-trail-art .trail-story-area.is-restored .tower-map-window{fill:#ffe36f;stroke:#fff2a8;filter:drop-shadow(0 0 12px #ffd657)}.tower-trail-art .trail-story-area.is-restored text{fill:#594519}.tower-trail-art .tower-observatory-dome,.tower-trail-art .tower-observatory-star{transition:fill .8s,filter .8s}.tower-trail-art .trail-story-area.is-restored .tower-observatory-dome{fill:#9682bd}.tower-trail-art .trail-story-area.is-restored .tower-observatory-star{fill:#ffe86f;filter:drop-shadow(0 0 9px #fff1a0)}
+.chronicle-volume .book-page-map .route-open .book-map-dashes{stroke:#fbbf24;stroke-width:12;stroke-dasharray:none;animation:none}
+.chronicle-volume .book-page-map .route-locked .route-edge{stroke:#b3c39b}
+.chronicle-volume .book-page-map .route-locked .route-track{stroke:#fff8e7;stroke-width:32;stroke-dasharray:none}
+.chronicle-volume .book-map-stop:disabled .book-map-token{background:#f5f0ff;border-color:#b8a0e1;box-shadow:0 5px 0 #9380b3;color:#78629a}
+.chronicle-volume .book-map-stop.is-done .book-map-token{background:#ecfdf5;border-color:#34d399}
+.chronicle-volume .book-trail-page>footer{padding:0!important;min-height:20px;background:none;font-size:11px}
+@media(max-width:700px){
+  .chronicle-volume .book-trail-page{padding:16px 12px!important;min-height:610px}
+  .chronicle-volume .book-trail-page .book-page-map{min-height:360px!important}
+  .chronicle-volume .book-map-stop{width:94px}
+  .chronicle-volume .book-map-stop strong{font-size:12px}
+  .chronicle-volume .book-map-stop small{font-size:10px}
+  .chronicle-volume .book-trail-page>header .milo-companion{width:55px!important;height:55px!important}
+}
+
+/* Book 10: the Crown Chamber reveals a royal carpet one jewel at a time. */
+.chronicle-volume .book-page-map .book-route--crown .route-edge{stroke:#2a1724!important;stroke-width:34;opacity:.88}
+.chronicle-volume .book-page-map .book-route--crown .route-track{stroke:#704059!important;stroke-width:26;opacity:.98;stroke-dasharray:none}
+.chronicle-volume .book-page-map .book-route--crown .crown-route-carpet{display:block;stroke:#8f3159;stroke-width:21;stroke-linecap:round}
+.chronicle-volume .book-page-map .book-route--crown .crown-route-jewels{display:block;stroke-width:8;stroke-linecap:round;stroke-dasharray:2 25}
+.chronicle-volume .book-page-map .book-route--crown .crown-route-jewels--base{stroke:#927d87;opacity:.72}
+.chronicle-volume .book-page-map .book-route--crown .crown-route-jewels--lit{stroke:#ffe07a;filter:drop-shadow(0 0 7px #f28caf)}
+.chronicle-volume .book-page-map .book-route--crown .book-route-progress{display:none}
+.crown-moving-jewel{filter:drop-shadow(0 0 9px #ffeaa0)}
+.chronicle-volume .book-page-map>.book-route .crown-moving-jewel path{fill:#f27b9f;stroke:#fff0a8;stroke-width:3}
+.crown-trail-art .crown-restoration.is-restored{opacity:.34}
+.crown-trail-art .crown-restoration.is-celebrating{animation:crown-room-awaken 1.9s cubic-bezier(.2,.8,.2,1) both}
+.crown-trail-art .crown-map-chest,.crown-trail-art .crown-map-crown,.crown-trail-art .crown-map-throne,.crown-trail-art .crown-throne-star{transition:fill .8s ease,stroke .8s ease,filter .8s ease}
+.crown-trail-art .trail-story-area.is-restored .crown-map-chest{fill:#9a6649;stroke:#f0c86b;filter:drop-shadow(0 0 10px #f4bc65)}
+.crown-trail-art .trail-story-area.is-restored .crown-map-crown{fill:#f0bf4e;stroke:#fff0a7;filter:drop-shadow(0 0 13px #ffd866)}
+.crown-trail-art .trail-story-area.is-restored .crown-map-throne{fill:#92506c;stroke:#f0c45e;filter:drop-shadow(0 0 14px #e787a8)}
+.crown-trail-art .trail-story-area.is-restored .crown-throne-star{fill:#ffe46f;filter:drop-shadow(0 0 9px #fff2a4)}
+@keyframes crown-room-awaken{0%{opacity:.04;transform:scale(.62)}50%{opacity:.82;transform:scale(1.1)}100%{opacity:.34;transform:scale(1)}}
+
+/* Book 10's last page celebrates the whole ten-book journey. */
+.chronicle-series-finale .chronicle-closing-picture{background:linear-gradient(180deg,#54304e,#2d2035)}
+.chronicle-series-finale .chronicle-closing-picture:before,.chronicle-series-finale .chronicle-closing-picture:after{border-color:#f5c95f;opacity:.22}
+.chronicle-series-finale .chronicle-sticker-award{background:#fff3ca;border-color:#fff8e8;box-shadow:0 10px 0 #bc754d,0 0 42px #ffe07099}
+.chronicle-series-finale .chronicle-sticker-award strong{color:#6b2949}
+.chronicle-series-finale .chronicle-sticker-award small{color:#81546a}
+.chronicle-ten-books{position:absolute;left:5%;bottom:7%;z-index:2;display:flex;align-items:center;gap:8px;padding:8px 11px;border:2px solid #ffe8a4;border-radius:7px;background:#4b2a48dd;color:#fff3c5;box-shadow:0 5px 0 #2a1728}
+.chronicle-ten-books strong{font-size:27px;line-height:1}
+.chronicle-ten-books span{max-width:75px;font-size:10px;font-weight:700;text-transform:uppercase;line-height:1.15}
+@media(prefers-reduced-motion:reduce){.crown-moving-jewel{display:none}.crown-restoration{animation:none!important;transition:none!important}}

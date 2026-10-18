@@ -1,3 +1,7 @@
+import { useId } from 'react';
+import { IllustrationSurface } from './IllustrationSurface';
+import { CampObjectArt, CAMP_OBJECT_WORDS, type CampObjectWord } from './CampObjectArt';
+
 export function CvcCrown({jewels=0}:{jewels?:number}) {
   return <svg viewBox="0 0 240 160" role="img" aria-label={`Crown with ${jewels} of 3 jewels restored`}>
     <path d="M35 115 20 40 75 72 120 20 165 72 220 40 205 115Z" fill="#fbbf24" stroke="#d97706" strokeWidth="5" strokeLinejoin="round"/>
@@ -18,6 +22,8 @@ export function CvcCastle({small=false}:{small?:boolean}) {
 }
 
 export function WordObject({word}:{word:string}) {
+  const surface=`word-${useId().replace(/:/g,'')}`;
+  if((CAMP_OBJECT_WORDS as readonly string[]).includes(word))return <CampObjectArt word={word as CampObjectWord}/>;
   let shape;
   switch(word) {
     case "sun": shape=<><g stroke="#f59e0b" strokeWidth="7" strokeLinecap="round">{Array.from({length:8},(_,i)=><path key={i} d="M100 15v15" transform={`rotate(${i*45} 100 80)`}/>)}</g><circle cx="100" cy="80" r="35" fill="#fbbf24"/><path d="M85 87q15 15 30 0" stroke="#92400e" strokeWidth="4" fill="none"/></>; break;
@@ -29,6 +35,8 @@ export function WordObject({word}:{word:string}) {
     case "log": shape=<><rect x="35" y="65" width="122" height="53" rx="20" fill="#d97706"/><ellipse cx="154" cy="91" rx="21" ry="27" fill="#fde68a"/><ellipse cx="154" cy="91" rx="10" ry="16" fill="none" stroke="#b45309" strokeWidth="3"/><path d="M55 77h70M65 104h65" stroke="#92400e" strokeWidth="4"/></>; break;
     case "bed": shape=<><path d="M35 55v80m130-60v60" stroke="#8b5cf6" strokeWidth="10"/><rect x="40" y="75" width="120" height="43" rx="8" fill="#67e8f9"/><rect x="43" y="62" width="37" height="24" rx="10" fill="white"/><path d="M90 77v40" stroke="#06b6d4" strokeWidth="4"/></>; break;
     case "pen": shape=<g transform="rotate(35 100 80)"><rect x="86" y="20" width="28" height="100" rx="8" fill="#8b5cf6"/><path d="m86 116 14 29 14-29" fill="#fcd34d"/><path d="M92 142h16" stroke="#1f2430" strokeWidth="4"/><path d="M92 40h16" stroke="white" strokeWidth="5"/></g>; break;
+    case "pin": shape=<><path d="M64 45q35-35 70 0v61q0 31-34 31t-34-31V67q0-18 18-18t18 18v39" fill="none" stroke="#a78bfa" strokeWidth="12" strokeLinecap="round"/><circle cx="135" cy="42" r="12" fill="#f472b6" stroke="#fff" strokeWidth="4"/></>; break;
+    case "fin": shape=<><path d="M22 92q45-53 108-30l35-27-2 42 24 17-24 17 2 42-35-27Q65 148 22 92Z" fill="#38bdf8" stroke="#fff" strokeWidth="5"/><path d="m97 80 26-38 16 46Z" fill="#06b6d4"/><circle cx="57" cy="84" r="6" fill="#173f48"/><path d="M47 105q16 10 31 0" stroke="#173f48" strokeWidth="4" fill="none"/></>; break;
     case "net": shape=<><path d="M85 94 55 145" stroke="#f59e0b" strokeWidth="9"/><ellipse cx="113" cy="63" rx="45" ry="38" fill="#cffafe" stroke="#06b6d4" strokeWidth="6"/><path d="M85 43v40m20-55v70m20-70v70m20-55v40M74 50h80M70 70h85M85 89h55" stroke="#22d3ee" strokeWidth="2"/></>; break;
     case "bag": shape=<><path d="M72 48V34q28-30 56 0v14" fill="none" stroke="#ec4899" strokeWidth="9"/><rect x="50" y="48" width="100" height="89" rx="16" fill="#f9a8d4"/><path d="m100 65 14 25-14 25-14-25Z" fill="#fef3c7"/></>; break;
     case "gem": shape=<><path d="m68 30-28 38 60 75 60-75-28-38Z" fill="#a78bfa" stroke="white" strokeWidth="4"/><path d="M40 68h120M68 30l10 38 22 75 22-75 10-38M78 68l22-38 22 38" fill="none" stroke="#ddd6fe" strokeWidth="3"/></>; break;
@@ -36,7 +44,7 @@ export function WordObject({word}:{word:string}) {
     case "lid": shape=<><rect x="45" y="70" width="110" height="60" rx="8" fill="#a78bfa"/><path d="M35 67q65-60 130 0Z" fill="#fde68a" stroke="#f59e0b" strokeWidth="5"/><rect x="90" y="79" width="20" height="24" rx="4" fill="#fbbf24"/></>; break;
     default: shape=<><path d="M100 20v26" stroke="#8b5cf6" strokeWidth="10"/><path d="m45 65 55-28 55 28-55 70Z" fill="#fbbf24"/><path d="M46 66h108M65 92h70" stroke="#ec4899" strokeWidth="12"/></>;
   }
-  return <svg viewBox="0 0 200 160" role="img" aria-label={word}>{shape}</svg>;
+  return <svg className="storybook-object-art" viewBox="0 0 200 160" role="img" aria-label={word}><defs><IllustrationSurface id={surface}/></defs><g filter={`url(#${surface})`} strokeLinejoin="round" strokeLinecap="round">{shape}</g></svg>;
 }
 
 export function CastleBackdrop({area=0}:{area?:number}) {

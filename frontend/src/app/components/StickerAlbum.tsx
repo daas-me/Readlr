@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Lock, Sparkles } from "lucide-react";
-import { isStickerEarned, type Sticker } from "./stickers";
 import "./stickerAlbum.css";
 
-export function StickerAlbum({ stickers, title, progress, onSelect }: {
-  stickers: Sticker[]; title: string; progress: Record<number,number>; onSelect: (sticker:Sticker)=>void;
+export interface AlbumSticker {
+  id:string; title:string; earned:boolean; art:ReactNode; requirement:string; achievement:string;
+}
+
+export function StickerAlbum({ stickers, title, cover, onSelect }: {
+  stickers: AlbumSticker[]; title: string; cover:ReactNode; onSelect: (sticker:AlbumSticker)=>void;
 }) {
   const [small,setSmall]=useState(()=>window.matchMedia("(max-width:700px)").matches);
   const [spread,setSpread]=useState(0);
@@ -13,7 +16,7 @@ export function StickerAlbum({ stickers, title, progress, onSelect }: {
   const busy=useRef(false);
   const reduced=useReducedMotion();
   const perSpread=small?3:6;
-  const count=Math.ceil(stickers.length/perSpread);
+  const count=Math.ceil((stickers.length+3)/perSpread);
   useEffect(()=>{
     const media=window.matchMedia("(max-width:700px)");
     const resize=()=>{setSmall(media.matches);setSpread(0);setTurning(null);busy.current=false;};
@@ -27,12 +30,13 @@ export function StickerAlbum({ stickers, title, progress, onSelect }: {
     busy.current=true;setTurning({from:spread,to,direction:to>spread?1:-1});
   }
   function leaf(index:number,side:number,decorative=false){
-    const start=index*perSpread+side*3;
+    const start=index*perSpread+side*3-3;
+    if(start<0)return <section className="sticker-paper album-authored-cover">{cover}<footer>1</footer></section>;
     const items=stickers.slice(start,start+3);
     return <section className="sticker-paper"><header><span>{title}</span><Sparkles size={16}/></header><div className="paper-stickers">
-      {items.map(sticker=>{const earned=isStickerEarned(sticker,progress);return <button key={sticker.id} disabled={decorative||!!turning} tabIndex={decorative?-1:undefined} className={`paper-sticker ${earned?"is-collected":"is-uncollected"}`} aria-label={`${sticker.name}, ${earned?"collected":"locked"}`} onClick={()=>onSelect(sticker)}><div><span aria-hidden="true">{sticker.emoji}</span>{earned?<Check size={16}/>:<Lock size={15}/>}</div><strong>{sticker.name}</strong><small>{earned?"Collected":`Level ${sticker.at}`}</small></button>;})}
+      {items.map(sticker=>{const earned=sticker.earned;return <button key={sticker.id} disabled={decorative||!!turning} tabIndex={decorative?-1:undefined} className={`paper-sticker ${earned?"is-collected":"is-uncollected"}`} aria-label={`${sticker.title}, ${earned?"collected":"locked"}`} onClick={()=>onSelect(sticker)}><div><span aria-hidden="true">{sticker.art}</span>{earned?<Check size={16}/>:<Lock size={15}/>}</div><strong>{sticker.title}</strong><small>{earned?"Collected":"Still to discover"}</small></button>;})}
       {items.length===0&&<div className="album-endpaper"><Sparkles size={40}/><h3>A chapter of little wonders</h3><p>Every new sound brought you here.</p></div>}
-    </div><footer>{start/3+1}</footer></section>;
+    </div><footer>{start/3+2}</footer></section>;
   }
   return <div className="sticker-album">
     <div className={`album-binding ${small?"single-page":""}`} aria-busy={!!turning}>

@@ -1,0 +1,44 @@
+/* Reserve the whole cover footprint, including pages and shadow. */
+.chronicle-home .book-carousel-stage{height:360px}
+.chronicle-home .chronicle-book{scale:1;top:14px}
+.chronicle-home .book-carousel-footer{margin-top:10px;flex-shrink:0}
+.chronicle-home .book-position{padding:3px 10px;background:#ecf7e8;border-radius:5px;line-height:1.4}
+.book-world .chronicle-keepsake{margin-top:70px}
+.chronicle-book.is-locked{filter:saturate(.35) drop-shadow(8px 17px 10px #335e5a30)}
+.chronicle-book.is-locked .book-cover{background:color-mix(in srgb,var(--book-color) 50%,#53676d)}
+.chronicle-book.is-locked .book-cover:before{content:'';position:absolute;left:0;right:-8px;top:60%;height:26px;background:#5b6173;border-block:3px solid #bbc0cc;box-shadow:0 3px 5px #20343b44;z-index:3}
+.chronicle-book.is-locked .book-seal{top:calc(60% - 9px);bottom:auto;right:38%;width:42px;height:48px;z-index:4;background:#e0cfab;color:#574b35;border-color:#f9e7bc}
+.world-welcome-screen{height:100%;min-height:0;position:relative;isolation:isolate;overflow:auto;display:grid;place-items:center;background:#cceee7;padding:30px 20px}
+.welcome-invitation{position:relative;text-align:center;max-width:560px;width:100%;padding:15px 0}
+.welcome-invitation .milo-companion{margin:0 auto 12px}.welcome-invitation .flex{justify-content:center}
+.welcome-invitation h1{font-size:38px;letter-spacing:0;font-weight:500;overflow-wrap:anywhere}.welcome-invitation p{color:#244e48;line-height:1.6}.welcome-invitation .world-primary{margin-top:10px}
+.is-entering-world{pointer-events:none;animation:enter-world .6s ease-in forwards}
+@keyframes enter-world{to{transform:scale(1.22);opacity:0}}
+.chronicle-home{animation:arrive-home .55s ease-out both}
+@keyframes arrive-home{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.chronicle-home.world-is-leaving[data-destination]{animation:landmark-approach .6s ease-in forwards!important}
+.chronicle-home[data-destination=camp]{transform-origin:14% 38%}.chronicle-home[data-destination=progress]{transform-origin:86% 38%}.chronicle-home[data-destination=stickers]{transform-origin:14% 75%}.chronicle-home[data-destination=sound]{transform-origin:86% 75%}
+@keyframes landmark-approach{to{transform:scale(1.65);opacity:0}}
+.world-destination{height:100%;min-height:0;overflow:hidden}
+.destination-sounds{animation:library-arrive .5s ease-out both}.destination-stickers{animation:album-arrive .5s ease-out both;transform-origin:left center}.destination-progress{animation:progress-arrive .5s ease-out both}
+.destination-sounds.destination-leaving{animation:library-arrive .5s ease-in reverse forwards;pointer-events:none}.destination-stickers.destination-leaving{animation:album-arrive .5s ease-in reverse forwards;pointer-events:none}.destination-progress.destination-leaving{animation:progress-arrive .5s ease-in reverse forwards;pointer-events:none}
+@keyframes library-arrive{from{opacity:0;transform:translateX(45px)}to{opacity:1;transform:none}}@keyframes album-arrive{from{opacity:0;transform:perspective(1400px) rotateY(-12deg)}to{opacity:1;transform:none}}@keyframes progress-arrive{from{opacity:0;transform:translateY(35px)}to{opacity:1;transform:none}}
+.camp-world{animation:camp-arrive .55s ease-out both}.camp-world.world-is-leaving{animation:camp-arrive .5s ease-in reverse forwards!important}
+@keyframes camp-arrive{from{opacity:0}to{opacity:1}}
+.river-shimmer{stroke-dasharray:12 8;animation:river-current 2.5s linear infinite}
+@keyframes river-current{to{stroke-dashoffset:-40;transform:translate(-10px,12px)}}
+.curriculum-library{height:100%;overflow:auto;background:#f2faf8;padding:28px max(20px,calc((100% - 1160px)/2));color:var(--ink)}
+.curriculum-library>header{display:flex;align-items:center;gap:16px;margin-bottom:24px}.curriculum-library h1{font-size:30px;font-weight:500;margin:0}.curriculum-library header p{font-size:12px;color:#178071;margin:0 0 3px}
+.curriculum-library>nav{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:20px;border-bottom:1px solid #cfe4de}.curriculum-library>nav button{padding:10px 16px;background:white;border:1px solid #d4e5df;border-radius:8px;color:#365950}.curriculum-library>nav button[aria-pressed=true]{background:#dfeafc;border-color:#7b9bc7;color:#254d80}
+.curriculum-library-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:32px;padding-top:24px}.curriculum-search{display:flex;align-items:center;gap:10px;background:white;border:1px solid #d4e5df;border-radius:8px;padding:10px 14px;margin-bottom:18px}.curriculum-search input{min-width:0;width:100%;background:none;outline:none}
+.curriculum-sound-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}.curriculum-sound-grid button{min-height:64px;padding:12px;background:#fff;border:1px solid #d1e2dc;border-radius:8px;box-shadow:0 3px 0 #c4d9d1;font-size:17px;color:#30574d;overflow-wrap:anywhere}.curriculum-sound-grid button[aria-pressed=true]{background:#fff2ca;border-color:#e4b342;box-shadow:0 3px 0 #d7ab45}
+.curriculum-listening-nook{text-align:center;align-self:start;position:sticky;top:10px;padding:22px 16px;background:#fff;border:1px solid #d1e2dc;border-radius:8px}.curriculum-listening-nook>svg{width:210px;height:185px;margin:0 auto}.curriculum-listening-nook h2{font-size:28px;font-weight:500;margin:14px 0}.curriculum-listening-nook p{color:#567569;line-height:1.6;font-size:14px}.curriculum-listening-nook .world-primary{margin:16px auto 0}.library-record{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:12px auto 0;min-height:46px;padding:10px 18px;border:3px solid #fff;border-bottom:6px solid #8a2f52;border-radius:7px;background:#d94f7a;color:white;font-weight:700}.library-record.is-recording{background:#b72f5b;box-shadow:0 0 0 8px #f7c9d8}.library-record audio{display:none}
+.chronicle-collection{margin:24px 0 32px}.chronicle-collection>header{display:flex;gap:12px;align-items:center;margin-bottom:18px}.chronicle-collection h2{font-size:22px;font-weight:500;margin:0}.chronicle-collection header p{font-size:13px;color:var(--ink-soft);margin:5px 0}.chronicle-collection>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.chronicle-collection article{padding:16px;background:#fff;border:1px solid #dce7e2;border-radius:8px}.chronicle-collection article.is-complete{background:#e5f6ee;border-color:#7bc8aa}.chronicle-collection .landmark-art{height:75px;width:90px;margin:0 auto 10px}.chronicle-collection article>span{font-size:11px;color:#647b72}.chronicle-collection h3{font-size:16px;font-weight:500;margin:5px 0}.chronicle-collection article p{font-size:12px;color:#567569;min-height:34px}.chronicle-collection small{display:flex;gap:5px;align-items:center;font-size:11px;color:#567569}
+@container (min-width:900px) and (max-height:680px){.chronicle-home .book-carousel-stage{height:275px}.chronicle-home .chronicle-book{scale:.78;top:-16px}.chronicle-home .book-carousel-footer{margin-top:5px}.book-world .chronicle-trail{height:230px}.book-world .chronicle-keepsake{margin-top:70px}}
+@media(max-width:680px){.chronicle-home .book-carousel-stage{height:325px}.chronicle-home .chronicle-book{scale:1;top:12px}.curriculum-library-layout{grid-template-columns:1fr}.curriculum-listening-nook{position:static;grid-row:1}.curriculum-listening-nook>svg{height:100px;width:140px}.curriculum-library{padding:20px 16px}.welcome-invitation h1{font-size:30px}.book-world .chronicle-keepsake{margin-top:35px}.chronicle-collection>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.is-entering-world,.chronicle-home,.chronicle-home.world-is-leaving[data-destination],.world-destination,.camp-world,.camp-world.world-is-leaving{animation:none!important}.river-shimmer{animation:none}}
+.chronicle-collection article{position:relative;overflow:hidden}.chronicle-collection .chronicle-sticker-card>.landmark-art{padding:7px;border-radius:50%;background:#fff8d7;border:4px solid white;box-shadow:0 5px 0 #d9bb58}.chronicle-sticker-shine{position:absolute;right:8px;top:8px;width:20px;color:#d69c16}
+/* Destination changes use a calm fade; landmark zooms made the world feel unstable. */
+.is-entering-world,.chronicle-home,.chronicle-home.world-is-leaving[data-destination],.destination-sounds,.destination-stickers,.destination-progress,.destination-sounds.destination-leaving,.destination-stickers.destination-leaving,.destination-progress.destination-leaving{transform:none;transform-origin:center;animation:world-calm-fade-in .42s ease both}
+.is-entering-world,.chronicle-home.world-is-leaving[data-destination],.destination-sounds.destination-leaving,.destination-stickers.destination-leaving,.destination-progress.destination-leaving{animation-name:world-calm-fade-out}
+@keyframes world-calm-fade-in{from{opacity:0}to{opacity:1}}@keyframes world-calm-fade-out{from{opacity:1}to{opacity:0}}

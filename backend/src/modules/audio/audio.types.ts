@@ -1,6 +1,9 @@
 export interface AudioResult {
   matched: boolean;
-  score: number;
+  status: 'matched' | 'different' | 'uncertain';
+  assessmentSource: 'transcription_match';
+  pronunciationAccuracy: null;
+  score: null;
   transcription: string;
   detectedPhoneme: string;
   targetPhoneme: string;

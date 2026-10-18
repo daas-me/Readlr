@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "manifestVersion": "readlr2-eng01-mat-media-draft-1",
+  "curriculumVersion": "readlr2-eng01-mat-draft-1",
+  "status": "provisional",
+  "releaseStatus": "blocked",
+  "runtimeAvailable": false,
+  "updatedAt": "2026-10-13",
+  "language": "en",
+  "languageVariety": null,
+  "policies": {
+    "instructionalAudioFallback": "block_dependent_activity",
+    "allowInstructionalTts": false,
+    "allowLegacyInstructionalSubstitution": false,
+    "missingMeaningImage": "block_meaning_item_only",
+    "narrationFallback": "approved_script_voice_fallback_only",
+    "hashMismatch": "block_asset_and_report",
+    "unapprovedAsset": "block_dependent_activity"
+  },
+  "assets": [
+    {
+      "assetId": "media.eng01.m.phoneme.v1",
+      "contentId": "eng01.grapheme.m",
+      "kind": "isolated_phoneme",
+      "required": true,
+      "instructionalTarget": "/m/",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.m.mouth-cue.v1",
+      "contentId": "eng01.grapheme.m",
+      "kind": "mouth_cue",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.m.letter-card.v1",
+      "contentId": "eng01.grapheme.m",
+      "kind": "letter_card",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.a.phoneme.v1",
+      "contentId": "eng01.grapheme.a",
+      "kind": "isolated_phoneme",
+      "required": true,
+      "instructionalTarget": "short-a (/ae/ provisional)",
+      "revision": {
+        "type": "audio_file",
+        "path": "frontend/public/audio/stage1/classic-milo/A.wav",
+        "bytes": 65354,
+        "sha256": "cdeeee4616223f8b4964a901cb8a26a5df26181c6d4e81d25503adbb92e88c79",
+        "mimeType": "audio/wav",
+        "channels": 1,
+        "sampleRate": 24000,
+        "sampleWidthBits": 16,
+        "durationSeconds": 1.361
+      },
+      "approval": { "status": "not_reviewed", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": "existing_readlr_repository" }
+    },
+    {
+      "assetId": "media.eng01.a.mouth-cue.v1",
+      "contentId": "eng01.grapheme.a",
+      "kind": "mouth_cue",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.a.letter-card.v1",
+      "contentId": "eng01.grapheme.a",
+      "kind": "letter_card",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.t.phoneme.v1",
+      "contentId": "eng01.grapheme.t",
+      "kind": "isolated_phoneme",
+      "required": true,
+      "instructionalTarget": "/t/",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.t.mouth-cue.v1",
+      "contentId": "eng01.grapheme.t",
+      "kind": "mouth_cue",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.t.letter-card.v1",
+      "contentId": "eng01.grapheme.t",
+      "kind": "letter_card",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.am.segmented.v1",
+      "contentId": "eng01.word.am",
+      "kind": "segmented_audio",
+      "required": true,
+      "instructionalTarget": "/a/ + /m/",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.am.continuous.v1",
+      "contentId": "eng01.word.am",
+      "kind": "continuous_blend",
+      "required": true,
+      "instructionalTarget": "am continuous blend",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.am.word.v1",
+      "contentId": "eng01.word.am",
+      "kind": "whole_word",
+      "required": true,
+      "instructionalTarget": "am",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.at.segmented.v1",
+      "contentId": "eng01.word.at",
+      "kind": "segmented_audio",
+      "required": true,
+      "instructionalTarget": "/a/ + /t/",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.at.continuous.v1",
+      "contentId": "eng01.word.at",
+      "kind": "continuous_blend",
+      "required": true,
+      "instructionalTarget": "at continuous blend",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.at.word.v1",
+      "contentId": "eng01.word.at",
+      "kind": "whole_word",
+      "required": true,
+      "instructionalTarget": "at",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.mat.segmented.v1",
+      "contentId": "eng01.word.mat",
+      "kind": "segmented_audio",
+      "required": true,
+      "instructionalTarget": "/m/ + /a/ + /t/",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.mat.continuous.v1",
+      "contentId": "eng01.word.mat",
+      "kind": "continuous_blend",
+      "required": true,
+      "instructionalTarget": "mat continuous blend",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.mat.word.v1",
+      "contentId": "eng01.word.mat",
+      "kind": "whole_word",
+      "required": true,
+      "instructionalTarget": "mat",
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    },
+    {
+      "assetId": "media.eng01.mat.meaning-image.v1",
+      "contentId": "eng01.word.mat",
+      "kind": "meaning_image",
+      "required": true,
+      "revision": null,
+      "approval": { "status": "missing_candidate", "reviewer": null, "role": null, "date": null, "approvalVersion": null },
+      "rights": { "status": "pending", "source": null }
+    }
+  ],
+  "legacyCandidates": [
+    {
+      "path": "frontend/public/audio/stage2/classic-milo/PronounceMA.wav",
+      "sha256": "7269ff9c4dd700c43d3c1bab7c93cd547edb299ce199ad454980ca6d30cad3cc",
+      "disposition": "preserve_legacy_not_bound",
+      "reason": "Legacy CV ma is not am, mat, or isolated /m/."
+    },
+    {
+      "path": "frontend/public/audio/stage2/classic-milo/PronounceTA.wav",
+      "sha256": "2aaa637624d46a8ae4b1c328bb255faed9fc7d2024117b5a530a9f34b835bff4",
+      "disposition": "preserve_legacy_not_bound",
+      "reason": "Legacy CV ta is not at, mat, or isolated /t/."
+    }
+  ]
+}

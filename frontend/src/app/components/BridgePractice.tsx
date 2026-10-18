@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowLeft, ArrowRight, Headphones, Mic, RotateCcw, Volume2, Link2, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Headphones, Mic, MicOff, RotateCcw, Volume2, Link2, Check } from "lucide-react";
 import { BlendWorkbench, type BlendCue } from "./BlendWorkbench";
 import "./blendWorkbench.css";
 import { CharacterCompanion } from "./CharacterCompanion";
@@ -43,6 +43,7 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
   const busy = useRef(false);
   const saved = useRef(false);
   const [explaining, setExplaining] = useState(false);
+  const [usedNonVoice, setUsedNonVoice] = useState(false);
   function skipExplanation() {
     sound.stop(); setExplaining(false); setCue("none"); setJoined(false);
     setMessage(choice ? "Choose the matching sound piece. Use the speaker to hear it." : "Tap to join the two sound pieces.");
@@ -277,6 +278,7 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
   function record() {
     retryStep.current = "record";
     void run(async () => {
+      setUsedNonVoice(false);
       setPhase("preparing");
       if (recordingUrl.current) { URL.revokeObjectURL(recordingUrl.current); recordingUrl.current = null; }
       const blob = await capture();
@@ -287,19 +289,41 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
       await say("playback");
       await sound.play(url);
       if (!active.current) return;
+      await completePractice(false);
+    });
+  }
+
+  async function completePractice(nonVoice: boolean) {
+      if (nonVoice) {
+        setUsedNonVoice(true);
+        practice.begin();
+        practice.finish("nonvoice_practice");
+        setPhase("narrating");
+        setMessage(`Listen to ${lesson.blend.toLowerCase()}, then say it aloud. No microphone is needed.`);
+        try { await playBlend(); } catch { /* The visible blend still supports offline practice. */ }
+        if (!active.current) return;
+        setMessage(`Now say ${lesson.blend.toLowerCase()} aloud by yourself.`);
+        await sound.wait(2200);
+        if (!active.current) return;
+      }
       setJoined(true);
       setCue("blend");
       setPhase("building");
-      setMessage("Your sound team is helping Milo build!");
+      setMessage(nonVoice ? "You practised the sound team without recording." : "Practice recorded. Listen to your sound while Milo builds!");
       await sound.wait(1600);
       if (!active.current) return;
       setPhase("reward");
       if (!saved.current) { saved.current = true; onComplete(); }
-      if (getLearningSettings().voice_feedback) {
+      if (nonVoice) setMessage("Practice complete. No recording or pronunciation score was saved.");
+      else if (getLearningSettings().voice_feedback) {
         if (lesson.training) await explain("WorkshopLinkPraise.wav", "Thank you for practising with me! Our sound team made a bridge piece. You helped Milo cross!");
         else await sayLesson("Success");
       } else setMessage(lesson.success);
-    });
+  }
+
+  function practiceWithoutMicrophone() {
+    retryStep.current = "record";
+    void run(() => completePractice(true));
   }
 
   const ready = phase === "ready";
@@ -309,7 +333,7 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
     retrying: phase === "error", success: fastened, joining: cue === "blend" && joined,
     teaching: cue === "consonant" || cue === "vowel", lookAt: "down-right" });
   const practiceLabel = `Practice my ${lesson.blend.toLowerCase()} sound`;
-  const status = phase === "preparing" ? "Wait for your turn..." : phase === "recording" ? "Milo is listening..." : phase === "playback" ? "That is your voice!" : phase === "building" ? "Your sound is fastening the bridge." : ready ? "Your turn!" : "";
+  const status = phase === "preparing" ? "Wait for your turn..." : phase === "recording" ? "Milo is listening..." : phase === "playback" ? "That is your voice. Listen and compare." : phase === "building" ? "Guided practice complete. Pronunciation was not scored." : reward ? usedNonVoice ? "Completed without microphone. No speech score was created." : "Practice complete. Pronunciation was not scored." : ready ? "Your turn!" : "";
   const step = reward ? 3 : phase === "playback" || phase === "building" ? 2 : phase === "recording" || ready || phase === "preparing" ? 1 : 0;
   const targetPattern = new RegExp(`(\\b${lesson.blend}\\b|\\b${lesson.blend[0]}\\b|/${lesson.blend[1]}/|\\b${lesson.blend[1]}(?= vowel|\\.)|(?<=toward )${lesson.blend[1]}\\b)`,"gi");
   const highlightedMessage = (error || message).split(targetPattern).map((part, i) => i%2 ? <mark key={i} className={part.replaceAll("/", "").toUpperCase() === lesson.blend[1] ? "blend-word--vowel" : ""}>{part}</mark> : part);
@@ -330,7 +354,7 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
         </div>
       </section>
       {phase === "choice" && <div className="bridge-choices">{choices.map(value => <button key={value} onClick={() => choose(value)} aria-label={`Choose ${value}`}>{value}</button>)}</div>}
-      <div className="bridge-practice__actions">
+      <div className={`bridge-practice__actions ${phase === "error" && retry === "record" ? "has-voice-fallback" : ""}`}>
         {phase === "choice" && <button title="Hear the blend" aria-label="Hear the blend" onClick={() => void run(playBlend)}><Volume2 size={22}/></button>}
         {["narrating", "preparing", "recording", "playback", "building"].includes(phase) && <button className="bridge-practice__audio" disabled aria-label="Hear the blend again" title="Hear the blend again"><Volume2 size={22}/></button>}
         {phase === "start" && <button className="bridge-practice__audio" onClick={introduce} aria-label="Hear Milo" title="Hear Milo"><Volume2 size={22} /></button>}
@@ -339,7 +363,8 @@ export function BridgePractice({ learnerId, lesson, onBack, onComplete, onNext }
         {ready && <button className="bridge-primary" onClick={record}><Mic size={22} />{practiceLabel}</button>}
         {["narrating", "preparing", "recording", "playback", "building"].includes(phase) && <button className="bridge-primary bridge-practice__phase-action" data-state={phase} disabled>{phase === "recording" ? <Mic size={22} /> : phase === "building" ? <Check size={22} /> : <Headphones size={22} />}{phase === "recording" ? `Say ${lesson.blend.toLowerCase()}` : phase === "preparing" ? "Get ready..." : phase === "playback" ? "Hear your voice" : phase === "building" ? "Bridge repaired!" : "Listen to Milo"}</button>}
         {phase === "error" && <button className="bridge-primary" onClick={retry === "record" ? record : retry === "join" ? joinPieces : retry === "choice" ? ()=>{setError("");setPhase("choice");} : introduce}><RotateCcw size={20} />{retry === "record" ? "Record again" : retry === "intro" ? "Hear Milo" : "Try again"}</button>}
-        {reward && <><button onClick={() => void run(async () => { if (recordingUrl.current) await sound.play(recordingUrl.current); })}><Headphones size={20} />My voice</button><button className="bridge-primary" onClick={onNext ?? onBack}>{onNext ? "Continue training" : lesson.training ? "Back to Workshop" : "Back to the map"}<ArrowRight size={20} /></button></>}
+        {phase === "error" && retry === "record" && <button className="voice-fallback" onClick={practiceWithoutMicrophone}><MicOff size={19}/>Practice without microphone</button>}
+        {reward && <>{recordingUrl.current&&<button onClick={() => void run(async () => { if (recordingUrl.current) await sound.play(recordingUrl.current); })}><Headphones size={20} />My voice</button>}<button className="bridge-primary" onClick={onNext ?? onBack}>{onNext ? "Continue training" : lesson.training ? "Back to Workshop" : "Back to the map"}<ArrowRight size={20} /></button></>}
       </div>
       {status && <div className="bridge-practice__status" role="status">
         {phase === "recording" && <span className="bridge-practice__record-dot" />}{status}

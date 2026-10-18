@@ -8,6 +8,7 @@ import { accessLabel, type ClassroomState as State } from './classroomAccess';
 import { AdminProgressReset } from './AdminProgressReset';
 import { AdminSurveyAssignment } from './AdminSurvey';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
+import { READING_CHAPTERS } from './aralCurriculum';
 const OPEN: ClassroomPolicy = { mode: 'open', stage: null, message: '', surveyUrl: '' };
 export function AdminClassroomControls({ token, learners, target, onTargetChange, onSaved }: { token: string; learners: { id: number; name: string; email: string }[]; target: string; onTargetChange: (value: string) => void; onSaved: (state: State) => void }) {
   const [targetSearch, setTargetSearch] = useState('');
@@ -99,6 +100,23 @@ export function AdminClassroomControls({ token, learners, target, onTargetChange
           const permitted = draft.mode === 'open' || (draft.mode === 'stage' ? draft.stage === stage : draft.stages?.includes(stage));
           return <div className="admin-level-row" key={stage}><label id={`unlock-stage-${stage}`}>Stage {stage}: {name}<small>{stage === 1 ? '1-5: Vowel Dojo; 6-20: valley trails' : stage === 2 ? '1-5: Bridge Workshop; 6-20: bridge challenges' : '1-19: word challenges; 20: crown finale'}</small></label><Select disabled={!permitted} value={String(draft.unlockThrough?.[stage] ?? 0)} onValueChange={value => setDraft({...draft,unlockThrough:{...draft.unlockThrough,[stage]:Number(value)}})}><SelectTrigger aria-labelledby={`unlock-stage-${stage}`}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0">Follow saved progress</SelectItem>{Array.from({length:20},(_,n)=><SelectItem key={n+1} value={String(n+1)}>{n===19 ? 'Unlock all 20 levels' : n===4 && stage<3 ? `Unlock all ${stage===1 ? 'Dojo' : 'Workshop'} lessons` : `Unlock through level ${n+1}`}</SelectItem>)}</SelectContent></Select></div>;
         })}<label className="admin-library-toggle"><input type="checkbox" checked={draft.soundLibrary ?? false} onChange={e=>setDraft({...draft,soundLibrary:e.target.checked})}/><span><strong>Unlock Sound Library</strong><small>All vowel, blend, and word sounds, plus the Workshop sound shelf. Does not complete lessons.</small></span></label></section>}
+        {!inherit && !['paused','survey'].includes(draft.mode) && <div className="admin-level-row">
+          <label id="unlock-reading-chapters">Reading Chronicles: unlock books through<small>Opens book entrances in order. Reading Chronicles must be allowed by the stage access setting (Stage 3). Earlier adventure levels stay unchanged.</small></label>
+          <Select disabled={draft.mode!=='open' && !(draft.mode==='stage'?draft.stage===3:draft.stages?.includes(3))} value={String(draft.readingUnlockThrough??0)} onValueChange={value=>setDraft({...draft,readingUnlockThrough:Number(value)})}>
+            <SelectTrigger aria-labelledby="unlock-reading-chapters"><SelectValue/></SelectTrigger><SelectContent>
+              <SelectItem value="0">Follow checkpoint progress</SelectItem>
+              {READING_CHAPTERS.map((chapter,index)=><SelectItem key={chapter.id} value={String(index+1)}>Through Book {index+1}: {chapter.title}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>}
+        {!inherit && !['paused','survey'].includes(draft.mode) && <fieldset className="admin-level-access" disabled={draft.mode!=='open' && !(draft.mode==='stage'?draft.stage===3:draft.stages?.includes(3))}>
+          <legend>Book challenge overrides</legend>
+          <p>Open a selected book and all its challenges, including the final gate. Other books keep their normal progression. No lessons, checkpoints, or rewards are marked complete.</p>
+          {READING_CHAPTERS.map((chapter,index)=><label className="admin-library-toggle" key={chapter.id}>
+            <input type="checkbox" checked={draft.readingOpenChallenges?.includes(index+1)??false} onChange={e=>setDraft({...draft,readingOpenChallenges:e.target.checked?[...(draft.readingOpenChallenges??[]),index+1]:(draft.readingOpenChallenges??[]).filter(book=>book!==index+1)})}/>
+            <span><strong>Book {index+1}: {chapter.title}</strong><small>Open all challenges</small></span>
+          </label>)}
+        </fieldset>}
         {!inherit && <label className="admin-access-message">Message to learners (optional)<textarea rows={2} maxLength={240} value={draft.message} onChange={e => setDraft({ ...draft, message: e.target.value })} className={`${controlClass} mt-2`} /><span>{draft.message.length}/240</span></label>}
         {!inherit && draft.mode === 'survey' && <p className="text-sm">This saved rule uses an older external invitation. Choose normal progression or another learning access mode, then assign the in-app survey in the Survey tab.</p>}
       </fieldset>
@@ -125,6 +143,8 @@ export function AdminClassroomControls({ token, learners, target, onTargetChange
           {target === 'class' ? 'Entire class' : learners.find(l => String(l.id) === target)?.name}: {inherit ? 'Use the class setting.' : draft.mode === 'stages' ? `Unlock stages ${draft.stages?.join(', ')}. Other stages will be unavailable.` : draft.mode === 'stage' ? `Unlock Stage ${draft.stage} only.` : draft.mode === 'open' ? 'Follow normal stage progression.' : draft.mode === 'paused' ? 'Pause learning activities.' : 'Show the survey invitation.'}
         </AlertDialogDescription>
         <p className="admin-confirm-safe">Saved progress, completed lessons, and rewards stay unchanged. Lesson overrides open extra practice without marking skipped lessons complete.</p>
+        {!!preview?.readingUnlockThrough && <p className="admin-confirm-note">Reading Chronicles: unlock through Book {preview.readingUnlockThrough}. Checkpoints are not marked complete.</p>}
+        {!!preview?.readingOpenChallenges?.length && <p className="admin-confirm-note">Open all challenges in Books {preview.readingOpenChallenges.join(', ')}, including their final gates. Completion and rewards are unchanged.</p>}
         <p className="admin-confirm-note">{[1,2,3].filter(s=>(preview?.unlockThrough?.[s] ?? 0)>0).map(s=>`Stage ${s}: practice through level ${preview?.unlockThrough?.[s]}`).join('. ') || 'Lessons follow saved progress.'} {preview?.soundLibrary ? 'Sound Library is fully unlocked.' : 'Sound Library follows saved progress.'}</p>
         {target === 'class' && <p className="admin-confirm-note">Individual learner overrides still take priority. Changes reach connected learners within about 15 seconds.</p>}
         <AlertDialogFooter><AlertDialogCancel>Keep current settings</AlertDialogCancel><AlertDialogAction className="admin-confirm-apply" onClick={() => void save()}>Confirm changes</AlertDialogAction></AlertDialogFooter>

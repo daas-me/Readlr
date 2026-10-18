@@ -4,6 +4,7 @@
  */
 
 import { Request, Response } from 'express';
+import { curriculumRewardAccess } from '../frames/curriculum-rewards.js';
 import {
   createLearner,
   getLearnerById,
@@ -157,6 +158,8 @@ export async function handleUpdateMyProfile(req: Request, res: Response) {
         return res.status(400).json({ error: 'avatar must be one of the supported options' });
       }
       updates.avatar = avatar;
+      const rewards=await curriculumRewardAccess(userId);
+      if(!rewards.avatars.some(option=>option.avatar===avatar&&option.unlocked))return res.status(403).json({error:'Keep practising to unlock this avatar.'});
     }
 
     const existing = await getLearnerByUserId(userId);

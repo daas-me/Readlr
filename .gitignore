@@ -37,6 +37,23 @@ lerna-debug.log*
 !README.md
 *.md
 !DEPLOYMENT.md
+!docs/refactoring/READLR_2_AUDIT.md
+!docs/refactoring/STEP_04_MAT_CURRICULUM_SPEC.md
+!docs/refactoring/STEP_05_VERSIONED_MEDIA_SPEC.md
+!docs/refactoring/STEP_06_EVIDENCE_FOUNDATION.md
+!docs/refactoring/STEP_07_LEARNING_CAMP_HUB.md
+!docs/refactoring/STEP_08_GUIDED_BLENDING.md
+!docs/refactoring/STEP_09_ADVENTURE_APPLICATION.md
+!docs/refactoring/STEP_10_INDEPENDENT_CHECKS.md
+!docs/refactoring/STEP_11_PROGRESS_INTEGRATION.md
+!docs/refactoring/STEP_12_DELAYED_REVIEW.md
+!docs/refactoring/STEP_13_ENG02_EXPANSION.md
+!docs/refactoring/STEP_14_MILO_GUIDANCE.md
+!docs/refactoring/MILO_GUIDANCE_SCRIPT.md
+!docs/refactoring/STEP_15_DISCOVERY_REALM.md
+!docs/refactoring/STEP_16_OFFLINE_PACKS.md
+!docs/refactoring/ARAL_INTEGRATION.md
+!docs/refactoring/ARAL_LIVE_ROLLOUT.md
 
 #Database
 readlr.db

@@ -23,6 +23,13 @@ export const config = {
   groqApiKey: process.env.GROQ_API_KEY,
   nodeEnv: process.env.NODE_ENV || 'development',
   corsOrigins: getCorsOrigins(),
+  readlr2CampEnabled: process.env.READLR2_CAMP_ENABLED?.trim().toLowerCase() !== 'false',
+  readlr2TesterEmails: (process.env.READLR2_TESTER_EMAIL_ALLOWLIST ?? '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean),
+  readlr2CampCurriculumVersion: process.env.READLR2_CAMP_CURRICULUM_VERSION?.trim() || 'readlr-aral-english-1',
+  readlr2CampMediaVersion: process.env.READLR2_CAMP_MEDIA_VERSION?.trim() || 'readlr-existing-models-tts-1',
 };
 
 export default config;

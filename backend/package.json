@@ -12,6 +12,7 @@
     "seed:stages": "tsx scripts/seedStages.ts",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
+    "rollout:check": "tsx scripts/checkReadingRollout.ts",
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {

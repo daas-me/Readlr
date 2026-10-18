@@ -1,0 +1,78 @@
+.curriculum-progress { padding: 22px 0 48px; color: var(--ink); }
+.curriculum-progress__heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--hairline); }
+.curriculum-progress__heading p { margin: 0 0 5px; color: #7c3aed; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.curriculum-progress__heading h2 { margin: 0 0 6px; font-size: 25px; }
+.curriculum-progress__heading span { color: var(--ink-soft); font-size: 13px; }
+.curriculum-progress__heading button { width: 42px; height: 42px; display: grid; place-items: center; color: var(--ink-soft); background: var(--paper); border: 1px solid var(--hairline); border-radius: 8px; }
+.curriculum-progress__heading button:hover:not(:disabled) { color: #7c3aed; border-color: #a78bfa; }
+.curriculum-progress__heading button svg { width: 18px; }
+
+.curriculum-progress__summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 24px 0; border-bottom: 1px solid var(--hairline); }
+.curriculum-progress__summary > div { min-height: 82px; padding: 8px 20px; display: grid; grid-template-columns: 24px 1fr; align-items: center; gap: 4px 12px; border-left: 1px solid var(--hairline); }
+.curriculum-progress__summary > div:first-child { border-left: 0; padding-left: 0; }
+.curriculum-progress__summary svg { width: 21px; color: #7c3aed; }
+.curriculum-progress__summary > div:nth-child(3) svg { color: #b45309; }
+.curriculum-progress__summary > div:nth-child(4) svg { color: #b42355; }
+.curriculum-progress__summary strong { font-size: 27px; font-weight: 650; }
+.curriculum-progress__summary small { color: var(--ink-muted); font-size: 13px; font-weight: 400; }
+.curriculum-progress__summary span { grid-column: 1 / -1; color: var(--ink-soft); font-size: 11px; }
+.curriculum-progress__boundary { margin: 18px 0 0; padding: 11px 14px; color: #51318a; background: #f3e8ff; border-left: 4px solid #7c3aed; font-size: 12px; }
+.curriculum-progress__pending, .curriculum-progress__error, .curriculum-progress__loading { margin-top: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-radius: 8px; font-size: 13px; }
+.curriculum-progress__pending { color: #73510e; background: #fff3cf; border: 1px solid #ebd089; }
+.curriculum-progress__error { color: #8a2f38; background: #fff0f1; border: 1px solid #e8b7bc; }
+.curriculum-progress__error div { display: flex; flex-direction: column; gap: 2px; }
+.curriculum-progress__error span { color: #7c565a; font-size: 12px; }
+.curriculum-progress__loading { justify-content: center; color: var(--ink-soft); }
+.curriculum-progress__pending svg, .curriculum-progress__error svg, .curriculum-progress__loading svg { width: 19px; flex: 0 0 auto; }
+.curriculum-progress__empty { padding: 62px 20px; text-align: center; }
+.curriculum-progress__empty > svg { width: 38px; height: 38px; color: #8a91a3; }
+.curriculum-progress__empty h3 { margin: 14px 0 6px; font-size: 20px; }
+.curriculum-progress__empty p { margin: 0 auto; max-width: 500px; color: var(--ink-soft); font-size: 13px; }
+
+.curriculum-progress__groups { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px 40px; }
+.curriculum-progress__group > header { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 2px solid #ddd6fe; }
+.curriculum-progress__group > header h3 { margin: 0; font-size: 17px; }
+.curriculum-progress__group > header span { color: var(--ink-muted); font-size: 11px; }
+.curriculum-progress__skill { min-height: 96px; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 13px; padding: 16px 0; border-bottom: 1px solid var(--hairline); }
+.curriculum-progress__status-icon { width: 38px; height: 38px; display: grid; place-items: center; color: #6b6278; background: #f1eff5; border-radius: 8px; }
+.curriculum-progress__status-icon svg { width: 18px; }
+.curriculum-progress__skill.is-practiced .curriculum-progress__status-icon { color: #7c3aed; background: #ede9fe; }
+.curriculum-progress__skill.is-completed-with-help .curriculum-progress__status-icon { color: #a85f11; background: #fff0d8; }
+.curriculum-progress__skill.is-independent-candidate .curriculum-progress__status-icon { color: #7c3aed; background: #ede9fe; }
+.curriculum-progress__skill-copy h4 { margin: 0 0 4px; font-size: 14px; }
+.curriculum-progress__skill-copy p { margin: 0; color: var(--ink-soft); font-size: 12px; }
+.curriculum-progress__skill-copy small { display: block; margin-top: 6px; color: var(--ink-muted); font-size: 10px; }
+.curriculum-progress__label { max-width: 132px; padding: 6px 8px; text-align: center; color: #6b6278; background: #f1eff5; border-radius: 6px; font-size: 10px; font-weight: 750; }
+.is-practiced .curriculum-progress__label { color: #6d28d9; background: #ede9fe; }
+.is-completed-with-help .curriculum-progress__label { color: #875016; background: #fff0d8; }
+.is-independent-candidate .curriculum-progress__label { color: #6d28d9; background: #ede9fe; }
+.curriculum-progress > footer { margin-top: 24px; color: var(--ink-muted); font-size: 11px; text-align: right; }
+.is-spinning { animation: curriculum-progress-spin .8s linear infinite; }
+
+@keyframes curriculum-progress-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .curriculum-progress__summary { grid-template-columns: 1fr 1fr; }
+  .curriculum-progress__summary > div:nth-child(3) { border-left: 0; }
+  .curriculum-progress__groups { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .curriculum-progress__heading { align-items: flex-start; }
+  .curriculum-progress__summary { gap: 12px; }
+  .curriculum-progress__summary > div { min-height: 74px; padding: 8px; border: 0; }
+  .curriculum-progress__skill { grid-template-columns: 38px minmax(0, 1fr); }
+  .curriculum-progress__label { grid-column: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) { .is-spinning { animation-duration: 1.8s; } }
+.reading-progress-world{height:100%;overflow:auto;padding:28px max(20px,calc((100% - 1160px)/2)) 55px;background:#faf9fc;color:#1f2430}.reading-progress-world__header{display:flex;align-items:center;gap:18px;margin-bottom:22px}.reading-progress-world__header p{margin:0;color:#7c3aed;font-size:12px;text-transform:uppercase}.reading-progress-world__header h1{margin:2px 0;font-size:34px}.reading-progress-world__header span{color:#4b5266}.reading-progress-hero{display:grid;grid-template-columns:auto 1fr 150px 150px;align-items:center;gap:20px;padding:24px;border:1px solid #ddd6fe;border-radius:8px;background:#fff}.reading-progress-ring{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#7c3aed var(--progress),#ede9fe 0);position:relative}.reading-progress-ring:after{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff}.reading-progress-ring strong{position:relative;z-index:1;font-size:26px}.reading-progress-hero h2{font-size:25px;margin:4px 0}.reading-progress-hero p,.reading-progress-hero span{color:#4b5266}.reading-progress-mini{min-height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid #e5def0;text-align:center}.reading-progress-mini svg{color:#7c3aed}.reading-progress-mini strong{font-size:24px}.reading-progress-mini span{font-size:12px}.reading-progress-books{margin:24px 0;padding:22px;border:1px solid #ddd6fe;border-radius:8px;background:#fff}.reading-progress-books>header{display:flex;gap:12px;align-items:center}.reading-progress-books>header svg{color:#7c3aed}.reading-progress-books h2{font-size:22px;margin:0}.reading-progress-books header p{color:#4b5266;margin:3px 0}.reading-progress-books>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:18px}.reading-progress-books article{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:13px;border-left:5px solid var(--chapter-color);background:#faf9fc}.reading-progress-books article>span{font-weight:800;color:#6b6278}.reading-progress-books h3{font-size:15px;margin:0}.reading-progress-books article p{font-size:11px;color:#4b5266}.reading-progress-books article.is-complete{background:#ede9fe}.reading-progress-books article.is-locked{filter:saturate(.1);opacity:.55}@media(max-width:800px){.reading-progress-hero{grid-template-columns:1fr 1fr}.reading-progress-ring{margin:auto}.reading-progress-hero>div:nth-child(2){text-align:center}.reading-progress-mini{border-left:0;border-top:1px solid #e5def0}.reading-progress-books>div{grid-template-columns:1fr}}
+
+/* Brand colors describe progress; chapter illustration palettes stay on the maps. */
+.reading-progress-books article{border-left-color:#d4cce0}
+.reading-progress-books article.is-complete{border-left-color:#7c3aed}
+.reading-progress-books article.is-complete>svg{color:#7c3aed}
+.reading-progress-books article.is-current{border-left-color:#f59a00;background:#fff7e6}
+.reading-progress-books article.is-current>svg{color:#f59a00}
+.reading-progress-mini:last-child svg{color:#f59a00}
+.reading-progress-world button:focus-visible{outline:3px solid #7c3aed;outline-offset:3px}

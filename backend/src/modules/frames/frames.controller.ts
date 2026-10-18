@@ -6,6 +6,7 @@
 import { Request, Response } from 'express';
 import { getFramesForUser, equipFrame } from './frames.service.js';
 import { getLearnerByUserId } from '../learner/learner.service.js';
+import { curriculumRewardAccess } from './curriculum-rewards.js';
 
 /**
  * GET /api/frames/me
@@ -16,7 +17,8 @@ export async function handleGetMyFrames(req: Request, res: Response) {
     const userId = (req as any).userId;
     const learner = await getLearnerByUserId(userId);
     const frames = await getFramesForUser(userId, learner.equipped_frame_id);
-    res.json({ success: true, frames });
+    const {avatars}=await curriculumRewardAccess(userId);
+    res.json({ success: true, frames, avatars });
   } catch (error) {
     console.error('Error fetching frames:', error);
     res.status(500).json({ error: 'Failed to fetch frames' });

@@ -1,0 +1,17 @@
+.milo-coach { position: relative; width: min(720px, calc(100% - 28px)); min-height: 116px; margin: 14px auto 18px; padding: 14px 48px 14px 110px; display: flex; align-items: center; color: #2d2850; background: #fff; border: 1px solid #d9d0f4; border-left: 5px solid #7652c7; border-radius: 8px; box-shadow: 0 10px 26px rgba(65, 45, 112, .12); }
+.milo-coach__character { position: absolute; left: 2px; bottom: 0; width: 104px; height: 104px; overflow: hidden; }
+.milo-coach__bubble { min-width: 0; }
+.milo-coach__heading { display: flex; align-items: baseline; gap: 9px; }
+.milo-coach__heading strong { color: #6644b2; font-size: 14px; }
+.milo-coach__heading span { color: #81779b; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.milo-coach p { margin: 4px 0 9px; color: #37324d; font-size: 15px; line-height: 1.45; }
+.milo-coach__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.milo-coach__actions button { min-height: 32px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; color: #6045a1; background: #f1edff; border: 1px solid #d5c9f4; border-radius: 7px; font-size: 12px; font-weight: 750; }
+.milo-coach__actions button:hover { background: #e7e0fb; }
+.milo-coach__actions button.milo-coach__action { color: #fff; background: #6c4cb7; border-color: #6c4cb7; }
+.milo-coach__actions svg { width: 15px; height: 15px; }
+.milo-coach__dismiss { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; display: grid; place-items: center; color: #706987; background: transparent; border-radius: 7px; }
+.milo-coach__dismiss:hover { color: #443c60; background: #f3f0f7; }
+.milo-coach__dismiss svg { width: 17px; }
+@media (max-width: 560px) { .milo-coach { min-height: 132px; padding: 14px 40px 14px 88px; }.milo-coach__character { width: 84px; height: 96px; }.milo-coach__character .milo-companion { transform: scale(.82); transform-origin: bottom left; }.milo-coach__heading { align-items: start; flex-direction: column; gap: 1px; }.milo-coach p { font-size: 14px; } }
+@media (prefers-reduced-motion: reduce) { .milo-coach * { transition: none !important; } }

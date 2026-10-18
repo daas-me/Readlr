@@ -1,6 +1,10 @@
 import { earnedProgress, preserveRewards } from "./components/progressReset";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useJourneySync } from "./hooks/useJourneySync";
+import { useEvidenceSync } from "./hooks/useEvidenceSync";
+import { useLearnerCurriculumState } from "./hooks/useLearnerCurriculumState";
+import { curriculumUnlocks } from "../hooks/learnerCurriculumState";
+import { loadReadingProgress } from "../hooks/readingCheckpoints";
 import { notifyJourneyChanged } from "./components/journeySync";
 import { useLearningSettings, markPracticeToday } from "./hooks/useLearningSettings";
 import { getLearningSettings } from "../hooks/learningSettings";
@@ -8,35 +12,37 @@ import { TrailRewardDialog } from "./components/TrailRewardDialog";
 import { StageCompleteDialog, type UnlockedFrame } from "./components/StageCompleteDialog";
 import { getTrailReward, type TrailReward } from "./components/trailRewards";
 import { newStickerReward, type StickerReward } from "./components/stickers";
-import { motion } from "motion/react";
 import { AuthProvider, useAuth, AuthScreen } from "../modules/auth/index";
 import { NavigationHeader } from "./components/NavigationHeader";
 import { StudentSurvey } from "./components/StudentSurvey";
 import { Landing } from "./components/Landing";
-import { LearnerProfile } from "./components/LearnerProfile";
 import { WelcomeScreen } from "./components/WelcomeScreen";
+import { ReadingWorldTour } from './components/ReadingWorldTour';
+import { CampOrientation } from './components/CampOrientation';
+import { shouldShowWorldTour, WORLD_TOUR_COMPLETED } from '../hooks/readingWorldTour';
+import { patchLearnerCurriculumState, readLearnerCurriculumState } from '../hooks/learnerCurriculumState';
+import { CurriculumSoundLibrary } from './components/CurriculumSoundLibrary';
+import { WorldDestination } from './components/WorldDestination';
 import { StageSelection } from "./components/StageSelection";
 import { useClassroom } from "./hooks/useClassroom";
 import { ClassroomMessage } from "./components/ClassroomMessage";
 import { ClassroomNotice } from "./components/ClassroomNotice";
+import { ReadingJourney } from './components/ReadingJourney';
+import { ReadingReview } from './components/ReadingReview';
 import { GameLevel } from "./components/GameLevel";
 import { StoryScene } from "./components/StoryScene";
 import { readBridgeJourney } from "./components/stageTwoContent";
-import { readCvcJourney } from "./components/cvcContent";
 import { ChapterBridge } from "./components/ChapterBridge";
 import { LevelMap } from "./components/LevelMap";
 import { StickerBook } from "./components/StickerBook";
-import { UnifiedDashboard } from "./components/UnifiedDashboard";
+import { ReadingProgressDashboard } from './components/ReadingProgressDashboard';
 import { VowelPowerComplete } from "./components/VowelPowerComplete";
-import { PhonemeBank } from "./components/PhonemeBank";
 import { Settings } from "./components/Settings";
-import { Achievements } from "./components/Achievements";
+import { CurriculumAchievements } from './components/CurriculumAchievements';
 import { Help } from "./components/Help";
 import { ProfilePage } from "./components/ProfilePage";
 import { useDarkMode } from "./hooks/useDarkMode";
 import { AdminDashboard } from "./components/AdminDashboard";
-import { LearningIntroduction } from "./components/LearningIntroduction";
-import { hasIntroduction, finishIntroduction } from "../hooks/learningIntroduction";
 
 // Stage configuration for determining progress
 const STAGE_CONFIG: Record<number, { title: string; totalLevels: number; nextStageId?: number }> = {
@@ -160,9 +166,10 @@ type Screen =
   | "survey"
   | "landing"
   | "auth"
-  | "learner-profile"
   | "welcome"
   | "stage-selection"
+  | "learning-camp"
+  | "reading-review"
   | "story-scene"
   | "chapter-bridge"
   | "level-map"
@@ -192,9 +199,11 @@ function parseAppPath(pathname: string): AppRouteState {
   if (path === "/") return DEFAULT_ROUTE;
   if (path === "/login") return { screen: "auth", authMode: "login" };
   if (path === "/register") return { screen: "auth", authMode: "register" };
-  if (path === "/profile/setup") return { screen: "learner-profile" };
+  if (path === "/profile/setup") return { screen: "welcome" };
   if (path === "/welcome") return { screen: "welcome" };
   if (path === "/home") return { screen: "stage-selection" };
+  if (path === "/learning-camp") return { screen: "learning-camp" };
+  if (path === "/review") return { screen: "reading-review" };
   if (path === "/stickers") return { screen: "sticker-book" };
   if (path === "/progress") return { screen: "dashboard" };
   if (path === "/sounds") return { screen: "phoneme-bank" };
@@ -233,12 +242,14 @@ function buildAppPath(screen: Screen, stageId: number, levelId: number, authMode
       return "/";
     case "auth":
       return authMode === "login" ? "/login" : "/register";
-    case "learner-profile":
-      return "/profile/setup";
     case "welcome":
       return "/welcome";
     case "stage-selection":
       return "/home";
+    case "learning-camp":
+      return "/learning-camp";
+    case "reading-review":
+      return "/review";
     case "story-scene":
       return `/stage-${stageId}`;
     case "chapter-bridge":
@@ -280,6 +291,7 @@ function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>(initialRoute.screen);
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialRoute.authMode ?? 'register');
   const [selectedStage, setSelectedStage] = useState<number>(initialRoute.stageId ?? 1);
+  const [selectedChronicle,setSelectedChronicle]=useState(0);
   const [selectedLevel, setSelectedLevel] = useState<number>(initialRoute.levelId ?? 1);
   const stageScreen = ["story-scene", "chapter-bridge", "level-map", "game", "vowel-power-complete"].includes(currentScreen);
   const classroom = useClassroom(token, user?.role === 'learner', {
@@ -292,10 +304,9 @@ function AppContent() {
   const [stickerReward, setStickerReward] = useState<TrailReward | StickerReward | null>(null);
   const [stageComplete, setStageComplete] = useState<{ stageId: number; frames: UnlockedFrame[] } | null>(null);
   const [journeyActivityOpen, setJourneyActivityOpen] = useState(false);
-  const [introductionOpen, setIntroductionOpen] = useState(false);
   const completionHandledRef = useRef(false);
 
-  useEffect(() => { setStickerReward(null); setStageComplete(null); setIntroductionOpen(false); }, [user?.id]);
+  useEffect(() => { setStickerReward(null); setStageComplete(null); }, [user?.id]);
   useEffect(() => {
     if (currentScreen !== "level-map") setStickerReward(null);
     if (currentScreen === "game") completionHandledRef.current = false;
@@ -318,10 +329,39 @@ function AppContent() {
   },[user?.id]);
   const showJourneyFrames = useCallback((stageId:number, frames:UnlockedFrame[]) => setStageComplete({stageId,frames}), []);
   useJourneySync(user?.role === "learner" ? learnerId : null, token, updateJourneyProgress, user?.id, showJourneyFrames);
-  const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+  useEvidenceSync(user?.role === "learner" ? learnerId : null, token);
+  const curriculumState = useLearnerCurriculumState(learnerId, token);
+  const [worldTourOpen,setWorldTourOpen]=useState(false);
+  const [replayCampOrientation,setReplayCampOrientation]=useState(false);
+  useEffect(()=>{setWorldTourOpen(false);setReplayCampOrientation(false);},[learnerId]);
+  useEffect(()=>{
+    if(currentScreen==='stage-selection'&&learnerId&&!curriculumState.loading&&shouldShowWorldTour(curriculumState.state))setWorldTourOpen(true);
+  },[currentScreen,learnerId,curriculumState.loading,curriculumState.state]);
+  const finishWorldTour=()=>{
+    if(learnerId){
+      const latest=readLearnerCurriculumState(learnerId);
+      patchLearnerCurriculumState(learnerId,{guidedActivities:{...latest.guidedActivities,[WORLD_TOUR_COMPLETED]:true}});
+    }
+    setWorldTourOpen(false);
+    setReplayCampOrientation(true);
+    setCurrentScreen('learning-camp');
+  };
+  const [completedBooks,setCompletedBooks]=useState<string[]>([]);
+  const featureAccess=curriculumUnlocks(curriculumState.state,completedBooks);
+  useEffect(()=>{
+    if(curriculumState.loading)return;
+    const locked=(currentScreen==='dashboard'&&!featureAccess.progress)||(currentScreen==='sticker-book'&&!featureAccess.stickers)||(currentScreen==='phoneme-bank'&&!featureAccess.sounds)||(currentScreen==='achievements'&&!featureAccess.achievements);
+    if(locked)setCurrentScreen(curriculumState.state.campOrientationStep<3?'learning-camp':'stage-selection');
+  },[currentScreen,curriculumState.loading,curriculumState.state.campOrientationStep,featureAccess.progress,featureAccess.stickers,featureAccess.sounds,featureAccess.achievements]);
+  useEffect(()=>{
+    if(!learnerId||user?.role!=="learner")return;
+    const controller=new AbortController();
+    void loadReadingProgress(controller.signal).then(progress=>setCompletedBooks(progress.completed)).catch(()=>{});
+    return()=>controller.abort();
+  },[learnerId,user?.role,currentScreen]);
   const [hasCheckedLearnerProfile, setHasCheckedLearnerProfile] = useState(false);
   const [isLevelJustCompleted, setIsLevelJustCompleted] = useState(false);
-  const publicScreens: Screen[] = ["landing", "auth"];
+  const publicScreens: Screen[] = ["landing", "auth", ...(import.meta.env.DEV ? ['reading-review' as const] : [])];
   const isPublicScreen = publicScreens.includes(currentScreen);
 
   useEffect(() => {
@@ -375,12 +415,12 @@ function AppContent() {
 
   useEffect(() => {
     if (isAuthenticated && user && (currentScreen === "landing" || currentScreen === "auth")) {
-      setCurrentScreen(user.role === "admin" ? "admin-learners" : "learner-profile");
+      if(user.role === "admin")setCurrentScreen("admin-learners");
     }
   }, [isAuthenticated, user, currentScreen]);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "admin" && currentScreen !== "admin-learners") {
+    if (isAuthenticated && user?.role === "admin" && currentScreen !== "admin-learners" && currentScreen !== "reading-review") {
       setCurrentScreen("admin-learners");
     }
   }, [isAuthenticated, user, currentScreen]);
@@ -392,34 +432,36 @@ function AppContent() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
-      setIsCheckingProfile(true);
+    if (currentScreen !== 'reading-review' && isAuthenticated && user?.role === "learner" && token && !learnerId && !hasCheckedLearnerProfile) {
       
       const checkProfile = async () => {
         try {
           const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-          const response = await fetch(`${API_URL}/learner/user/${user.id}`, {
+          let response = await fetch(`${API_URL}/learner/user/${user.id}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
 
-          if (response.ok) {
-            const data = await response.json();
-            setLearnerName(data.name);
-            setLearnerAvatar(data.avatar);
-            setLearnerId(data.id);
-            setCurrentScreen("welcome");
-          } else if (currentScreen !== "learner-profile") {
-            setCurrentScreen("learner-profile");
+          if(!response.ok){
+            const fallbackName=user.name?.trim()||user.email.split('@')[0]||'Reader';
+            response=await fetch(`${API_URL}/learner/profile`,{
+              method:'POST',
+              headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
+              body:JSON.stringify({name:fallbackName,avatar:'🦊'}),
+            });
           }
+
+          if(!response.ok)throw new Error('Learner profile is unavailable');
+          const payload=await response.json();
+          const data=payload.learner??payload;
+          setLearnerName(data.name||user.name||'Reader');
+          setLearnerAvatar(data.avatar||'🦊');
+          setLearnerId(data.id);
+          setCurrentScreen("welcome");
         } catch (error) {
-          console.log('No existing profile found, showing setup screen');
-          if (currentScreen !== "learner-profile") {
-            setCurrentScreen("learner-profile");
-          }
+          console.error('Unable to prepare learner profile',error);
         } finally {
-          setIsCheckingProfile(false);
           setHasCheckedLearnerProfile(true);
         }
       };
@@ -438,28 +480,17 @@ function AppContent() {
     setCurrentScreen("auth");
   };
 
-  const handleAuthSuccess = () => {
-    // After auth, learner-profile will be shown (auto-navigate via useEffect)
-  };
-
-  const handleProfileComplete = (name: string, avatar: string, newLearnerId?: number) => {
-    setLearnerName(name);
-    setLearnerAvatar(avatar);
-    if (newLearnerId) setLearnerId(newLearnerId);
-    setHasCheckedLearnerProfile(true);
-    setCompletedByStage(readProgressFromStorage(user?.id));
-    setCurrentScreen("welcome");
-  };
+  const handleAuthSuccess = () => {};
 
   const handleStartAdventure = () => {
-    if (learnerId && !hasIntroduction(learnerId)) setIntroductionOpen(true);
     setCurrentScreen("stage-selection");
   };
 
-  const handleSelectStage = (stageId: number) => {
+  const handleSelectStage = (stageId: number, chapter = 0) => {
+    setSelectedChronicle(chapter);
     setSelectedStage(stageId);
     setMapEntry(undefined);
-    setCurrentScreen("story-scene");
+    setCurrentScreen(stageId===3 ? "level-map" : "story-scene");
   };
 
   const handleBeginChapter = () => {
@@ -582,22 +613,26 @@ function AppContent() {
   };
 
   const handleViewProgress = () => {
-    setCurrentScreen("dashboard");
+    if(featureAccess.progress)setCurrentScreen("dashboard");
   };
 
   const handleViewStickers = () => {
-    setCurrentScreen("sticker-book");
+    if(featureAccess.stickers)setCurrentScreen("sticker-book");
   };
 
   const handleViewPhonemeBank = () => {
-    setCurrentScreen("phoneme-bank");
+    if(featureAccess.sounds)setCurrentScreen("phoneme-bank");
   };
 
   const handleViewAchievements = () => {
-    setCurrentScreen("achievements");
+    if(featureAccess.achievements)setCurrentScreen("achievements");
   };
 
   const handleNavigate = (screen: string) => {
+    if(screen==='dashboard'&&!featureAccess.progress)return;
+    if(screen==='sticker-book'&&!featureAccess.stickers)return;
+    if(screen==='phoneme-bank'&&!featureAccess.sounds)return;
+    if(screen==='achievements'&&!featureAccess.achievements)return;
     setCurrentScreen(screen as Screen);
   };
 
@@ -621,8 +656,10 @@ function AppContent() {
     setCompletedByStage({ ...DEFAULT_PROGRESS });
   };
 
-  const noHeaderScreens = ["landing", "auth", "learner-profile", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "vowel-power-complete"];
+  const noHeaderScreens = ["landing", "auth", "welcome", "story-scene", "chapter-bridge", "level-map", "game", "vowel-power-complete"];
   const showLearnerHeader = user?.role === "learner" && !noHeaderScreens.includes(currentScreen);
+
+  if(currentScreen==='reading-review'&&import.meta.env.DEV) return <ReadingReview onBack={()=>setCurrentScreen(isAuthenticated?(user?.role==='admin'?'admin-learners':'stage-selection'):'landing')} onSignIn={!isAuthenticated?handleSignIn:undefined}/>;
 
   if (currentScreen === "landing") {
     return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
@@ -649,29 +686,34 @@ function AppContent() {
     return <Landing onGetStarted={handleGetStarted} onSignIn={handleSignIn} />;
   }
 
+  if (currentScreen === 'reading-review') {
+    const back=()=>setCurrentScreen(user?.role==='admin'?'admin-learners':'stage-selection');
+    if(user?.role==='admin'||import.meta.env.DEV)return <ReadingReview onBack={back}/>;
+    return <main className="p-8"><h1>Review access is for administrators.</h1><button onClick={back}>Back to stages</button></main>;
+  }
+
   if (user?.role === "admin") {
-    return <AdminDashboard />;
+    return <AdminDashboard/>;
   }
 
   const classroomMessage = user?.role === 'learner' && !classroom.error ? <ClassroomMessage key={user.id} userId={user.id} policy={classroom.policy} /> : null;
   if (currentScreen === 'survey' && token && user?.role === 'learner') return <><NavigationHeader userName={learnerName} userAvatar={learnerAvatar} currentScreen="survey" onNavigate={handleNavigate} onLogout={handleBackToRoleSelect} surveyAssigned={classroom.surveyAssigned}/><StudentSurvey key={user.id} token={token} userId={user.id} onBack={handleBackToStages}/></>;
   const allClassroomStagesUnlocked = classroom.policy?.mode === 'stages' &&
     [1, 2, 3].every(stage => classroom.policy?.stages?.includes(stage));
+  const classroomBlocksCurrentScreen=!!classroom.policy&&(
+    ['paused','survey'].includes(classroom.policy.mode)||
+    (['stage','stages'].includes(classroom.policy.mode)&&(
+      (stageScreen&&!(classroom.policy.mode==='stage'?[classroom.policy.stage]:classroom.policy.stages??[]).includes(selectedStage))||
+      (currentScreen==='phoneme-bank'&&!allClassroomStagesUnlocked&&!classroom.policy.soundLibrary)
+    ))
+  );
 
-  if (user?.role === 'learner' && currentScreen !== 'learner-profile' &&
-    (classroom.error || !classroom.policy || ['paused', 'survey'].includes(classroom.policy.mode) ||
-      (['stage', 'stages'].includes(classroom.policy.mode) && ((stageScreen && !(classroom.policy.mode === 'stage' ? [classroom.policy.stage] : classroom.policy.stages ?? []).includes(selectedStage)) || introductionOpen || (currentScreen === 'phoneme-bank' && !allClassroomStagesUnlocked && !classroom.policy.soundLibrary))))) {
+  if (user?.role === 'learner' &&
+    (classroom.error || classroomBlocksCurrentScreen)) {
     return <>{classroomMessage}{classroom.surveyAssigned&&<button className="m-4 rounded-lg bg-teal-700 text-white p-4" onClick={()=>setCurrentScreen('survey')}>Open your feedback survey</button>}<ClassroomNotice policy={classroom.policy} error={classroom.error} onLogout={logout} onStage={stage => {
-      setIntroductionOpen(false); setSelectedLevel(1); handleSelectStage(stage);
+      setSelectedLevel(1); handleSelectStage(stage);
     }} /></>;
   }
-
-  if (introductionOpen && learnerId) return <>{classroomMessage}<LearningIntroduction key={learnerId} learnerId={learnerId} userName={learnerName} completedByStage={completedByStage} onLessonDone={() => {
-    finishIntroduction(learnerId); setIntroductionOpen(false);
-    setSelectedStage(1); setSelectedLevel(1); setMapEntry("dojo"); setCurrentScreen("level-map");
-  }} onDone={() => {
-    finishIntroduction(learnerId); setIntroductionOpen(false);
-  }} /></>;
 
   return (
     <div className="size-full flex flex-col">
@@ -684,14 +726,12 @@ function AppContent() {
           currentScreen={currentScreen}
           onNavigate={handleNavigate}
           onLogout={handleBackToRoleSelect}
+          learningCampEnabled
+          featureAccess={featureAccess}
         />
       )}
 
       <div className="flex-1 overflow-hidden">
-        {currentScreen === "learner-profile" && (
-          <LearnerProfile onComplete={handleProfileComplete} />
-        )}
-
         {currentScreen === "welcome" && (
           <WelcomeScreen onStart={handleStartAdventure} userName={learnerName} />
         )}
@@ -707,9 +747,16 @@ function AppContent() {
             onViewStickers={handleViewStickers}
             onViewPhonemeBank={handleViewPhonemeBank}
             onViewAchievements={handleViewAchievements}
+            onOpenLearningCamp={() => setCurrentScreen("learning-camp")}
+            learningCampEnabled
+            expandedKingdom
             completedByStage={completedByStage}
+            curriculumState={curriculumState.state}
+            completedBooks={completedBooks}
           />
         )}
+
+        {currentScreen === "learning-camp" && learnerId && (replayCampOrientation?<CampOrientation learnerId={learnerId} replay onReady={()=>setReplayCampOrientation(false)}/>:<ReadingJourney learnerId={learnerId} initialTab="camp" onBack={handleBackToStages}/>)}
 
         {currentScreen === "story-scene" && (
           <StoryScene
@@ -753,7 +800,8 @@ function AppContent() {
           />
         )}
 
-        {currentScreen === "level-map" && (
+        {currentScreen === "level-map" && (selectedStage===3 && learnerId ?
+          <ReadingJourney key={`${learnerId}-${selectedChronicle}`} learnerId={learnerId} initialTab="kingdom" initialChapter={selectedChronicle} onBack={handleBackToStages}/> :
           <LevelMap
             unlockThrough={classroom.policy?.unlockThrough?.[selectedStage]}
             soundLibraryUnlocked={classroom.policy?.soundLibrary}
@@ -805,25 +853,19 @@ function AppContent() {
         )}
 
         {currentScreen === "sticker-book" && (
-          <StickerBook onBack={handleBackToStages} completedByStage={rewardProgress} avatar={learnerAvatar} />
+          <WorldDestination kind="stickers" onBack={handleBackToStages}>{back=><StickerBook learnerId={learnerId} learnerName={learnerName} completedBooks={completedBooks} curriculumState={curriculumState.state} expandedKingdom onBack={back} completedByStage={rewardProgress} avatar={learnerAvatar} />}</WorldDestination>
         )}
 
         {currentScreen === "dashboard" && (
-          <UnifiedDashboard
-            learnerId={learnerId}
-            userName={learnerName || user?.name}
-            completedByStage={completedByStage}
-            onBack={handleBackToStages}
-            onContinue={handleSelectStage}
-          />
+          <WorldDestination kind="progress" onBack={handleBackToStages}>{back=><ReadingProgressDashboard learnerId={learnerId} token={token} userName={learnerName||user?.name} state={curriculumState.state} completedBooks={completedBooks} onBack={back}/>}</WorldDestination>
         )}
 
         {currentScreen === "phoneme-bank" && (
-          <PhonemeBank key={learnerId ?? "guest"} learnerId={learnerId} unlocked={classroom.policy?.soundLibrary} onBack={handleBackToStages} completedByStage={completedByStage} />
+          <WorldDestination kind="sounds" onBack={handleBackToStages}>{back=><CurriculumSoundLibrary learnerId={learnerId} completedBooks={completedBooks} onBack={back}/>}</WorldDestination>
         )}
 
         {currentScreen === "achievements" && (
-          <Achievements learnerId={learnerId} onBack={handleBackToStages} completedByStage={rewardProgress} />
+          <CurriculumAchievements state={curriculumState.state} completedBooks={completedBooks} onBack={handleBackToStages}/>
         )}
 
         {currentScreen === "settings" && (
@@ -834,7 +876,7 @@ function AppContent() {
         )}
 
         {currentScreen === "help" && (
-          <Help onTutorial={() => setIntroductionOpen(true)} />
+          <Help onTutorial={() => {setCurrentScreen('stage-selection');setWorldTourOpen(true);}} />
         )}
 
         {currentScreen === "profile" && (
@@ -842,9 +884,12 @@ function AppContent() {
             onBack={() => setCurrentScreen("stage-selection")}
             onAvatarUpdate={(avatar) => setLearnerAvatar(avatar)}
             onNameUpdate={(name) => setLearnerName(name)}
+            curriculumState={curriculumState.state}
+            completedBooks={completedBooks}
           />
         )}
       </div>
+      {worldTourOpen&&currentScreen==='stage-selection'&&<ReadingWorldTour onFinish={finishWorldTour}/>}
     </div>
   );
 }

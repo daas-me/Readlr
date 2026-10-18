@@ -68,13 +68,11 @@ export function ChapterBridge({
   stageName, 
   currentLevel, 
   vowel, 
-  vowelName, 
   stageId, 
   onBeginChapter, 
   onBack,
   blendingPair,
   cvcWord,
-  isCompletionView = false 
 }: ChapterBridgeProps) {
   const theme = STAGE_THEMES[stageId as keyof typeof STAGE_THEMES] || STAGE_THEMES[1];
   

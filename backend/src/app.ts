@@ -11,6 +11,7 @@ import { characterRouter, characterService } from './modules/character/index.js'
 import { AuthService, AuthController, createAuthRouter } from './modules/auth/index.js';
 import { config } from './config/env.js';
 import { adminRoutes } from './modules/admin/index.js';
+import { evidenceRoutes } from './modules/evidence/index.js';
 
 const app: Express = express();
 
@@ -42,6 +43,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/frames', framesRoutes);
+app.use('/api/evidence', evidenceRoutes);
 app.use('/api/characters', characterRouter);
 
 // Initialize default characters

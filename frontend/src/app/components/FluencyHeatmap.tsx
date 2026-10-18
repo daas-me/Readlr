@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Sparkles, TrendingUp, Volume2, Star, AlertCircle, CheckCircle2, Zap } from "lucide-react";
-
-type FluencyTier = "fluent" | "halting" | "syllabic" | "untested";
-
-interface FluencyStat {
-  tier: FluencyTier;
-  count: number;
-  percentage: number;
-}
+import { Sparkles, Volume2, Star, AlertCircle, CheckCircle2, Zap } from "lucide-react";
 
 interface StageFluency {
   stageId: number;

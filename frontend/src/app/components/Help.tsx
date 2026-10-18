@@ -3,31 +3,32 @@ import { BookOpen, Mic, Trophy, Map, Search, ChevronDown, Volume2, Headphones, H
 import "./help.css";
 
 const topics = [
-  { id:"journey", title:"Your adventure", icon:Map, answers:[
-    ["Where do I begin?", "Open Stages and choose Valley of Vowels. Begin chapter takes you to the Vowel Dojo. Train the five vowels, then use the Valley button to explore the trail. Return to the Dojo to practise again."],
-    ["What happens in Blending Bridges?", "Train five sound teams in the Bridge Workshop. Join a consonant and a vowel, then restore fifteen bridges. After training, the Sound Shelf lets you choose a consonant and vowel, hear each sound, and blend them together. No recording is needed on the shelf."],
-    ["What happens in CVC Kingdom?", "Place a vowel between two consonants, like m-a-p. Follow nineteen word challenges through the town and castle: build words, find missing letters, change sounds, and read. At the throne, use a vowel, a blend, and a whole word to restore the three crown jewels."],
-    ["Why is a challenge locked?", "Complete the available training or challenge first. The next step opens as you progress. Finish the previous stage before moving to the next one."],
+  { id:"journey", title:"Your reading world", icon:Map, answers:[
+    ["Where do I begin?", "Begin at Learning Camp. Milo guides you through three short practices: tap a sound, build ma, and build am. Finishing them opens the full Camp and unlocks Book 1, The First Gate."],
+    ["What happens inside a book?", "Each book is a new place with a trail of reading stops. Complete the available stop to open the next one. You will meet sounds, join or build words, play a word activity, and finish at a reading checkpoint."],
+    ["Why is a stop or book locked?", "The trail opens in reading order. Finish the available stop before the next stop, and finish the current book before the next book. Your completed work is saved to your learner account and also kept on this device while you are offline."],
+    ["How many books are there?", "The Reading World currently has ten chronicles, from The First Gate to The Crown of Words. Book 10 ends with a road toward a future reading world, so the adventure can grow later."],
   ]},
-  { id:"voice", title:"Sound & microphone", icon:Mic, answers:[
-    ["When should I speak?", "Tap the large practice button. Listen to Milo's prompt, then wait for the listening colour and microphone cue before speaking. Your voice plays back after recording. The small speaker button replays Milo's model when it is available."],
+  { id:"voice", title:"Voice & listening", icon:Mic, answers:[
+    ["When should I speak?", "Listen to Milo first, then tap the recording button and wait for the clear recording cue. Say only the sound or word shown on the page. You can listen to your voice and try again without losing progress."],
     ["Why can't Milo hear me?", "Ask a grown-up to check microphone permission for Readlr in the browser and select the correct microphone. Find a quiet spot and record again. A quiet recording is not a wrong answer."],
+    ["Why are am, at, and mat harder to check?", "Very short words give speech recognition less sound to work with. Wait for the recording cue, keep the vowel short, and say only the word once. Readlr gives the recognizer the word on the page as context, but it still requires that exact word."],
+    ["Can I continue without a microphone?", "Yes. When microphone practice is unavailable, use the practice-without-microphone choice. Listen, say the word aloud with a grown-up if possible, and continue. Readlr records this as guided practice rather than an assessed pronunciation result."],
     ["Why can't I hear the narration?", "Check your device volume and Readlr's volume in Settings. Tap a speaker or Listen to Milo if your browser blocked automatic sound. Check your headphones. Success narration also follows the voice-feedback setting."],
-    ["Does hearing my voice mean I said it correctly?", "Not necessarily. Stage 3 whole-word challenges check the recorded word with speech recognition after playback. A matching word lets you continue; unclear results let you retry. Recognition can make mistakes and is not a phoneme-level pronunciation score. The first two crown jewels remain guided vowel and blend practice."],
-    ["How are Stage 3 words checked?", "Your recording is sent through Readlr's server to Groq's speech-recognition service. Readlr handles this upload in memory rather than saving an audio file on its server. Word-check outcomes are saved in device-local practice history; pronunciation and fluency remain Not assessed. Word checks need an internet connection and a signed-in account."],
-    ["Can I listen without a challenge?", "Open Sound Library from Stages for available vowel, blend, and word recordings. Collections unlock as you progress. After Workshop training, the Stage 2 Sound Shelf also lets you explore sound pairs."],
+    ["Does hearing my voice mean I said it correctly?", "Not always. Reading checkpoints compare the recognized word with the exact word on the page. Recognition can make mistakes and is not a phoneme-by-phoneme pronunciation score, so unclear results invite another try rather than calling the learner wrong."],
+    ["Can I listen without a challenge?", "Yes. The Sound Library opens after the first three stops in Book 1. It contains the 44 phonemes, example words, sound blends, and a place to record and compare your voice. More examples appear as you progress."],
   ]},
-  { id:"progress", title:"Practice & rewards", icon:Trophy, answers:[
-    ["What can I see in Progress?", "My journey shows completed lessons. My Practice shows weekly recording attempts, recorded time, session history, and stage filters. My milestones shows earned rewards. Completing a lesson and having pronunciation assessed are different things."],
-    ["Why does My Practice say Not assessed?", "Accuracy, fluency, and Self-Correction Stars need valid assessment evidence. A completed lesson or a detected voice is not a score. Until those measurements exist, Readlr shows Not assessed instead of inventing a percentage."],
-    ["What are Self-Correction Stars?", "A star needs two assessed attempts at the same target: the first below the accuracy threshold, then the next above it, without corrective feedback between them. Simply trying again or speaking after a quiet recording does not earn an assessed star."],
-    ["Where is practice history saved?", "New challenge recording attempts are saved for the signed-in learner on this browser and device. This history does not currently follow you to another device. Clearing browser data can remove it. Older completed lessons are not converted into attempts. My Practice does not store audio."],
-    ["How do I collect stickers?", "Complete valley trails and stage milestones. Open Sticker Book from Stages to turn the pages and see your collection. Achievements shows reward milestones; account frames become available when their requirements are met."],
+  { id:"progress", title:"Books & rewards", icon:Trophy, answers:[
+    ["When do rewards open?", "The first three stops in Book 1 unlock the Sticker Book and Sound Library. Completing all of Book 1 unlocks Progress and Achievements. Later books unlock one at a time as each previous book is completed."],
+    ["How do I collect stickers?", "Your first three Book 1 sounds award the first stickers. More stickers are placed in the book for learning a chapter skill and completing a chronicle. The first time Sticker Book opens, tap the book to unwrap the collection."],
+    ["What can I see in Progress?", "After Book 1, Progress shows Camp completion, finished chronicles, reading stops, Sound Library recordings, and activity across the current curriculum. It does not turn completion into a pronunciation score."],
+    ["Why can completion and assessment differ?", "Finishing a guided activity shows that it was practised. An independent reading check is separate evidence. Readlr keeps those ideas separate instead of inventing an accuracy percentage from completion alone."],
+    ["Where is my journey saved?", "Book access, completed stops, Camp orientation, carousel position, stickers, and Sound Library visits are saved for the signed-in learner and synchronized across their account. If the connection drops, the latest activity stays on this device until it can sync."],
   ]},
   { id:"grownups", title:"For grown-ups", icon:Heart, answers:[
     ["How can I support a learner?", "Listen to the model together and let the child try before giving the answer. Replay their voice and celebrate their effort. Keep practice comfortable and take a break when they are tired."],
-    ["How can I tell what they have learned?", "Use Progress to see what they practised, then listen as they try a sound or word without a model. Ask a teacher to help interpret their reading. Lesson completion, voice detection, and time spent are not proof of reading mastery."],
-    ["What if a recording is interrupted?", "Return to the challenge and try again when ready. In Blending Bridges and CVC Kingdom, leaving the tab can pause a turn. A microphone or playback problem should not be treated as a reading mistake."],
+    ["How can I tell what they have learned?", "After Book 1, use Progress to see completed Camp practices, book stops, chronicles, and listening activity. Then invite the learner to try a sound or word without the model. Completion and voice detection are not proof of mastery."],
+    ["What if a recording is interrupted?", "Return to the same book stop and try again when ready. Leaving the page can pause a recording. A microphone, connection, or playback problem should not be treated as a reading mistake."],
   ]},
 ] as const;
 
@@ -40,14 +41,14 @@ export function Help({ onTutorial }: { onTutorial?: () => void }) {
     .filter(item=>search?`${item.question} ${item.answer} ${item.topic}`.toLowerCase().includes(search):item.id===topic);
   return <div className="readlr-help"><main className="help-inner">
     <header className="help-heading"><div><p className="help-eyebrow">A little help along the way</p><h1>Help & guidance</h1><p>For young readers and the grown-ups beside them.</p></div>
-      {onTutorial ? <button onClick={onTutorial} className="help-tutorial" aria-label="Replay Milo's tutorial and microphone check">
+      {onTutorial ? <button onClick={onTutorial} className="help-tutorial" aria-label="Replay Milo's Reading World tour">
         <span className="help-tutorial__icon"><RotateCcw size={22} aria-hidden="true"/></span>
-        <span className="help-tutorial__label"><strong>Take a tour with Milo</strong><small>Tutorial & microphone check</small></span>
+        <span className="help-tutorial__label"><strong>Take a tour with Milo</strong><small>Your Reading World, then Learning Camp</small></span>
         <ArrowRight size={19} className="help-tutorial__arrow" aria-hidden="true"/>
       </button> : <BookOpen size={48} aria-hidden="true"/>}
     </header>
     <ol className="help-voice-flow" aria-label="Voice practice sequence">{[{icon:Volume2,title:"Listen to Milo",text:"Hear the sound first."},{icon:Mic,title:"Your turn",text:"Wait for the listening cue."},{icon:Headphones,title:"Hear your voice",text:"Listen back together."}].map(({icon:Icon,title,text},i)=><li key={title}><span className={`help-step step-${i}`}><Icon size={23}/></span><div><h2>{title}</h2><p>{text}</p></div></li>)}</ol>
-    <div className="help-search"><Search size={20} aria-hidden="true"/><input aria-label="Search help" placeholder="Search sounds, stages, progress..." value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button aria-label="Clear search" title="Clear search" onClick={()=>setQuery("")}><X size={18}/></button>}</div>
+    <div className="help-search"><Search size={20} aria-hidden="true"/><input aria-label="Search help" placeholder="Search books, sounds, rewards..." value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button aria-label="Clear search" title="Clear search" onClick={()=>setQuery("")}><X size={18}/></button>}</div>
     <div className="help-layout"><nav aria-label="Help topics">{topics.map(({id,title,icon:Icon})=><button key={id} aria-current={!search&&topic===id?"page":undefined} onClick={()=>{setTopic(id);setQuery("");}}><Icon size={19}/>{title}</button>)}</nav>
       <section className="help-answers" aria-label="Help answers"><header><h2>{search?"Search results":selected.title}</h2><span role="status">{results.length} answers</span></header>
         {results.length===0?<div className="help-empty"><Search size={28}/><h3>No matching answers</h3><p>Try a shorter phrase, such as microphone or progress.</p></div>:results.map(item=><details key={`${search}-${item.question}`}><summary>{item.question}<ChevronDown size={18} aria-hidden="true"/></summary><p>{item.answer}</p></details>)}

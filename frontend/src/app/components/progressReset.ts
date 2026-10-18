@@ -9,7 +9,7 @@ function read(key: string): Record<number, number> {
     const value = JSON.parse(localStorage.getItem(key) || '{}');
     if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
     return Object.fromEntries(Object.entries(value).filter(([stage, count]) =>
-      ['1','2','3'].includes(stage) && Number.isInteger(count) && (count as number) >= 0));
+      ['1','2','3'].includes(stage) && Number.isInteger(count) && (count as number) >= 0).map(([stage,count])=>[Number(stage),Number(count)]));
   } catch { return {}; }
 }
 export function earnedProgress(learner?: number | null): Record<number, number> {
