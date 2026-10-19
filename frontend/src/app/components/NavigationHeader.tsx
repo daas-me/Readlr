@@ -1,17 +1,7 @@
 import { motion } from "motion/react";
 import { Home, Settings, HelpCircle, User, LogOut, Menu, X, FileText, TentTree, LockKeyhole } from "lucide-react";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
+import { GrownUpConfirm } from "./GrownUpConfirm";
 import { useFrames } from "../hooks/useFrames";
 import { AvatarFrame } from "./AvatarFrame";
 
@@ -20,7 +10,7 @@ interface NavigationHeaderProps {
   userAvatar?: string;
   currentScreen: string;
   onNavigate: (screen: string) => void;
-  onLogout?: () => void;
+  onLogout?: () => void | Promise<void>;
   surveyAssigned?: boolean;
   learningCampEnabled?: boolean;
   featureAccess?:{progress:boolean;stickers:boolean;sounds:boolean;achievements:boolean};
@@ -37,7 +27,18 @@ export function NavigationHeader({
   featureAccess={progress:true,stickers:true,sounds:true,achievements:true},
 }: NavigationHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { equippedAssetKey } = useFrames();
+
+  const confirmLogout = async () => {
+    setLoggingOut(true);
+    try { await onLogout?.(); } finally {
+      setLoggingOut(false);
+      setLogoutOpen(false);
+      setMenuOpen(false);
+    }
+  };
 
   const menuItems = [
     { id: "stage-selection", label: "Home", icon: Home, unlocked:true },
@@ -111,37 +112,13 @@ export function NavigationHeader({
                   </AvatarFrame>
                 </button>
                 {onLogout && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button
-                        className="p-2 text-[var(--ink-muted)] hover:text-[#DC2626] hover:bg-card rounded-lg transition-colors"
-                        title="Logout"
-                      >
-                        <LogOut className="w-4 h-4" />
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle className="text-[var(--ink)] text-xl">
-                          Leaving so soon? 👋
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-[var(--ink-soft)]">
-                          Are you sure you want to log out? Your progress is saved!
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]">
-                          Stay
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={onLogout}
-                          className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white"
-                        >
-                          Yes, log out
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <button
+                    onClick={() => setLogoutOpen(true)}
+                    className="p-2 text-[var(--ink-muted)] hover:text-[#DC2626] hover:bg-card rounded-lg transition-colors"
+                    title="Logout"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
                 )}
               </div>
             )}
@@ -202,39 +179,17 @@ export function NavigationHeader({
             })}
 
             {onLogout && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left text-[#DC2626] hover:bg-card transition-colors">
-                    <LogOut className="w-5 h-5" />
-                    Logout
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="text-[var(--ink)] text-xl">
-                      Leaving so soon? 👋
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="text-[var(--ink-soft)]">
-                      Are you sure you want to log out? Your progress is saved!
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]">
-                      Stay
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => { onLogout(); setMenuOpen(false); }}
-                      className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white"
-                    >
-                      Yes, log out
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <button onClick={() => setLogoutOpen(true)} className="w-full px-4 py-3.5 rounded-xl flex items-center gap-3 text-left text-[#DC2626] hover:bg-card transition-colors">
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
             )}
           </div>
         </motion.div>
       )}
+
+      <GrownUpConfirm open={logoutOpen} question="Do you want to log out?" busy={loggingOut}
+        onConfirm={() => void confirmLogout()} onCancel={() => setLogoutOpen(false)}/>
     </>
   );
 }

@@ -2,14 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { supabase, unwrap } from '../../database/db.js';
 import { DecodedToken } from './auth.types.js';
-
-function getJwtSecret(): string {
-  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET is required in production');
-  }
-  return 'readlr-development-secret';
-}
+import { getJwtSecret } from '../../config/jwt.js';
 
 const JWT_SECRET = getJwtSecret();
 const JWT_EXPIRY = '7d';
@@ -22,7 +15,7 @@ export class AuthService {
     email: string,
     password: string,
     role: 'learner' | 'teacher' | 'admin',
-    name: string
+    consentVersion: string | null
   ): Promise<{ id: number; email: string; role: string; name: string }> {
     // Check if user exists
     const existingUser = unwrap(await supabase.from('users').select('id').eq('email', email).maybeSingle());
@@ -33,24 +26,27 @@ export class AuthService {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = unwrap(await supabase.from('users').insert({ email, password_hash: passwordHash, role }).select('id, email, role').single());
+    // Create user; the child profile is created later by the guardian in child setup.
+    const consent = consentVersion ? { consent_at: new Date().toISOString(), consent_version: consentVersion } : {};
+    const user = unwrap(await supabase.from('users').insert({ email, password_hash: passwordHash, role, ...consent }).select('id, email, role').single());
     if (!user) {
       throw new Error('Failed to create user');
-    }
-    const userId = user.id;
-
-    // If learner, create learner profile with name
-    if (role === 'learner') {
-      unwrap(await supabase.from('learner_profiles').insert({ user_id: userId, name }));
     }
 
     return {
       id: user.id,
       email: user.email,
       role: user.role,
-      name: role === 'learner' ? name : email.split('@')[0], // For teachers, use email prefix as fallback
+      name: email.split('@')[0],
     };
+  }
+
+  /**
+   * Check the account password before an adult-only action
+   */
+  async verifyPassword(userId: number, password: string): Promise<boolean> {
+    const user = unwrap(await supabase.from('users').select('password_hash').eq('id', userId).maybeSingle());
+    return user ? bcrypt.compare(password, user.password_hash) : false;
   }
 
   /**

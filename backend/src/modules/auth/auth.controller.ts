@@ -2,6 +2,12 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { LoginRequest, RegisterRequest, AuthResponse } from './auth.types.js';
 import { registrationRole } from './adminInvitation.js';
+import { createLimiter } from '../../middleware/rateLimit.js';
+import { isStrongPassword, PASSWORD_RULES_MESSAGE } from './passwordPolicy.js';
+
+export const CONSENT_VERSION = 'guardian-consent-v1';
+// Five wrong passwords lock account deletion for 15 minutes.
+export const deletePasswordLimit = createLimiter(5, 15 * 60_000, 'Too many wrong passwords. Please wait 15 minutes.');
 
 export class AuthController {
   private authService: AuthService;
@@ -12,10 +18,10 @@ export class AuthController {
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email, password, confirmPassword, role, name }: RegisterRequest = req.body;
+      const { email, password, confirmPassword, role, guardianConfirmed, consent, consentVersion }: RegisterRequest = req.body;
 
       // Validation
-      if (!email || !password || !confirmPassword || !role || !name) {
+      if (!email || !password || !confirmPassword || !role) {
         res.status(400).json({ success: false, message: 'Missing required fields' });
         return;
       }
@@ -25,8 +31,8 @@ export class AuthController {
         return;
       }
 
-      if (password.length < 6) {
-        res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+      if (!isStrongPassword(password)) {
+        res.status(400).json({ success: false, message: PASSWORD_RULES_MESSAGE });
         return;
       }
 
@@ -39,7 +45,12 @@ export class AuthController {
       // Register user
       const normalizedEmail = email.trim().toLowerCase();
       const assignedRole = registrationRole(normalizedEmail, req.body.adminInvitation);
-      const user = await this.authService.register(normalizedEmail, password, assignedRole, name);
+      const consented = guardianConfirmed === true && consent === true && consentVersion === CONSENT_VERSION;
+      if (assignedRole === 'learner' && !consented) {
+        res.status(400).json({ success: false, message: 'Please confirm you are the guardian and agree to the privacy notice.' });
+        return;
+      }
+      const user = await this.authService.register(normalizedEmail, password, assignedRole, assignedRole === 'learner' ? CONSENT_VERSION : null);
 
       // Generate token
       const token = this.authService.generateToken(user.id, user.email, user.role);
@@ -138,6 +149,24 @@ export class AuthController {
         return;
       }
 
+      const { confirmation, password } = req.body ?? {};
+      if (confirmation !== 'DELETE' || typeof password !== 'string' || !password) {
+        res.status(400).json({ success: false, message: 'Type DELETE and enter the guardian password.' });
+        return;
+      }
+
+      const limitKey = `user:${userId}`;
+      if (deletePasswordLimit.blocked(limitKey)) {
+        res.status(429).json({ success: false, message: 'Too many wrong passwords. Please wait 15 minutes.' });
+        return;
+      }
+      if (!(await this.authService.verifyPassword(userId, password))) {
+        deletePasswordLimit.hit(limitKey);
+        res.status(403).json({ success: false, message: 'The password is not correct.' });
+        return;
+      }
+
+      deletePasswordLimit.clear(limitKey);
       await this.authService.deleteAccount(userId);
 
       res.json({ success: true, message: 'Account deleted' });

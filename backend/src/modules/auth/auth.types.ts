@@ -9,7 +9,9 @@ export interface RegisterRequest {
   password: string;
   confirmPassword: string;
   role: 'learner' | 'teacher';
-  name: string;
+  guardianConfirmed?: boolean;
+  consent?: boolean;
+  consentVersion?: string;
 }
 
 export interface AuthResponse {

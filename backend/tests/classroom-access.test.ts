@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 // No live database is contacted: these modules use an isolated test client.
 process.env.SUPABASE_URL = 'http://127.0.0.1:1';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'classroom-test-key';
-process.env.JWT_SECRET = 'classroom-test-jwt-secret';
+process.env.JWT_SECRET = 'classroom-test-jwt-secret-0123456789';
 const { supabase } = await import('../src/database/db.js');
 const { requireRole } = await import('../src/middleware/auth.js');
 const { enforceClassroom, saveClassroom, heartbeat } = await import('../src/modules/admin/classroom.controller.js');

@@ -36,6 +36,8 @@ export async function updateLearner(
   id: number,
   data: UpdateLearnerRequest
 ): Promise<LearnerResponse> {
-  await updateLearnerDB(id, data);
+  // Only nickname and avatar are learner-editable; never grade, frames, or ownership.
+  const updates = { ...(data.name !== undefined && { name: data.name }), ...(data.avatar !== undefined && { avatar: data.avatar }) };
+  await updateLearnerDB(id, updates);
   return getLearnerById(id);
 }

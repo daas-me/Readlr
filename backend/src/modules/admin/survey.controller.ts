@@ -42,9 +42,9 @@ async function responseRows() {
   for(let start=0;;start+=500){
     const batch=unwrap(await supabase.from('survey_responses').select('*').eq('version',SURVEY_VERSION).order('user_id').range(start,start+499))??[];
     if(batch.length){
-      const profiles=unwrap(await supabase.from('learner_profiles').select('user_id,name').in('user_id',batch.map(r=>r.user_id)))??[];
-      const names=new Map(profiles.map(p=>[p.user_id,p.name]));
-      rows.push(...batch.map(r=>({...r,name:names.get(r.user_id)??'Learner'})));
+      const profiles=unwrap(await supabase.from('learner_profiles').select('user_id,name,study_participant').in('user_id',batch.map(r=>r.user_id)))??[];
+      const byUser=new Map(profiles.map(p=>[p.user_id,p]));
+      rows.push(...batch.map(r=>({...r,name:byUser.get(r.user_id)?.name??'Learner',study_participant:byUser.get(r.user_id)?.study_participant===true})));
     }
     if(batch.length<500)return rows;
   }
@@ -57,8 +57,8 @@ export function surveyWorkbook(rows:any[]) {
   const book=new ExcelJS.Workbook();
   book.creator='Readlr';
   const sheet=book.addWorksheet('Responses');
-  sheet.addRow(['Learner ID','Learner','Section','Language','Submitted (UTC)','Questionnaire version',...questions.map(q=>`Q${q.id}`)]);
-  for(const row of rows)sheet.addRow([row.user_id,String(row.name),String(row.section),row.language,new Date(row.submitted_at),SURVEY_VERSION,...row.answers]);
+  sheet.addRow(['Learner ID','Learner','Section','Language','Submitted (UTC)','Questionnaire version',...questions.map(q=>`Q${q.id}`),'Study participant']);
+  for(const row of rows)sheet.addRow([row.user_id,String(row.name),String(row.section),row.language,new Date(row.submitted_at),SURVEY_VERSION,...row.answers,row.study_participant?'Yes':'No']);
   sheet.getColumn(5).numFmt='yyyy-mm-dd hh:mm:ss';
   const key=book.addWorksheet('Question key');
   key.addRow(['Question','English','Cebuano','Answer values']);

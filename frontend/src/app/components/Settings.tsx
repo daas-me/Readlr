@@ -10,16 +10,7 @@ import "./settings.css";
 import { applyDarkMode } from "../hooks/useDarkMode";
 import { AvatarFrame } from "./AvatarFrame";
 import { toast as notify } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
+import { GrownUpConfirm } from "./GrownUpConfirm";
 
 const AVATAR_OPTIONS = [
   "🦊", "🐻", "🐼", "🐨", "🦁", "🐯",
@@ -102,8 +93,12 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [pendingAvatar, setPendingAvatar] = useState("");
   const [showAvatarConfirm, setShowAvatarConfirm] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<"closed" | "ask" | "confirm">("closed");
+  const [deleteText, setDeleteText] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [learnerId, setLearnerId] = useState<number | null>(null);
 
   const volumeSaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -134,6 +129,7 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
         if (learnerRes.ok) {
           const data = await learnerRes.json();
           setCurrentAvatar(data.learner.avatar);
+          setLearnerId(data.learner.id);
         }
       } catch (err) {
         console.error("Failed to fetch settings:", err);
@@ -232,26 +228,37 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
     }
   };
 
+  const closeDelete = () => {
+    setDeleteStep("closed");
+    setDeleteText("");
+    setDeletePassword("");
+    setDeleteError("");
+  };
+
   const handleConfirmDeleteData = async () => {
     setIsDeleting(true);
+    setDeleteError("");
     try {
       const response = await fetch(`${API_URL}/auth/me`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation: deleteText, password: deletePassword }),
       });
       if (response.ok) {
+        closeDelete();
         toast.success("Account deleted", {
-          description: "Your data has been removed.",
+          description: "All reading progress has been removed.",
         });
-        logout();
+        await logout({ learnerId, accountDeleted: true });
       } else {
-        toast.error("Could not delete your data. Try again!");
+        const data = await response.json().catch(() => ({}));
+        setDeletePassword("");
+        setDeleteError(data.message || "Could not delete the account. Try again.");
       }
     } catch {
-      toast.error("Something went wrong!");
+      setDeleteError("Something went wrong. Check your connection and try again.");
     } finally {
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
 
@@ -556,11 +563,11 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
               <div className="divide-y divide-[var(--hairline)]">
                 <details className="settings-data-details">
                   <summary>Your data in Readlr <ChevronRight size={16}/></summary>
-                  <p>Account settings and synced lesson progress are associated with your account. My Practice attempt history is stored separately in this browser for each learner and does not currently sync across devices.</p>
+                  <p>Account settings and synced lesson progress are associated with your account. My Practice attempt history is stored separately in this browser for each learner and does not currently sync across devices. Logging out removes this learner's data from this browser.</p>
                   <p>Ask a grown-up before clearing browser data or deleting an account. Clearing browser data can remove device-only practice history.</p>
                 </details>
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={() => setDeleteStep("ask")}
                   className="w-full py-3.5 flex items-center justify-between text-left text-[#DC2626] hover:opacity-80 transition-opacity"
                 >
                   <span>Delete account</span>
@@ -679,73 +686,36 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
           </>
         )}
       </AnimatePresence>
-      {/* Avatar confirmation dialog */}
-      <AlertDialog open={showAvatarConfirm} onOpenChange={setShowAvatarConfirm}>
-        <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ink)] text-xl">
-              Change your avatar? 🎨
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="text-[var(--ink-soft)]">
-                <p className="mb-3">Switch your avatar to this one?</p>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-14 h-14 bg-[var(--paper-deep)] rounded-full flex items-center justify-center text-3xl">
-                    {currentAvatar}
-                  </div>
-                  <span className="text-[var(--ink-muted)]">→</span>
-                  <div className="w-14 h-14 bg-[var(--accent-soft)] rounded-full flex items-center justify-center text-3xl ring-2 ring-[#4F46E5]">
-                    {pendingAvatar}
-                  </div>
-                </div>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancelAvatar}
-              className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]"
-            >
-              Keep old one
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmAvatar}
-              className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white"
-            >
-              Yes, switch it!
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Avatar confirmation pop-up */}
+      <GrownUpConfirm open={showAvatarConfirm} question="Save these changes?" busy={isSaving}
+        onConfirm={handleConfirmAvatar} onCancel={handleCancelAvatar}>
+        <div className="flex items-center justify-center gap-4 mb-2" aria-label={`Change avatar from ${currentAvatar} to ${pendingAvatar}`}>
+          <span className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[#e9ddff]">{currentAvatar}</span>
+          <span aria-hidden="true">→</span>
+          <span className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[#e9ddff] ring-2 ring-[#7c3aed]">{pendingAvatar}</span>
+        </div>
+      </GrownUpConfirm>
 
-      {/* Delete data confirmation dialog */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ink)] text-xl">
-              Delete your account?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--ink-soft)]">
-              This permanently deletes your account, progress, and settings. This cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setShowDeleteConfirm(false)}
-              className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]"
-            >
-              Keep my data
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDeleteData}
-              disabled={isDeleting}
-              className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white"
-            >
-              {isDeleting ? "Deleting..." : "Yes, delete it"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete account: ask first, then the guardian types DELETE and the account password */}
+      <GrownUpConfirm open={deleteStep === "ask"} question="Do you want to delete this account? All reading progress will be removed."
+        onConfirm={() => setDeleteStep("confirm")} onCancel={closeDelete}/>
+      <GrownUpConfirm open={deleteStep === "confirm"} question="Type DELETE, then enter the guardian password." confirmLabel="Delete account"
+        confirmDisabled={deleteText !== "DELETE" || !deletePassword} busy={isDeleting}
+        onConfirm={handleConfirmDeleteData} onCancel={closeDelete}>
+        <div className="space-y-3">
+          <label className="block">
+            <span className="block text-sm font-bold mb-1">Type DELETE</span>
+            <input value={deleteText} onChange={(e) => setDeleteText(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false}
+              className="w-full min-h-12 px-3 border-2 border-[#dbc6ff] rounded-md bg-white text-[#302044]"/>
+          </label>
+          <label className="block">
+            <span className="block text-sm font-bold mb-1">Guardian password</span>
+            <input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} autoComplete="current-password"
+              className="w-full min-h-12 px-3 border-2 border-[#dbc6ff] rounded-md bg-white text-[#302044]"/>
+          </label>
+          {deleteError && <p role="alert" className="text-sm">{deleteError}</p>}
+        </div>
+      </GrownUpConfirm>
     </div>
   );
 }

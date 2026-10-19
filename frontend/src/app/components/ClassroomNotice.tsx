@@ -1,9 +1,13 @@
 import { ArrowRight, ExternalLink, Pause, WifiOff } from 'lucide-react';
+import { useState } from 'react';
 import type { ClassroomPolicy } from '../hooks/useClassroom';
+import { GrownUpConfirm } from './GrownUpConfirm';
 
 export function ClassroomNotice({ policy, error, onStage, onLogout }: {
-  policy: ClassroomPolicy | null; error: boolean; onStage: (stage: number) => void; onLogout: () => void;
+  policy: ClassroomPolicy | null; error: boolean; onStage: (stage: number) => void; onLogout: () => void | Promise<void>;
 }) {
+  const [logoutOpen,setLogoutOpen]=useState(false);
+  const [loggingOut,setLoggingOut]=useState(false);
   if(!error&&!policy)return null;
   return <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] p-6 text-[var(--ink)]">
     <div className="w-full max-w-lg text-center">
@@ -12,7 +16,9 @@ export function ClassroomNotice({ policy, error, onStage, onLogout }: {
       <p className="mt-4 text-lg text-[var(--ink-soft)]">{error ? 'We are checking your classroom connection. Your saved progress stays safe.' : policy?.message || (policy?.mode === 'paused' ? 'Your teacher will let you know when it is time to continue.' : 'Your teacher has chosen an activity for you.')}</p>
       {!error && policy && ['stage', 'stages'].includes(policy.mode) && (policy.mode === 'stage' ? [policy.stage!] : policy.stages ?? []).map(stage => <button key={stage} onClick={() => onStage(stage)} className="mx-auto mt-6 flex items-center gap-2 rounded-lg bg-amber-500 px-6 py-4 font-bold text-white">Go to Stage {stage}<ArrowRight size={20} /></button>)}
       {!error && policy?.mode === 'survey' && <a href={policy.surveyUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-amber-500 px-6 py-4 font-bold text-white">Open check-in<ExternalLink size={18} /></a>}
-      <button onClick={onLogout} className="mx-auto mt-8 block text-sm underline">Sign out</button>
+      <button onClick={()=>setLogoutOpen(true)} className="mx-auto mt-8 block text-sm underline">Sign out</button>
     </div>
+    <GrownUpConfirm open={logoutOpen} question="Do you want to log out?" busy={loggingOut} onCancel={()=>setLogoutOpen(false)}
+      onConfirm={()=>{setLoggingOut(true);void Promise.resolve(onLogout()).finally(()=>{setLoggingOut(false);setLogoutOpen(false);});}}/>
   </main>;
 }
