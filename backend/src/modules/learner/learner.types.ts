@@ -22,6 +22,4 @@ export interface LearnerResponse {
 export interface UpdateLearnerRequest {
   name?: string;
   avatar?: string;
-  grade?: number;
-  equipped_frame_id?: number;
 }

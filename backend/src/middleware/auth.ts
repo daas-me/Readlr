@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { supabase, unwrap } from '../database/db.js';
-
-function getJwtSecret(): string {
-  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET is required in production');
-  }
-  return 'readlr-development-secret';
-}
+import { getJwtSecret } from '../config/jwt.js';
 
 const JWT_SECRET = getJwtSecret();
 

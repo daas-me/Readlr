@@ -3,13 +3,10 @@
  */
 
 import { Router } from 'express';
-import { authMiddleware } from '../../middleware/auth.js';
+import { authMiddleware, requireRole } from '../../middleware/auth.js';
 import {
   handleSaveProfile,
-  handleCreateLearner,
-  handleGetLearnerById,
   handleGetLearnerByUserId,
-  handleUpdateLearner,
   handleGetMyProfile,
   handleUpdateMyProfile,
 } from './learner.controller.js';
@@ -20,13 +17,10 @@ const router = Router();
 router.get('/me', authMiddleware, handleGetMyProfile);
 router.put('/me', authMiddleware, handleUpdateMyProfile);
 
-// Protected route for authenticated users
-router.post('/profile', authMiddleware, handleSaveProfile);
+// Child setup for a new learner account
+router.post('/profile', authMiddleware, requireRole('learner'), handleSaveProfile);
 
-// Authenticated routes
-router.post('/', authMiddleware, handleCreateLearner);
+// Own profile by user id, or any profile for an admin
 router.get('/user/:userId', authMiddleware, handleGetLearnerByUserId);
-router.get('/:id', authMiddleware, handleGetLearnerById);
-router.put('/:id', authMiddleware, handleUpdateLearner);
 
 export default router;
