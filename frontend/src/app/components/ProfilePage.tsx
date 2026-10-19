@@ -6,16 +6,7 @@ import { useFrames } from "../hooks/useFrames";
 import { AvatarFrame } from "./AvatarFrame";
 import { completedBookOneStarterStops, emptyLearnerCurriculumState, type LearnerCurriculumState } from "../../hooks/learnerCurriculumState";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
+import { GrownUpConfirm } from "./GrownUpConfirm";
 
 interface ProfilePageProps {
   onBack: () => void;
@@ -241,7 +232,7 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate, curriculumSt
                         }
                       }}
                       className="text-2xl text-[var(--ink)] bg-[var(--paper)] border border-[#4F46E5] rounded-lg px-3 py-1 outline-none w-full"
-                      maxLength={30}
+                      maxLength={20}
                     />
                     <button
                       onClick={handleSaveName}
@@ -395,77 +386,21 @@ export function ProfilePage({ onBack, onAvatarUpdate, onNameUpdate, curriculumSt
         </div>
       </div>
 
-      {/* Name confirmation dialog */}
-      <AlertDialog open={showNameConfirm} onOpenChange={setShowNameConfirm}>
-        <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ink)] text-xl">
-              Change your name? ✏️
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--ink-soft)]">
-              Your name will change from{" "}
-              <span className="font-medium text-[var(--ink)]">"{profile?.name}"</span>{" "}
-              to{" "}
-              <span className="font-medium text-[#4F46E5]">"{pendingName}"</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancelName}
-              className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]"
-            >
-              Keep old name
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmName}
-              disabled={isSaving}
-              className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white"
-            >
-              {isSaving ? "Saving..." : "Yes, change it!"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Nickname confirmation pop-up */}
+      <GrownUpConfirm open={showNameConfirm} question="Save these changes?" busy={isSaving}
+        onConfirm={handleConfirmName} onCancel={handleCancelName}>
+        <p>"{profile?.name}" → <strong>"{pendingName}"</strong></p>
+      </GrownUpConfirm>
 
-      {/* Avatar confirmation dialog */}
-      <AlertDialog open={showAvatarConfirm} onOpenChange={setShowAvatarConfirm}>
-        <AlertDialogContent className="bg-card rounded-2xl border border-[var(--hairline)]">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ink)] text-xl">
-              Change your avatar? 🎨
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="text-[var(--ink-soft)]">
-                <p className="mb-3">Switch your avatar from</p>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-14 h-14 bg-[var(--paper-deep)] rounded-full flex items-center justify-center text-3xl">
-                    {displayAvatar}
-                  </div>
-                  <span className="text-[var(--ink-muted)]">→</span>
-                  <div className="w-14 h-14 bg-[var(--accent-soft)] rounded-full flex items-center justify-center text-3xl ring-2 ring-[#4F46E5]">
-                    {pendingAvatar}
-                  </div>
-                </div>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancelAvatar}
-              className="rounded-xl border border-[var(--hairline)] text-[var(--ink-soft)] hover:bg-[var(--paper)]"
-            >
-              Keep old one
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmAvatar}
-              disabled={isSaving}
-              className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white"
-            >
-              {isSaving ? "Saving..." : "Yes, switch it!"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Avatar confirmation pop-up */}
+      <GrownUpConfirm open={showAvatarConfirm} question="Save these changes?" busy={isSaving}
+        onConfirm={handleConfirmAvatar} onCancel={handleCancelAvatar}>
+        <div className="flex items-center justify-center gap-4 mb-2" aria-label={`Change avatar from ${displayAvatar} to ${pendingAvatar}`}>
+          <span className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[#e9ddff]">{displayAvatar}</span>
+          <span aria-hidden="true">→</span>
+          <span className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[#e9ddff] ring-2 ring-[#7c3aed]">{pendingAvatar}</span>
+        </div>
+      </GrownUpConfirm>
 
     </div>
   );
