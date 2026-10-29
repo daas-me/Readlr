@@ -57,3 +57,6 @@ lerna-debug.log*
 
 #Database
 readlr.db
+
+# Local tools (Rhubarb Lip Sync)
+tools/

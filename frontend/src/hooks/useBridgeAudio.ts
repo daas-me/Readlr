@@ -7,6 +7,7 @@ import { getLearningSettings, learningVolume } from "./learningSettings";
 import { voiceCandidates, withVoiceFallback } from "./miloVoice";
 import { resolveStageOneAudioPath } from "../app/components/stageOneAudio";
 import { observeAudioActivity, startAudioPlayback } from "./audioPlayback";
+import { followMouthCues } from "./miloMouth";
 
 export function useBridgeAudio(basePath = "/audio/stage2") {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -55,10 +56,12 @@ export function useBridgeAudio(basePath = "/audio/stage2") {
     const unobserve = observeAudioActivity(player, active => {
       if (mounted.current && audio.current === player) setIsPlaying(active);
     });
+    const stopMouth = followMouthCues(player);
     const playback = startAudioPlayback(player, onProgress);
     cancelPending.current = playback.cancel;
     return playback.done.finally(() => {
       unobserve();
+      stopMouth();
       if (cancelPending.current === playback.cancel) cancelPending.current = null;
       if (audio.current === player) { audio.current = null; if (mounted.current) setIsPlaying(false); }
     });
@@ -73,7 +76,7 @@ export function useBridgeAudio(basePath = "/audio/stage2") {
       onLine?.(lines.find(line => { end += line.length; return position < end; }) ?? lines[lines.length-1]);
     };
     onLine?.(lines[0]);
-    // Full recordings have no cue sheet yet; distribute captions by text length.
+    // Cue sheets drive Milo's mouth only; captions are still distributed by text length.
     try { if (!entry.file) throw new Error("Use speech"); await play(`${basePath}/${entry.file}`, fraction=>showPosition(fraction*total)); return; }
     catch (error) {
       if (generation.current !== current || ["AbortError", "NotAllowedError"].includes((error as Error).name)) throw error;

@@ -1,6 +1,7 @@
-import { useId } from "react";
+import { useId, useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { CharacterState, MiloGesture, MiloLook } from "./miloBehavior";
+import { getMiloMouth, subscribeMiloMouth, type MouthShape } from "../../hooks/miloMouth";
 
 export type { CharacterState } from "./miloBehavior";
 
@@ -18,6 +19,33 @@ interface CharacterCompanionProps {
 const mouths: Record<string, [number, number]> = {
   A: [15, 15], E: [18, 8], I: [19, 6], O: [12, 14], U: [10, 12],
 };
+
+// Placeholder lip-sync shapes (Rhubarb A–H, X), each with a distinct silhouette so changes
+// read at lesson size. Replace with final artwork in the same area (below the nose, y≈148–178).
+const INSIDE = "#4a2541", LIPS = "#b0607f", TONGUE = "#f592b4", TEETH = "#fffdf6";
+const OPEN = "M135 153 Q150 149 165 153 Q166 170 150 172 Q134 170 135 153Z";
+function LipSyncMouth({ shape }: { shape: MouthShape }) {
+  switch (shape) {
+    case "A": // m, b, p: lips pressed together
+      return <g><path d="M135 158 Q150 153 165 158 Q150 165 135 158Z" fill={LIPS}/><path d="M136 158 Q150 160 164 158" stroke={INSIDE} strokeWidth="2.5" fill="none" strokeLinecap="round"/></g>;
+    case "B": // most consonants, ee: wide grin with both teeth rows
+      return <g><path d="M133 155 Q150 151 167 155 Q166 165 150 166 Q134 165 133 155Z" fill={INSIDE} stroke={LIPS} strokeWidth="3"/><rect x="137" y="154.5" width="26" height="4.5" rx="2" fill={TEETH}/><rect x="138" y="160.5" width="24" height="3.5" rx="1.7" fill={TEETH}/></g>;
+    case "C": // e, a: open
+      return <g><path d={OPEN} fill={INSIDE} stroke={LIPS} strokeWidth="3"/><rect x="140" y="152.5" width="20" height="4" rx="2" fill={TEETH}/><ellipse cx="150" cy="167" rx="9" ry="4" fill={TONGUE}/></g>;
+    case "D": // ah: wide open
+      return <g><path d="M134 152 Q150 148 166 152 Q168 175 150 177 Q132 175 134 152Z" fill={INSIDE} stroke={LIPS} strokeWidth="3"/><rect x="140" y="151.5" width="20" height="4" rx="2" fill={TEETH}/><ellipse cx="150" cy="171" rx="11" ry="4.5" fill={TONGUE}/></g>;
+    case "E": // o, er: rounded
+      return <g><ellipse cx="150" cy="162" rx="10" ry="12" fill={INSIDE} stroke={LIPS} strokeWidth="3.5"/><ellipse cx="150" cy="169" rx="5.5" ry="3" fill={TONGUE}/></g>;
+    case "F": // oo, w: puckered
+      return <g><ellipse cx="150" cy="160" rx="8.5" ry="8" fill={LIPS}/><ellipse cx="150" cy="160" rx="3.5" ry="3.7" fill={INSIDE}/></g>;
+    case "G": // f, v: top teeth on the lower lip
+      return <g><path d="M136 156 Q150 152 164 156 Q163 164 150 165 Q137 164 136 156Z" fill={INSIDE}/><rect x="139" y="153.5" width="22" height="6" rx="2" fill={TEETH}/><path d="M135 161 Q150 167 165 161" stroke={LIPS} strokeWidth="5" fill="none" strokeLinecap="round"/></g>;
+    case "H": // l: open with the tongue raised
+      return <g><path d={OPEN} fill={INSIDE} stroke={LIPS} strokeWidth="3"/><rect x="140" y="152.5" width="20" height="4" rx="2" fill={TEETH}/><path d="M142 168 Q150 154 158 168Z" fill={TONGUE}/></g>;
+    default: // X: rest
+      return <path d="M137 156 Q150 167 163 156" stroke="#785365" strokeWidth="3.5" fill="none" strokeLinecap="round"/>;
+  }
+}
 
 export function CharacterCompanion({ state, phoneme, size = 320, gesture = "rest", lookAt = "viewer", cueKey, reducedMotion = false }: CharacterCompanionProps) {
   const id = useId().replace(/:/g, "");
@@ -37,6 +65,9 @@ export function CharacterCompanion({ state, phoneme, size = 320, gesture = "rest
   const leftArm = joining ? -60 : happy || revealing ? 65 : 0;
   const rightArm = joining ? 60 : pointing ? -100 : listening ? -135 : thinking ? 55 : revealing ? -75 : waving || happy ? -125 : speaking ? -25 : 0;
   const [mouthX, mouthY] = mouths[phoneme?.toUpperCase() ?? ""] ?? [16, 10];
+  // A playing recording with a cue sheet drives the mouth, except while Milo listens or thinks.
+  const lipSync = useSyncExternalStore(subscribeMiloMouth, getMiloMouth, () => null);
+  const syncedMouth = lipSync && !listening && !thinking ? lipSync : null;
   const fill = (name: string) => `url(#${id}-${name})`;
 
   return <div className="relative milo-companion" data-state={state} data-gesture={gesture} data-look={lookAt} style={{ width: size, height: size, flexShrink: 0 }}>
@@ -89,7 +120,8 @@ export function CharacterCompanion({ state, phoneme, size = 320, gesture = "rest
             </>}
           </motion.g>
           <path d="M143 140 Q150 136 157 140 Q156 147 150 148 Q144 147 143 140" fill="#786084"/>
-          {speaking ? <motion.g animate={{ scaleY: reduced ? 1 : [1, .35, .85, .5, 1, .25, 1] }} transition={{ duration: reduced ? 0 : 1.1, repeat: reduced ? 0 : Infinity }} style={{ transformOrigin: "150px 153px" }}>
+          {syncedMouth ? <LipSyncMouth shape={syncedMouth}/>
+            : speaking ? <motion.g animate={{ scaleY: reduced ? 1 : [1, .35, .85, .5, 1, .25, 1] }} transition={{ duration: reduced ? 0 : 1.1, repeat: reduced ? 0 : Infinity }} style={{ transformOrigin: "150px 153px" }}>
               <ellipse cx="150" cy="159" rx={mouthX} ry={mouthY} fill="#59334f"/>
               <ellipse cx="150" cy={159 + mouthY * .48} rx={mouthX * .55} ry={mouthY * .27} fill="#f592b4"/>
             </motion.g>

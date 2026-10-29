@@ -16,6 +16,7 @@ const poses: { name: string; state: CharacterState; gesture: MiloGesture; lookAt
   { name: "Join sounds", state: "idle", gesture: "join", lookAt: "down", icon: Link2 },
 ];
 const clips = [
+  { label: "Lip-sync: Bridge Workshop welcome", path: "/audio/stage2/WorkshopWelcome.wav" },
   { label: "Milo's introduction", path: "/audio/stage1/Stage1MiloIntro.wav" },
   { label: "Blended sound: ma", path: "/audio/stage2/PronounceMA.wav" },
   { label: "Word: sun", path: "/audio/stage3/PronounceSUN.wav" },

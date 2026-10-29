@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceJO.wav",
+    "duration": 1.13
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.12, "value": "X" },
+    { "start": 0.12, "end": 0.28, "value": "B" },
+    { "start": 0.28, "end": 0.56, "value": "E" },
+    { "start": 0.56, "end": 0.84, "value": "F" },
+    { "start": 0.84, "end": 0.91, "value": "C" },
+    { "start": 0.91, "end": 1.13, "value": "X" }
+  ]
+}

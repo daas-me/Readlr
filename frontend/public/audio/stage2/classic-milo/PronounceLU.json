@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceLU.wav",
+    "duration": 0.97
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.24, "value": "X" },
+    { "start": 0.24, "end": 0.76, "value": "F" },
+    { "start": 0.76, "end": 0.97, "value": "X" }
+  ]
+}

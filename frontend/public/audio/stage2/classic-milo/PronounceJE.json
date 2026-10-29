@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceJE.wav",
+    "duration": 0.73
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.04, "value": "X" },
+    { "start": 0.04, "end": 0.20, "value": "B" },
+    { "start": 0.20, "end": 0.27, "value": "C" },
+    { "start": 0.27, "end": 0.41, "value": "B" },
+    { "start": 0.41, "end": 0.73, "value": "X" }
+  ]
+}

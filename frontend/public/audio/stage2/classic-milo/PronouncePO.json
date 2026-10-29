@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronouncePO.wav",
+    "duration": 0.74
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.05, "value": "X" },
+    { "start": 0.05, "end": 0.11, "value": "B" },
+    { "start": 0.11, "end": 0.23, "value": "E" },
+    { "start": 0.23, "end": 0.30, "value": "F" },
+    { "start": 0.30, "end": 0.44, "value": "B" },
+    { "start": 0.44, "end": 0.74, "value": "X" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage3\\classic-milo\\PronounceBED.wav",
+    "duration": 1.79
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.03, "value": "A" },
+    { "start": 0.03, "end": 0.22, "value": "C" },
+    { "start": 0.22, "end": 0.50, "value": "B" },
+    { "start": 0.50, "end": 1.79, "value": "X" }
+  ]
+}

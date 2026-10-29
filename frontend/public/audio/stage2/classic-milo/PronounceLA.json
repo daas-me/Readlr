@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceLA.wav",
+    "duration": 1.09
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.24, "value": "X" },
+    { "start": 0.24, "end": 0.41, "value": "H" },
+    { "start": 0.41, "end": 0.66, "value": "D" },
+    { "start": 0.66, "end": 0.73, "value": "C" },
+    { "start": 0.73, "end": 1.04, "value": "B" },
+    { "start": 1.04, "end": 1.09, "value": "X" }
+  ]
+}

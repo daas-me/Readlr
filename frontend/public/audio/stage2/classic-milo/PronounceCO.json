@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceCO.wav",
+    "duration": 1.73
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.24, "value": "E" },
+    { "start": 0.24, "end": 0.52, "value": "F" },
+    { "start": 0.52, "end": 0.59, "value": "B" },
+    { "start": 0.59, "end": 1.73, "value": "X" }
+  ]
+}

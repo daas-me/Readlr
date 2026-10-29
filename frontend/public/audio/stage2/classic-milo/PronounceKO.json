@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceKO.wav",
+    "duration": 0.89
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.11, "value": "X" },
+    { "start": 0.11, "end": 0.18, "value": "B" },
+    { "start": 0.18, "end": 0.60, "value": "E" },
+    { "start": 0.60, "end": 0.81, "value": "F" },
+    { "start": 0.81, "end": 0.89, "value": "X" }
+  ]
+}

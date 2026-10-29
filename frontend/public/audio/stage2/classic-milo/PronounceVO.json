@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\Jude\\Desktop\\trixie\\Readlr2\\Readlr\\frontend\\public\\audio\\stage2\\classic-milo\\PronounceVO.wav",
+    "duration": 1.57
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.03, "value": "X" },
+    { "start": 0.03, "end": 0.10, "value": "G" },
+    { "start": 0.10, "end": 0.30, "value": "E" },
+    { "start": 0.30, "end": 0.44, "value": "F" },
+    { "start": 0.44, "end": 1.57, "value": "X" }
+  ]
+}
