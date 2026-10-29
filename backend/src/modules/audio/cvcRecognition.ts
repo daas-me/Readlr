@@ -6,9 +6,10 @@ export const READING_TARGETS = new Set([...CVC_TARGETS,
   'mango','apple','egg','insect','octopus','umbrella','dog','goat','quilt','box','mix','mop','pan','pup','tap','ten']);
 // Same vocabulary for every challenge, never the current expected answer alone.
 export const CVC_TRANSCRIPTION_CONTEXT = `English reading practice with short words: ${[...READING_TARGETS].join(', ')}. Write spoken words, not numerals.`;
-export function cvcTranscriptionPrompt(target:string) {
-  const expected=READING_TARGETS.has(target)?target:'';
-  return `A learner is reading exactly one printed word. The word on screen is "${expected}". Transcribe only what the learner actually says, using that spelling when the audio supports it. ${CVC_TRANSCRIPTION_CONTEXT}`;
+// The target word is deliberately left out: naming it makes Whisper write near-misses
+// such as "toop" or "soon" as the expected word.
+export function cvcTranscriptionPrompt(_target:string) {
+  return `A learner is reading one short word aloud. Transcribe only what the learner actually says. ${CVC_TRANSCRIPTION_CONTEXT}`;
 }
 export interface RecognitionSegment { avg_logprob?:number; no_speech_prob?:number; compression_ratio?:number }
 const TARGET_EQUIVALENTS:Record<string,Set<string>>={

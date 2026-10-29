@@ -15,8 +15,9 @@ test('tin context includes the entire curriculum without accepting ten or numera
   assert.equal(judgeCvcWord('tin','ten',quality).status,'different');
 });
 test('short-word transcription accepts target-only homophones but rejects other or extra words',()=>{
-  assert.match(cvcTranscriptionPrompt('at'),/word on screen is "at"/);
-  assert.match(cvcTranscriptionPrompt('mat'),/word on screen is "mat"/);
+  // The prompt no longer names the target; it biased near-misses ("soon", "toop") into matches.
+  assert.equal(cvcTranscriptionPrompt('at'),cvcTranscriptionPrompt('mat'));
+  assert.ok(!/word on screen/.test(cvcTranscriptionPrompt('at')));
   assert.equal(judgeCvcWord('at','hat',quality).status,'different');
   assert.equal(judgeCvcWord('at','add',quality).status,'matched');
   assert.equal(judgeCvcWord('mat','Matt',quality).status,'matched');

@@ -13,6 +13,7 @@
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
     "rollout:check": "tsx scripts/checkReadingRollout.ts",
+    "asr:accuracy": "tsx scripts/asrAccuracy.ts",
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {

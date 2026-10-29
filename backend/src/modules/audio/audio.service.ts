@@ -10,8 +10,20 @@ export async function recognizeCvcWord(file: Express.Multer.File, target: string
     file: new File([file.buffer], `recording.${extension}`, {type:file.mimetype}),
     model:'whisper-large-v3', language:'en', response_format:'verbose_json', temperature:0,
     prompt:cvcTranscriptionPrompt(target),
-  }, {timeout:20000, maxRetries:0});
-  return judgeCvcWord(target,response.text ?? '',(response as unknown as {segments?:RecognitionSegment[]}).segments);
+  }, {timeout:20000, maxRetries:0}).catch((error: unknown) => {
+    // Callers show a generic retry message, so keep the cause visible in the server log.
+    const status = (error as {status?: number}).status;
+    console.warn(`Groq transcription failed${status ? ` (HTTP ${status})` : ''}: ${error instanceof Error ? error.message : String(error)}`);
+    throw error;
+  });
+  const segments=(response as unknown as {segments?:RecognitionSegment[]}).segments;
+  const result=judgeCvcWord(target,response.text ?? '',segments);
+  // Development-only tuning aid; transcripts are never logged or stored in production.
+  if (config.nodeEnv !== 'production') {
+    const scores=(segments ?? []).map(s=>`logprob ${s.avg_logprob?.toFixed(2)} nospeech ${s.no_speech_prob?.toFixed(2)} compression ${s.compression_ratio?.toFixed(2)}`).join(' | ');
+    console.log(`[asr] target "${target}" heard "${(response.text ?? '').trim()}" -> ${result.status} (${scores || 'no segments'})`);
+  }
+  return result;
 }
 
 let openai: OpenAI | null = null;

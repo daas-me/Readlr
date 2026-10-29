@@ -2,8 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkpointWords, chapterAvailable, CHAPTER_IDS, READING_BANKS } from '../src/modules/evidence/reading-catalog.js';
 import { parsePolicy, stagePermitted, OPEN_POLICY } from '../src/modules/admin/classroom.policy.js';
-import { READING_TARGETS } from '../src/modules/audio/cvcRecognition.js';
+import { READING_TARGETS, cvcTranscriptionPrompt, CVC_TRANSCRIPTION_CONTEXT } from '../src/modules/audio/cvcRecognition.js';
 import fs from 'node:fs';
+
+test('transcription prompt does not single out the expected word',()=>{
+  // Naming the target biased Whisper into writing near-misses ("toop", "soon") as the target.
+  assert.equal(cvcTranscriptionPrompt('top'),cvcTranscriptionPrompt('sun'));
+  assert.ok(!/on screen|expected/i.test(cvcTranscriptionPrompt('top')));
+  assert.ok(cvcTranscriptionPrompt('top').endsWith(CVC_TRANSCRIPTION_CONTEXT));
+});
 
 test('server issues unique permitted words, never an arbitrary client word',()=>{
   for(const chapter of CHAPTER_IDS){
