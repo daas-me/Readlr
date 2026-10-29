@@ -2,12 +2,19 @@ import { Request, Response } from 'express';
 import { AudioAssessmentUnavailableError, processAudio } from './audio.service.js';
 import { recognizeCvcWord } from './audio.service.js';
 import { READING_TARGETS } from './cvcRecognition.js';
+import { logSpeechOnFinish } from '../study/study.service.js';
 
 export async function handleCvcRecognition(req:Request,res:Response) {
   const target = typeof req.body.target === 'string' ? req.body.target.toLowerCase() : '';
   if (!READING_TARGETS.has(target) || !req.file?.size) return res.status(400).json({error:'A supported word and recording are required.'});
-  try { return res.json(await recognizeCvcWord(req.file,target)); }
-  catch { return res.status(503).json({error:'Word checking is unavailable. Please try again shortly.'}); }
+  try {
+    const result = await recognizeCvcWord(req.file,target);
+    logSpeechOnFinish(req,res,{target,bookId:null,activity:'practice',result:result.status});
+    return res.json(result);
+  } catch {
+    logSpeechOnFinish(req,res,{target,bookId:null,activity:'practice',result:'unavailable'});
+    return res.status(503).json({error:'Word checking is unavailable. Please try again shortly.'});
+  }
 }
 
 /**

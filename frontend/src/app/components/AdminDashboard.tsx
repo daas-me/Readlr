@@ -1,10 +1,11 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import { AlertCircle, LogOut, RefreshCw, Search, Users, Radio, Trophy, TrendingUp, SlidersHorizontal, ChevronDown, CalendarDays, ShieldCheck } from 'lucide-react';
+import { AlertCircle, LogOut, RefreshCw, Search, Users, Radio, Trophy, TrendingUp, SlidersHorizontal, ChevronDown, CalendarDays, ShieldCheck, FlaskConical, Trash2 } from 'lucide-react';
 import { useAuth } from '../../modules/auth/auth.context.js';
 import { AdminReadingDetail } from './AdminReadingDetail';
 import { AdminClassroomControls } from './AdminClassroomControls';
 import { AdminPasswordRequests } from './AdminPasswordRequests';
 import { AdminSurveyResponses } from './AdminSurvey';
+import { AdminStudy } from './AdminStudy';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import './adminDashboard.css';
 import './adminCurriculum.css';
@@ -20,6 +21,7 @@ interface Learner {
   progress: Array<{ stageId: number; completedLevels: number; totalLevels: number; completionPercentage: number; lastUpdated: string }>;
 }
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const learnerCode = (id: number) => `L-${String(id).padStart(3, '0')}`;
 const connected = (learner: Learner) => !!learner.presence && Date.now() - Date.parse(learner.presence.last_seen) < 45000;
 function getCompletion(learner: Learner) {
   return Math.max(0,Math.min(100,(learner.readingChapters??0)*10));
@@ -33,7 +35,7 @@ function DateStamp({ value }: { value: string | null }) {
 export function AdminDashboard() {
   const { token, user, logout } = useAuth();
   const [learners, setLearners] = useState<Learner[]>([]);
-  const [view, setView] = useState<'overview' | 'controls' | 'passwords' | 'surveys'>('overview');
+  const [view, setView] = useState<'overview' | 'controls' | 'passwords' | 'surveys' | 'study'>('overview');
   const [passwordCount,setPasswordCount]=useState(0);
   const [access, setAccess] = useState<ClassroomState | null>(null);
   const [accessError, setAccessError] = useState(false);
@@ -95,6 +97,18 @@ export function AdminDashboard() {
     { label: 'All 10 books complete', value: learners.filter(l => getCompletion(l) === 100).length, icon: Trophy, tone: 'gold' },
     { label: 'Average book completion', value: assessedLearners.length ? Math.round(assessedLearners.reduce((n, l) => n + getCompletion(l), 0) / assessedLearners.length) + '%' : 'Not yet available', icon: TrendingUp, tone: 'pink' },
   ];
+  const [deleting, setDeleting] = useState<number | null>(null);
+  // Guardian withdrawal: deleting the account removes every progress and study record (data handling procedure, section 10).
+  const removeLearner = async (learner: Learner) => {
+    if (!token || !window.confirm(`Delete ${learner.name} (${learnerCode(learner.id)}) and all their Readlr data? This cannot be undone.`)) return;
+    setDeleting(learner.id);
+    try {
+      const response = await fetch(`${API_URL}/admin/learners/${learner.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error((await response.json().catch(() => null))?.message || 'The learner could not be deleted.');
+      setExpanded(null); setRefresh(n => n + 1);
+    } catch (e) { setError(e instanceof Error ? e.message : 'The learner could not be deleted.'); }
+    finally { setDeleting(null); }
+  };
   const manage = (id: number) => {
     setTarget(String(id)); setView('controls');
     document.getElementById('classroom-controls')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -104,14 +118,15 @@ export function AdminDashboard() {
       <div className="admin-brand"><img src="/readlr-mark.svg" alt="" /><strong>Readlr</strong><span>Classroom</span></div>
       <div className="admin-account"><span>{user?.email}</span><button className="admin-icon-button" onClick={logout} aria-label="Sign out" title="Sign out"><LogOut size={19} /></button></div>
     </div></header>
-    <div className="admin-workspace"><aside className="admin-sidebar"><p>CLASSROOM MANAGEMENT</p><nav aria-label="Admin navigation"><button aria-current={view === 'overview' ? 'page' : undefined} onClick={() => setView('overview')}><Users size={19} />Learner overview</button><button aria-current={view === 'controls' ? 'page' : undefined} onClick={() => setView('controls')}><SlidersHorizontal size={19} />Classroom controls</button><button aria-current={view==='passwords'?'page':undefined} onClick={()=>setView('passwords')}><ShieldCheck size={19}/>Password requests <span aria-live="polite">{passwordCount || ''}</span></button><button aria-current={view==='surveys'?'page':undefined} onClick={()=>setView('surveys')}><TrendingUp size={19}/>Student feedback</button></nav><div className="admin-sidebar-note"><Trophy size={21} />Earned rewards stay safe.<small>Book access changes preserve saved progress and earned rewards.</small></div></aside><div className="admin-shell admin-content">
-      <div className="admin-intro"><div><p className="admin-eyebrow">LEARN. PRACTICE. GROW.</p><h1>{view === 'surveys' ? 'Listen to your learners' : view === 'overview' ? 'Your classroom' : view === 'passwords' ? 'Account recovery' : 'Manage access'}</h1><p className="admin-muted">Every learner's journey, together in one place.</p></div>
+    <div className="admin-workspace"><aside className="admin-sidebar"><p>CLASSROOM MANAGEMENT</p><nav aria-label="Admin navigation"><button aria-current={view === 'overview' ? 'page' : undefined} onClick={() => setView('overview')}><Users size={19} />Learner overview</button><button aria-current={view === 'controls' ? 'page' : undefined} onClick={() => setView('controls')}><SlidersHorizontal size={19} />Classroom controls</button><button aria-current={view==='passwords'?'page':undefined} onClick={()=>setView('passwords')}><ShieldCheck size={19}/>Password requests <span aria-live="polite">{passwordCount || ''}</span></button><button aria-current={view==='surveys'?'page':undefined} onClick={()=>setView('surveys')}><TrendingUp size={19}/>Student feedback</button><button aria-current={view==='study'?'page':undefined} onClick={()=>setView('study')}><FlaskConical size={19}/>Pilot study</button></nav><div className="admin-sidebar-note"><Trophy size={21} />Earned rewards stay safe.<small>Book access changes preserve saved progress and earned rewards.</small></div></aside><div className="admin-shell admin-content">
+      <div className="admin-intro"><div><p className="admin-eyebrow">LEARN. PRACTICE. GROW.</p><h1>{view === 'study' ? 'Measure the pilot' : view === 'surveys' ? 'Listen to your learners' : view === 'overview' ? 'Your classroom' : view === 'passwords' ? 'Account recovery' : 'Manage access'}</h1><p className="admin-muted">Every learner's journey, together in one place.</p></div>
         <div className="admin-today"><CalendarDays size={19} /><div>{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}<small>{Intl.DateTimeFormat().resolvedOptions().timeZone.split('_').join(' ')}</small></div></div>
       </div>
       <section hidden={view !== 'overview'} className="admin-metrics" aria-label="Class summary">{metrics.map(({ label, value, icon: Icon, tone }) => <div key={label} className="admin-metric"><span className={`admin-metric-icon ${tone}`}><Icon size={22} /></span><div><strong>{isLoading ? '...' : error && !updated ? 'Unavailable' : value}</strong><span>{label}</span></div></div>)}</section>
       <div hidden={view !== 'controls'}>{token && <AdminClassroomControls token={token} learners={learners} target={target} onTargetChange={setTarget} onSaved={data => { setAccess(data); setAccessError(false); }} />}</div>
       <div hidden={view !== 'passwords'}>{token&&<AdminPasswordRequests token={token} onCount={setPasswordCount}/>}</div>
       {view==='surveys'&&token&&<AdminSurveyResponses token={token}/>}
+      {view==='study'&&token&&<AdminStudy token={token}/>}
       <section hidden={view !== 'overview'} className="admin-roster" aria-labelledby="roster-heading">
         <div className="admin-section-heading"><div><h2 id="roster-heading">Learner overview <span className="admin-count">{learners.length}</span></h2><p>Synced lesson completion, not pronunciation accuracy.</p></div><div className="admin-refresh"><small>{updated ? `Updated ${updated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Waiting for data'}</small><button className="admin-icon-button" onClick={() => setRefresh(n => n + 1)} aria-label="Refresh learners" title="Refresh learners"><RefreshCw size={18} /></button></div></div>
         <div className="admin-roster-tools"><div className="admin-filters" aria-label="Filter learners">{[['all', 'All learners'], ['connected', 'Connected'], ['complete', 'Completed']].map(([value, label]) => <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}</div>
@@ -129,7 +144,7 @@ export function AdminDashboard() {
                 <td className="admin-access"><span className="admin-access-badge">{accessError ? 'Unable to verify' : access ? accessLabel(access.overrides[String(learner.id)] ?? access.policy) : 'Loading access...'}</span><small>{!accessError && access ? access.overrides[String(learner.id)] ? 'Individual override' : 'Class setting' : 'Refresh to check permissions'}</small></td>
                 <td className="admin-activity"><span className={`admin-presence ${connected(learner) ? 'online' : ''}`}>{connected(learner) ? 'Recently connected' : 'Last active'}</span><DateStamp value={learner.lastActivity} /></td>
                 <td className="admin-row-actions"><button className="admin-icon-button" aria-label={`Manage ${learner.name}`} title="Manage access" onClick={() => manage(learner.id)}><SlidersHorizontal size={17} /></button><button className="admin-icon-button" aria-label={`Details for ${learner.name}`} aria-expanded={expanded === learner.id} aria-controls={`learner-details-${learner.id}`} title="Learner details" onClick={() => setExpanded(expanded === learner.id ? null : learner.id)}><ChevronDown size={18} style={{ transform: expanded === learner.id ? 'rotate(180deg)' : undefined }} /></button></td>
-              </tr>{expanded === learner.id && <tr className="admin-detail-row" id={`learner-details-${learner.id}`}><td colSpan={6}>{token&&<AdminReadingDetail key={learner.id} userId={learner.id} token={token}/>}<div className="admin-details"><div><h3>Reading Chronicles</h3><p>{learner.readingChapters == null ? 'Checkpoint data unavailable' : `${learner.readingChapters} of 10 books complete`}</p><small>Independent final gates, separate from guided practice.</small></div><div><h3>Last reported screen</h3><p>{learner.presence ? learner.presence.screen.split('-').join(' ') : 'No report yet'}</p><DateStamp value={learner.presence?.last_seen ?? null} /></div><div><h3>Joined Readlr</h3><DateStamp value={learner.createdAt} /></div></div></td></tr>}</Fragment>;
+              </tr>{expanded === learner.id && <tr className="admin-detail-row" id={`learner-details-${learner.id}`}><td colSpan={6}>{token&&<AdminReadingDetail key={learner.id} userId={learner.id} token={token}/>}<div className="admin-details"><div><h3>Reading Chronicles</h3><p>{learner.readingChapters == null ? 'Checkpoint data unavailable' : `${learner.readingChapters} of 10 books complete`}</p><small>Independent final gates, separate from guided practice.</small></div><div><h3>Last reported screen</h3><p>{learner.presence ? learner.presence.screen.split('-').join(' ') : 'No report yet'}</p><DateStamp value={learner.presence?.last_seen ?? null} /></div><div><h3>Joined Readlr</h3><DateStamp value={learner.createdAt} /></div><div><h3>Study code</h3><p>{learnerCode(learner.id)}</p><small>Use this code, not the name, on test sheets.</small><button className="admin-icon-button mt-2" disabled={deleting === learner.id} onClick={() => removeLearner(learner)} title="Delete learner and all their data"><Trash2 size={16} /> Delete learner data</button></div></div></td></tr>}</Fragment>;
             })}
           </tbody></table>}
         <div className="admin-pagination"><button disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>Previous</button><span>Page {currentPage} of {pageCount}</span><button disabled={currentPage === pageCount} onClick={() => setPage(currentPage + 1)}>Next</button></div><footer className="admin-roster-footer">{filtered.length} of {learners.length} learners<span>Times shown in your local timezone</span></footer>

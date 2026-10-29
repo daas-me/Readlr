@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { authMiddleware, requireRole } from '../../middleware/auth.js';
 import { handleCurriculumState, handleDelayedReviewStatus, handleEvidenceSummary, handleLearningCampAccess, handleListEvidence, handleSaveCurriculumState, handleSyncEvidence } from './evidence.controller.js';
 import { readingProgress, startReadingCheckpoint, skipReadingCheckpoint, recordReadingMeaning } from './reading-checkpoints.js';
+import { getDailyGoal, getRecap } from '../study/study.controller.js';
 
 const router = Router();
+router.get('/me/daily-goal', authMiddleware, requireRole('learner'), getDailyGoal);
+router.get('/me/recap', authMiddleware, requireRole('learner'), getRecap);
 router.get('/me/reading-progress', authMiddleware, requireRole('learner'), readingProgress);
 router.post('/me/reading-checkpoints', authMiddleware, requireRole('learner'), startReadingCheckpoint);
 router.post('/me/reading-checkpoints/:sessionId/:item/skip', authMiddleware, requireRole('learner'), skipReadingCheckpoint);

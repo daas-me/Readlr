@@ -7,6 +7,7 @@ import { stagePermitted } from '../admin/classroom.policy.js';
 import { getLearningCampAccess } from './camp-access.js';
 import { READING_VERSION, READING_MEDIA, CHAPTER_IDS, checkpointWords, chapterAvailable } from './reading-catalog.js';
 import { recognizeCvcWord } from '../audio/audio.service.js';
+import { logSpeechOnFinish } from '../study/study.service.js';
 
 interface Session {
   id: string; learner_id: number; epoch: number; chapter_id: string; words: string[];
@@ -79,11 +80,14 @@ export async function recognizeReadingCheckpoint(req: Request,res: Response) {
     if (['matched','different','skipped'].includes(row.results[item])) {res.json(row);return;}
     if (!req.file?.size) throw new ReadingError(400,'A recording is required.');
     let result:Awaited<ReturnType<typeof recognizeCvcWord>>;
+    const speech={target:row.words[item],bookId:row.chapter_id,activity:'checkpoint' as const};
     try {result=await recognizeCvcWord(req.file,row.words[item]);}
     catch {
+      logSpeechOnFinish(req,res,{...speech,result:'unavailable'});
       await store(c.learnerId,row.id,item,'unavailable');
       throw new ReadingError(503,'Word checking is unavailable. Your recording was not scored. Please retry.');
     }
+    logSpeechOnFinish(req,res,{...speech,result:result.status});
     res.json(await store(c.learnerId,row.id,item,result.status));
   } catch(error) {fail(res,error);}
 }
@@ -91,10 +95,11 @@ export async function retryReadingCheckpoint(req: Request,res: Response) {
   try {
     const {c,row,item}=await itemContext(req);
     if (!req.file?.size) throw new ReadingError(400,'A recording is required.');
-    if(!['different','uncertain','unavailable'].includes(row.results[item])){res.json(row);return;}
-    let result:Awaited<ReturnType<typeof recognizeCvcWord>>;
+    if(!['different','uncertain','unavailable'].includes(row.results[item])){res.json(row);return;}    let result:Awaited<ReturnType<typeof recognizeCvcWord>>;
+    const speech={target:row.words[item],bookId:row.chapter_id,activity:'checkpoint_retry' as const};
     try { result=await recognizeCvcWord(req.file,row.words[item]); }
-    catch { throw new ReadingError(503,'Word checking is unavailable. Please retry.'); }
+    catch { logSpeechOnFinish(req,res,{...speech,result:'unavailable'}); throw new ReadingError(503,'Word checking is unavailable. Please retry.'); }
+    logSpeechOnFinish(req,res,{...speech,result:result.status});
     res.json(unwrap<Session>(await supabase.rpc('retry_reading_checkpoint',{p_learner:c.learnerId,p_session:row.id,p_item:item,p_result:result.status})));
   } catch(error) { fail(res,error); }
 }

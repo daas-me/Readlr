@@ -5,6 +5,8 @@ import { ReadingWorldBackdrop } from './ReadingWorldBackdrop';
 import { CHRONICLES } from './chronicleContent';
 import { READING_CHAPTERS } from './aralCurriculum';
 import { CharacterCompanion } from './CharacterCompanion';
+import { DailyGoalCard } from './DailyGoalCard';
+import { ProgressRecap } from './ProgressRecap';
 import { loadReadingProgress, loadDevelopmentReadingProgress } from '../../hooks/readingCheckpoints';
 import { devicePracticeNotice } from '../../hooks/readingProgressError';
 import { useWorldExit } from './useWorldExit';
@@ -39,6 +41,7 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
   const [unlockMessage,setUnlockMessage]=useState('');
   const unlockHandoff=useRef<ReadingBookUnlockTransition|null>(null);
   const transition=useWorldExit();
+  const nextBookIndex=READING_CHAPTERS.findIndex(c=>!completedBooks.includes(c.id)&&!completed.includes(c.id));
   const access=curriculumUnlocks(curriculumState,[...new Set([...completedBooks,...completed])]);
   const focusBook=(next:number)=>{
     const safe=Math.max(0,Math.min(READING_CHAPTERS.length-1,next));
@@ -108,7 +111,8 @@ export function ChronicleHome({learnerId,reviewMode=false,blocked=false,initialI
   ];
   return <main data-destination={destination} className={`chronicle-home ${transition.leaving?'world-is-leaving':''} ${opening?'world-is-opening':''}`} onAnimationEnd={event=>{if(event.target===event.currentTarget&&event.animationName==='world-depart')transition.finish();}}><div className="chronicle-home-scene" inert={transition.leaving}>
     <ReadingWorldBackdrop/>
-    <header className="world-welcome"><div><p>Your reading world</p><h1>A new story awaits.</h1></div><div className="world-milo"><CharacterCompanion state="idle" gesture="wave" size={108}/><span>Come read with me!</span></div></header>
+    <header className="world-welcome"><div><p>Your reading world</p><h1>A new story awaits.</h1></div><DailyGoalCard enabled={!reviewMode&&!!learnerId}/><div className="world-milo"><CharacterCompanion state="idle" gesture="wave" size={108}/><span>Come read with me!</span></div></header>
+    <ProgressRecap learnerId={learnerId} enabled={!reviewMode&&!!learnerId} next={nextBookIndex<0?null:{number:nextBookIndex+1,title:READING_CHAPTERS[nextBookIndex].title,teaser:CHRONICLES[nextBookIndex].story[0]}}/>
     <div className="home-landmarks" aria-label="Places to visit">{places.map(place=>place.action&&<button key={place.kind} disabled={opening||transition.leaving||!place.unlocked} className={`world-place world-place--${place.kind} ${place.unlocked?'':'is-locked'}`} onClick={()=>{setDestination(place.kind);if(place.action)transition.exit(place.action,place.kind==='camp'?CAMP_ARRIVAL_MS:650);}} data-tour={place.label}><LandmarkArt kind={place.kind}/>{!place.unlocked&&<LockKeyhole className="world-place-lock"/>}<span className="world-sign">{place.label}<small>{place.hint}</small></span></button>)}</div>
     <section className="chronicle-carousel" aria-label="Adventure books" aria-roledescription="carousel" onKeyDown={event=>{if(opening)return;if(event.key==='ArrowLeft'){event.preventDefault();focusBook(index-1);}if(event.key==='ArrowRight'){event.preventDefault();focusBook(index+1);}}}>
       <div className="chronicle-heading"><span>The reading chronicles</span><h2>{chapter.title}</h2><p>{book.subtitle}</p></div>

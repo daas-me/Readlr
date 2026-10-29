@@ -5,6 +5,7 @@ import { handleAudioProcess, handleCvcRecognition } from './audio.controller.js'
 import { authMiddleware, requireRole } from '../../middleware/auth.js';
 import { recognizeReadingCheckpoint, retryReadingCheckpoint } from '../evidence/reading-checkpoints.js';
 import { enforceClassroom } from '../admin/classroom.controller.js';
+import { markSpeechStart } from '../study/study.service.js';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -24,19 +25,19 @@ router.post('/review-recognize',authMiddleware,requireRole(...(config.nodeEnv===
     next();
   });
 },handleCvcRecognition);
-router.post('/reading-check/:sessionId/:item',authMiddleware,requireRole('learner'),enforceClassroom(()=>3),(req,res,next)=>{
+router.post('/reading-check/:sessionId/:item',authMiddleware,markSpeechStart,requireRole('learner'),enforceClassroom(()=>3),(req,res,next)=>{
   cvcUpload.single('audio')(req,res,error=>{
     if(error){res.status(400).json({error:'Please send a recording smaller than 5 MB.'});return;}
     next();
   });
 },recognizeReadingCheckpoint);
-router.post('/reading-check/:sessionId/:item/retry',authMiddleware,requireRole('learner'),enforceClassroom(()=>3),(req,res,next)=>{
+router.post('/reading-check/:sessionId/:item/retry',authMiddleware,markSpeechStart,requireRole('learner'),enforceClassroom(()=>3),(req,res,next)=>{
   cvcUpload.single('audio')(req,res,error=>{
     if(error){res.status(400).json({error:'Please send a recording smaller than 5 MB.'});return;}
     next();
   });
 },retryReadingCheckpoint);
-router.post('/cvc-recognize',authMiddleware,enforceClassroom(()=>3),(req,res,next)=>{
+router.post('/cvc-recognize',authMiddleware,markSpeechStart,enforceClassroom(()=>3),(req,res,next)=>{
   cvcUpload.single('audio')(req,res,error=>{
     if(error) {res.status(400).json({error:'Please send a recording smaller than 5 MB.'});return;}
     next();

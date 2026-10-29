@@ -1,5 +1,6 @@
 import { supabase, unwrap } from '../../database/db.js';
 import { getLearnerByUserId } from '../learner/learner.service.js';
+import { recordStopCompletions } from '../study/study.service.js';
 
 export interface CurriculumState {
   schemaVersion: 1;
@@ -97,12 +98,13 @@ export async function getCurriculumState(userId: number) {
 export async function saveCurriculumState(userId: number, input: unknown) {
   const learner = await getLearnerByUserId(userId), incoming = parseCurriculumState(input), updatedAt = new Date().toISOString();
   const existing = unwrap<Record<string, unknown> | null>(await supabase.from('learner_curriculum_state').select('*').eq('learner_id', learner.id).maybeSingle());
-  const state = mergeState(fromRow(existing), incoming);
+  const previous = fromRow(existing), state = mergeState(previous, incoming);
   const result = await supabase.from('learner_curriculum_state').upsert({
     learner_id: learner.id, camp_orientation_step: state.campOrientationStep, guided_stops: state.guidedStops,
     guided_activities: state.guidedActivities, guided_rounds: state.guidedRounds, carousel_focus: state.carouselFocus,
     sticker_book_opened: state.stickerBookOpened, sound_recordings: state.soundRecordings, updated_at: updatedAt,
   }, { onConflict: 'learner_id' }).select('*').single();
   if(result.error||!result.data)throw new Error(result.error?.message||'Curriculum state was not saved');
+  await recordStopCompletions(userId, previous.guidedStops, state.guidedStops);
   return fromRow(result.data as Record<string, unknown>);
 }

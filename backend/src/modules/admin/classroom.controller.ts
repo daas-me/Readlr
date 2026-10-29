@@ -3,6 +3,7 @@ import { supabase, unwrap } from '../../database/db.js';
 import { classroomState, effectivePolicy } from './classroom.service.js';
 import { parsePolicy, stagePermitted } from './classroom.policy.js';
 import { surveyAssigned } from './survey.controller.js';
+import { recordPresence } from '../study/study.service.js';
 
 export async function getClassroom(_req:Request,res:Response) {
   try { res.json(await classroomState()); }
@@ -39,6 +40,7 @@ export async function heartbeat(req:Request,res:Response) {
   }
   try {
     unwrap(await supabase.from('learner_presence').upsert({user_id:(req as any).userId,stage,level,screen,last_seen:new Date().toISOString()}));
+    await recordPresence((req as any).userId);
     res.json({success:true});
   } catch { res.status(503).json({message:'Could not report activity'}); }
 }
