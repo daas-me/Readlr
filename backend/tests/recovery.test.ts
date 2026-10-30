@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import jwt from 'jsonwebtoken';
 process.env.SUPABASE_URL='http://127.0.0.1:1';
 process.env.SUPABASE_SERVICE_ROLE_KEY='test-only';
-process.env.JWT_SECRET='test-only-recovery';
+process.env.JWT_SECRET='test-only-recovery-secret-0123456789';
 const {supabase}=await import('../src/database/db.js');
 const {requestRecovery,approveRecovery,completeRecovery,recoveryHash,listRecovery}=await import('../src/modules/auth/recovery.controller.js');
 const {authMiddleware}=await import('../src/middleware/auth.js');
@@ -34,9 +34,9 @@ test('only verified requests issue codes and only hashes reach the database',asy
     const rejected=response();await approveRecovery({userId:7,params:{id},body:{action:'approve'}} as any,rejected as any);assert.equal(rejected.statusCode,400);assert.equal(calls,0);
     const res=response();await approveRecovery({userId:7,params:{id},body:{action:'approve',verified:true}} as any,res as any);
     assert.match(res.body.code,/^[A-F0-9]{12}$/);assert.equal(args.p_actor,7);assert.equal(args.p_code,recoveryHash(res.body.code));
-    const bad=response();await completeRecovery({body:{id,secret,code:res.body.code,password:'abcdefgh',confirmPassword:'different'}} as any,bad as any);assert.equal(bad.statusCode,400);assert.equal(calls,1);
-    const good=response();await completeRecovery({body:{id,secret,code:res.body.code,password:'abcdefgh',confirmPassword:'abcdefgh'}} as any,good as any);
-    assert.equal(good.statusCode,200);assert.match(args.p_password,/^\$2/);assert.notEqual(args.p_password,'abcdefgh');assert.equal(args.p_request,recoveryHash(secret));
+    const bad=response();await completeRecovery({body:{id,secret,code:res.body.code,password:'Abcdefg1!',confirmPassword:'different'}} as any,bad as any);assert.equal(bad.statusCode,400);assert.equal(calls,1);
+    const good=response();await completeRecovery({body:{id,secret,code:res.body.code,password:'Abcdefg1!',confirmPassword:'Abcdefg1!'}} as any,good as any);
+    assert.equal(good.statusCode,200);assert.match(args.p_password,/^\$2/);assert.notEqual(args.p_password,'Abcdefg1!');assert.equal(args.p_request,recoveryHash(secret));
   }finally{supabase.rpc=original;}
 });
 test('password changes invalidate older sessions including legacy tokens',async()=>{

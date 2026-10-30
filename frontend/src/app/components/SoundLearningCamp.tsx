@@ -47,7 +47,7 @@ export function SoundLearningCamp({onBack,reviewMode=false,learnerId}:{onBack:()
   const goBack=()=>{audio.stop();area?setArea(null):transition.exit(onBack);};
   if(!reviewMode&&learnerId&&readLearnerCurriculumState(learnerId).campOrientationStep<3)return <CampOrientation learnerId={learnerId} onReady={onBack}/>;
   if(selected)return <CampSoundLesson key={`${selected.category}-${selected.word}`} card={selected} reviewMode={reviewMode} onBack={()=>setSelected(null)} onFinish={()=>{setVisited(items=>[...new Set([...items,selected.word])]);setSelected(null);}}/>;
-  return <main className={`camp-world ${area?'camp-world--inside':''} ${transition.leaving?'world-is-leaving':''}`}>
+  return <main className={`camp-world ${area?'camp-world--inside':''} ${transition.leaving?'world-is-leaving':''}`}><div className="camp-world-content">
     <AdventureBackdrop theme={area==='blends'?'bridge':'garden'}/>
     <header className="camp-header"><button className="reading-icon activity-back-button" aria-label={area?'Back to Camp':'Back home'} title={area?'Back to Camp':'Back home'} onClick={goBack}><ArrowLeft/></button><div><p>Learning Camp</p><h1>{area==='vowels'?'The Vowel Dojo':area==='consonants'?'The Consonant Grove':area==='blends'?'The Blending Workshop':'A little wonder. A little practice.'}</h1></div><CharacterCompanion state={audio.isPlaying?'speaking':'idle'} gesture="wave" size={100}/></header>
     {!area?<>
@@ -66,7 +66,7 @@ export function SoundLearningCamp({onBack,reviewMode=false,learnerId}:{onBack:()
       <section className={`camp-sound-shelf camp-illustrated-shelf ${area==='vowels'?'camp-sound-shelf--shields':''}`} aria-label="Choose a letter">{cards.map(card=><button key={card.word} className="camp-sound-token" onClick={()=>setSelected(card)}><span className="camp-token-letter">{area==='vowels'&&<CampSoundShield/>}<span>{card.letter}</span></span><span className="camp-token-art"><ReadingAnchorArt word={card.word}/></span><span className="camp-token-word">{card.word}</span>{visited.includes(card.word)&&<Check className="camp-visited" aria-label="Practiced today"/>}</button>)}</section>
       {area==='consonants'&&<p className="camp-bottom-note">Some sounds stretch, like m and s. Others are quick, like p and t.</p>}
     </>}{message&&<p role="status" className="camp-feedback">{message}</p>}
-  </main>;
+  </div></main>;
 }
 
 export function CampSoundLesson({card,reviewMode,onBack,onFinish}:{card:SoundCard;reviewMode:boolean;onBack:()=>void;onFinish:()=>void}) {
@@ -124,7 +124,7 @@ export function CampSoundLesson({card,reviewMode,onBack,onFinish}:{card:SoundCar
       <p className="camp-word-phrase"><HighlightedSoundSentence sentence={sentence} word={card.word} sound={card.letter}/></p>
     </section>
     <div className="camp-lesson-controls book-sequential-action" aria-live="polite">{phase==='listen'?!heard?<button className="world-primary" disabled={sound.isPlaying} onClick={()=>void narrate()}><Volume2/>{sound.isPlaying?'Listening...':`Hear ${card.word}`}</button>:<button className="world-primary" disabled={sound.isPlaying} onClick={()=>{sound.stop();setPhase('find');setMessage(`Can you find ${card.letter} in ${card.word}? Tap the letter.`);}}>Find the sound<ArrowRight/></button>:phase==='say'?<button className={`world-primary camp-record ${recording?'is-listening':''}`} data-recording={recording} disabled={busy||sound.isPlaying} onClick={()=>void record()}>{recording?<><span className="recording-pulse" aria-hidden="true"/><span className="recording-live">Live</span></>:<Mic/>}<span>{recording?`Recording · ${seconds}`:busy?'Checking...':`Say ${card.word}`}</span></button>:phase==='finish'?<button className="world-primary" onClick={finishLesson}>Return to my trail<ArrowRight/></button>:null}</div>
-    {heard&&phase!=='finish'&&<details className="book-practice-help"><summary>Need help?</summary><button className="reading-icon" disabled={busy||sound.isPlaying} onClick={()=>void narrate()} title="Hear the word again" aria-label="Hear the word again"><Headphones/></button>{phase==='say'&&<button className="camp-text-button" disabled={busy} onClick={()=>{sound.stop();setPhase('finish');setMessage('You explored a new sound! Come back and say it with me any time.');}}>Practice without recording</button>}</details>}
+    {heard&&phase!=='finish'&&<details className="book-practice-help"><summary>Need help?</summary><button className="reading-secondary" disabled={busy||sound.isPlaying} onClick={()=>void narrate()}><Headphones aria-hidden="true"/>Hear the word again</button>{phase==='say'&&<button className="camp-text-button" disabled={busy} onClick={()=>{sound.stop();setPhase('finish');setMessage('You explored a new sound! Come back and say it with me any time.');}}>Practice without recording</button>}</details>}
     {clip&&<div className="camp-replay"><audio ref={clipPlayer} src={clip} preload="metadata"/><button className="camp-replay-voice" disabled={busy} onClick={()=>void clipPlayer.current?.play()} aria-label="Hear your voice" title="Hear your voice"><Headphones/><span>My voice</span></button><button className="reading-icon" disabled={busy} aria-label="Try again" title="Try again" onClick={()=>{setPhase('say');setMessage(`Say ${card.word} again when you are ready.`);}}><RotateCcw/></button></div>}
   </main>;
 }

@@ -16,8 +16,9 @@ export async function handleGetMyFrames(req: Request, res: Response) {
   try {
     const userId = (req as any).userId;
     const learner = await getLearnerByUserId(userId);
-    const frames = await getFramesForUser(userId, learner.equipped_frame_id);
-    const {avatars}=await curriculumRewardAccess(userId);
+    const rewards=await curriculumRewardAccess(userId);
+    const frames = await getFramesForUser(userId, learner.equipped_frame_id,rewards);
+    const {avatars}=rewards;
     res.json({ success: true, frames, avatars });
   } catch (error) {
     console.error('Error fetching frames:', error);

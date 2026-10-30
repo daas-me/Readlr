@@ -54,6 +54,9 @@ lerna-debug.log*
 !docs/refactoring/STEP_16_OFFLINE_PACKS.md
 !docs/refactoring/ARAL_INTEGRATION.md
 !docs/refactoring/ARAL_LIVE_ROLLOUT.md
+# Narration scripts read by the frontend tests
+!STAGE2_AUDIO_SCRIPT.md
+!frontend/public/audio/stage1/STAGE1_AUDIO_SCRIPT.md
 
 #Database
 readlr.db

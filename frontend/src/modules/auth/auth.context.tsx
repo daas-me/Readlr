@@ -1,4 +1,31 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { syncEvidenceQueue } from '../../hooks/evidenceRecords';
+import { clearLearnerDeviceData } from '../../hooks/learnerDeviceData';
+
+// Must match CONSENT_VERSION in backend/src/modules/auth/auth.controller.ts.
+export const CONSENT_VERSION = 'guardian-consent-v1';
+
+export interface GuardianConsent {
+  guardianConfirmed: boolean;
+  consent: boolean;
+}
+
+export interface LogoutOptions {
+  learnerId?: number | null;
+  accountDeleted?: boolean;
+}
+
+// Sends queued evidence before logout; false means some attempts are still waiting.
+async function flushEvidence(learnerId: number, token: string): Promise<boolean> {
+  const attempt = async () => {
+    for (let batch = 0; batch < 20; batch++) {
+      if (!(await syncEvidenceQueue(learnerId, token)).remaining) return true;
+    }
+    return false;
+  };
+  const timeout = new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000));
+  return Promise.race([attempt().catch(() => false), timeout]);
+}
 
 export interface User {
   id: number;
@@ -12,9 +39,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  register: (email: string, password: string, confirmPassword: string, role: 'learner' | 'teacher', name: string, adminInvitation?:string) => Promise<void>;
+  freshLogin: boolean;
+  register: (email: string, password: string, confirmPassword: string, role: 'learner' | 'teacher', consent: GuardianConsent, adminInvitation?:string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: (options?: LogoutOptions) => Promise<void>;
   error: string | null;
   clearError: () => void;
 }
@@ -25,6 +53,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [freshLogin, setFreshLogin] = useState(false);
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('auth_token');
   });
@@ -74,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password: string,
       confirmPassword: string,
       role: 'learner' | 'teacher',
-      name: string,
+      consent: GuardianConsent,
       adminInvitation?: string
     ) => {
       setIsLoading(true);
@@ -91,7 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             password,
             confirmPassword,
             role,
-            name,
+            ...consent,
+            consentVersion: CONSENT_VERSION,
             adminInvitation,
           }),
         });
@@ -103,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         // Store token and user
+        setFreshLogin(true);
         localStorage.setItem('auth_token', data.token);
         setToken(data.token);
         setUser(data.user);
@@ -140,6 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Store token and user
+      setFreshLogin(true);
       localStorage.setItem('auth_token', data.token);
       setToken(data.token);
       setUser(data.user);
@@ -152,12 +184,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async ({ learnerId = null, accountDeleted = false }: LogoutOptions = {}) => {
+    const evidenceSafe = accountDeleted || !learnerId || !token || await flushEvidence(learnerId, token);
+    try { clearLearnerDeviceData(localStorage, learnerId, user?.id ?? null, !evidenceSafe); } catch { /* Logout must still finish if storage is blocked. */ }
+    setFreshLogin(false);
     localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
     setError(null);
-  }, []);
+  }, [token, user]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -168,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     token,
     isLoading,
     isAuthenticated: !!user && !!token,
+    freshLogin,
     register,
     login,
     logout,

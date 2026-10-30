@@ -17,6 +17,16 @@ test('new learners receive a world tour without granting lesson completion',()=>
   assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState()),true);
 });
 
+test('restoring a session never automatically reopens onboarding',()=>{
+  assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState(),false),false);
+  assert.equal(shouldShowWorldTour(emptyLearnerCurriculumState(),true),true);
+  const hook=readFileSync(new URL('../src/app/hooks/useLearnerCurriculumState.ts',import.meta.url),'utf8');
+  assert.match(hook,/loadedFor!==accountKey/);
+  const app=readFileSync(new URL('../src/app/App.tsx',import.meta.url),'utf8');
+  assert.match(app,/!curriculumState.loading&&shouldShowWorldTour\(curriculumState.state,freshLogin\)/);
+  assert.match(app,/<Help onTutorial=.*setWorldTourOpen\(true\)/);
+});
+
 test('all Camp sound cards have dedicated new object illustrations',()=>{
   const objects=readFileSync(new URL('../src/app/components/CampObjectArt.tsx',import.meta.url),'utf8');
   const stickers=readFileSync(new URL('../src/app/components/RewardStickerArt.tsx',import.meta.url),'utf8');
@@ -42,7 +52,10 @@ test('tour uses a clear spotlight and replays Camp without lowering saved progre
   assert.match(camp,/Practise without a microphone/);
   assert.match(camp,/URL.revokeObjectURL/);
   assert.match(camp,/<Dialog open=\{micOpen\}/);
-  assert.match(camp,/Skip this practice/);
+  assert.match(camp,/Skip orientation and open Book 1/);
+  assert.match(camp,/campOrientationStep:3,guidedActivities/);
+  assert.match(camp,/lessons.slice\(step\)/);
+  assert.equal(curriculumUnlocks({...emptyLearnerCurriculumState(),campOrientationStep:3},[]).bookOne,true);
   assert.match(camp,/run!==micRun.current/);
   assert.match(camp,/\{complete&&<div className="camp-orientation-actions"/);
   assert.match(camp,/Try my microphone \(optional\)/);

@@ -2,9 +2,11 @@ import { useId } from 'react';
 import { ReadingWorldBackdrop } from './ReadingWorldBackdrop';
 import { RewardStickerArt, type RewardStickerDesign } from './RewardStickerArt';
 import { IllustrationSurface } from './IllustrationSurface';
+import { WorldLandmarkArt, WORLD_LANDMARKS } from './WorldLandmarkArt';
 
 export function LandmarkArt({kind}:{kind:string}) {
   const id=`landmark-${useId().replace(/:/g,'')}`;
+  if((WORLD_LANDMARKS as readonly string[]).includes(kind))return <WorldLandmarkArt kind={kind}/>;
   const designs:Partial<Record<string,RewardStickerDesign>>={gate:'gate',bridge:'bridge',lantern:'lantern',market:'market',key:'keyring',magic:'wand',crown:'crown',library:'books',tower:'tower'};
   const design=designs[kind];
   return <svg viewBox="0 0 220 190" aria-hidden="true" className={`landmark-art illustrated-landmark ${kind==='dojo'?'dojo-landmark':''}`}>

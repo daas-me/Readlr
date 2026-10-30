@@ -1,7 +1,8 @@
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ReadingWorldBackdrop } from './ReadingWorldBackdrop';
 import { CharacterCompanion } from './CharacterCompanion';
+import { WorldLandmarkArt } from './WorldLandmarkArt';
 import { useWorldExit } from './useWorldExit';
 
 interface WelcomeScreenProps {
@@ -10,7 +11,7 @@ interface WelcomeScreenProps {
 }
 
 export function WelcomeScreen({ onStart, userName }: WelcomeScreenProps) {
-  const transition=useWorldExit(1800);
+  const transition=useWorldExit(250);
   const reduced=useReducedMotion();
   return (
     <div className={`world-welcome-screen reading-world-welcome welcome-story-entry ${transition.leaving?'is-preparing-adventure':''}`}>
@@ -47,7 +48,7 @@ export function WelcomeScreen({ onStart, userName }: WelcomeScreenProps) {
         </div>
       </motion.div>
       {transition.leaving&&<div className="adventure-loading" role="status" aria-live="polite">
-        <div className="loading-storybook" aria-hidden="true"><div className="loading-book-page page-left"><span>a</span><span>m</span></div><div className="loading-book-page page-right"><BookOpen/><span>Once upon a word...</span></div><div className="loading-turning-page"/><CharacterCompanion state="encouraging" gesture="wave" size={150}/></div>
+        <div className="loading-storybook" aria-hidden="true"><div className="loading-book-page page-left"><span>a</span><span>m</span></div><div className="loading-book-page page-right"><WorldLandmarkArt kind="storybook"/><span>Once upon a word...</span></div><div className="loading-turning-page"/><CharacterCompanion state="encouraging" gesture="wave" size={150}/></div>
         <h2>Your story is opening...</h2><p>Milo is finding your next adventure.</p>
         <div className="adventure-loading-track" aria-hidden="true"><span/></div>
       </div>}

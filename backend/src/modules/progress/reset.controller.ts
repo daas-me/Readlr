@@ -12,7 +12,9 @@ export async function getResetState(req: Request, res: Response) {
 }
 
 export async function resetProgress(req: Request, res: Response) {
-  const { target, stages, confirmation } = req.body;
+  const { target, confirmation, scope } = req.body;
+  if (scope !== undefined && scope !== 'reading-checkpoints') { res.status(400).json({message:'Choose a valid restart scope.'}); return; }
+  const stages = scope === 'reading-checkpoints' ? [3] : req.body.stages;
   if (!(target === 'class' || (Number.isInteger(target) && target > 0)) ||
       !Array.isArray(stages) || stages.length < 1 || stages.length > 3 ||
       stages.some(s => ![1,2,3].includes(s)) || new Set(stages).size !== stages.length || confirmation !== 'RESET') {
@@ -22,6 +24,6 @@ export async function resetProgress(req: Request, res: Response) {
     const affected = unwrap(await supabase.rpc('reset_learning_progress', {
       p_actor: (req as any).userId, p_target: target === 'class' ? null : target, p_stages: stages,
     }));
-    res.json({ affected, message: `Reset saved for ${affected} learner(s). Earned rewards are preserved.` });
+    res.json({ affected, message: scope === 'reading-checkpoints' ? `Book checkpoints restarted for ${affected} learner(s). Guided practice and access overrides stay saved.` : `Reset saved for ${affected} learner(s). Earned rewards are preserved.` });
   } catch { res.status(503).json({ message: 'Reset was not confirmed. Check the reset migration and refresh progress before retrying.' }); }
 }

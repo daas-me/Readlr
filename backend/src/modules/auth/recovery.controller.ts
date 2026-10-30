@@ -1,20 +1,14 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response } from 'express';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { supabase, unwrap } from '../../database/db.js';
+import { createLimiter } from '../../middleware/rateLimit.js';
+import { isStrongPassword, PASSWORD_RULES_MESSAGE } from './passwordPolicy.js';
 
 export const recoveryHash = (value: string) => createHash('sha256').update(value).digest('hex');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const validRequest = (body: any) => uuid.test(body?.id ?? '') && typeof body?.secret === 'string' && /^[0-9a-f]{64}$/.test(body.secret);
-const attempts = new Map<string,{count:number;until:number}>();
-export function recoveryLimit(req: Request, res: Response, next: NextFunction) {
-  const now = Date.now();
-  for (const [key,value] of attempts) if (value.until < now) attempts.delete(key);
-  const key = req.ip ?? req.socket.remoteAddress ?? 'unknown';
-  const item = attempts.get(key) ?? {count:0,until:now+60000};
-  if (++item.count > 60 || attempts.size > 10000) { res.status(429).json({message:'Please wait a minute before trying again.'}); return; }
-  attempts.set(key,item); next();
-}
+export const recoveryLimit = createLimiter(60, 60_000).middleware;
 export async function requestRecovery(req: Request,res: Response) {
   const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length>254) { res.status(400).json({message:'Enter a valid email address.'}); return; }
@@ -34,8 +28,8 @@ export async function recoveryStatus(req:Request,res:Response) {
 }
 export async function completeRecovery(req:Request,res:Response) {
   const {password,confirmPassword,code}=req.body ?? {};
-  if (!validRequest(req.body) || typeof code!=='string' || !/^[0-9a-f]{12}$/i.test(code.trim()) || typeof password!=='string' || password.length<8 || Buffer.byteLength(password)>72 || password!==confirmPassword) {
-    res.status(400).json({message:'Enter your 12-character code and matching passwords of at least 8 characters (maximum 72 bytes).'}); return;
+  if (!validRequest(req.body) || typeof code!=='string' || !/^[0-9a-f]{12}$/i.test(code.trim()) || !isStrongPassword(password) || password!==confirmPassword) {
+    res.status(400).json({message:`Enter your 12-character code and matching passwords. ${PASSWORD_RULES_MESSAGE}`}); return;
   }
   try {
     const success=unwrap(await supabase.rpc('complete_password_recovery',{p_id:req.body.id,p_request:recoveryHash(req.body.secret),p_code:recoveryHash(code.trim().toUpperCase()),p_password:await bcrypt.hash(password,12)}));

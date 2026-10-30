@@ -31,7 +31,11 @@ export function applyResetState(learner: number, user: number, stages: ResetStag
     if (row.epoch > (epochs[row.stage_number] ?? 0)) {
       progress[row.stage_number] = 0;
       if (row.stage_number === 2) localStorage.removeItem(bridgeStorageKey(learner)!);
-      if (row.stage_number === 3) localStorage.removeItem(cvcStorageKey(learner)!);
+      if (row.stage_number === 3) {
+        localStorage.removeItem(cvcStorageKey(learner)!);
+        for (const prefix of ['readlr_aral_reading_v1_', 'readlr_aral_book_access_v1_', 'readlr_aral_book_unlock_v1_']) localStorage.removeItem(`${prefix}${learner}`);
+        localStorage.setItem(`readlr_aral_carousel_v1_${learner}`, '0');
+      }
       epochs[row.stage_number] = row.epoch;
       changed = true;
     }

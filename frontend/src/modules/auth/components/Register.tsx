@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Check, Circle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../auth.context.js';
+import { PASSWORD_RULES, isStrongPassword } from '../passwordRules.js';
 
 interface RegisterProps {
   onSuccess?: () => void;
@@ -13,7 +14,8 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
   const [email, setEmail] = useState('');
   const [adminInvitation, setAdminInvitation] = useState('');
   const adminEmail = email.trim().toLowerCase().endsWith('@admin.readlr.com');
-  const [name, setName] = useState('');
+  const [guardianConfirmed, setGuardianConfirmed] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
@@ -24,13 +26,18 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
     e.preventDefault();
     setLocalError(null);
 
-    if (!email || !name || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       setLocalError('All fields are required');
       return;
     }
 
-    if (password.length < 6) {
-      setLocalError('Password must be at least 6 characters');
+    if (!adminEmail && (!guardianConfirmed || !consent)) {
+      setLocalError('Please confirm you are the guardian and agree to the privacy notice.');
+      return;
+    }
+
+    if (!isStrongPassword(password)) {
+      setLocalError('Your password does not meet all the requirements yet.');
       return;
     }
 
@@ -40,10 +47,11 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
     }
 
     try {
-      await register(email, password, confirmPassword, 'learner', name, adminEmail ? adminInvitation : undefined);
+      await register(email, password, confirmPassword, 'learner', { guardianConfirmed, consent }, adminEmail ? adminInvitation : undefined);
       setAdminInvitation('');
       setEmail('');
-      setName('');
+      setGuardianConfirmed(false);
+      setConsent(false);
       setPassword('');
       setConfirmPassword('');
       onSuccess?.();
@@ -75,7 +83,7 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
               className="w-16 h-16 rounded-xl mx-auto mb-4 shadow-[0_4px_12px_-4px_rgba(79,70,229,0.2)]"
             />
             <h1 className="text-2xl font-semibold text-[var(--ink)] mb-1">Join Readlr</h1>
-            <p className="text-[var(--ink-soft)] text-sm">Create your account to get started</p>
+            <p className="text-[var(--ink-soft)] text-sm">For guardians: create an account for your child</p>
           </div>
 
           {/* Error Message */}
@@ -99,33 +107,26 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
               <p className="text-xs mt-2 text-[var(--ink-soft)]">Use the private code provided by your Readlr system owner.</p>
             </div>}
             <div>
-              <label className="block text-[var(--ink)] font-medium text-sm mb-2">Full Name</label>
+              <label htmlFor="guardian-email" className="block text-[var(--ink)] font-medium text-sm mb-2">Guardian email</label>
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                className="w-full px-4 py-3 border-2 border-[var(--gray-soft)] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors bg-card text-[var(--ink)] placeholder-[#9CA3AF]"
-                disabled={isLoading}
-              />
-            </div>
-
-            <div>
-              <label className="block text-[var(--ink)] font-medium text-sm mb-2">Email Address</label>
-              <input
+                id="guardian-email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="guardian@example.com"
                 className="w-full px-4 py-3 border-2 border-[var(--gray-soft)] rounded-lg focus:outline-none focus:border-[#4F46E5] transition-colors bg-card text-[var(--ink)] placeholder-[#9CA3AF]"
                 disabled={isLoading}
               />
             </div>
 
             <div>
-              <label className="block text-[var(--ink)] font-medium text-sm mb-2">Password</label>
+              <label htmlFor="guardian-password" className="block text-[var(--ink)] font-medium text-sm mb-2">Create a password for your account</label>
               <div className="relative">
                 <input
+                  id="guardian-password"
+                  autoComplete="new-password"
+                  aria-describedby="password-rules"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -141,13 +142,25 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-[#9CA3AF] mt-1">At least 6 characters</p>
+              <ul id="password-rules" aria-label="Password requirements" className="mt-2 space-y-1">
+                {PASSWORD_RULES.map(rule => {
+                  const met = rule.test(password);
+                  return (
+                    <li key={rule.label} className={`flex items-center gap-2 text-xs ${met ? 'text-[#10B981]' : 'text-[var(--ink-soft)]'}`}>
+                      {met ? <Check className="w-3.5 h-3.5" aria-hidden="true" /> : <Circle className="w-3.5 h-3.5" aria-hidden="true" />}
+                      <span>{rule.label}<span className="sr-only">{met ? ' (met)' : ' (not met yet)'}</span></span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
             <div>
-              <label className="block text-[var(--ink)] font-medium text-sm mb-2">Confirm Password</label>
+              <label htmlFor="guardian-confirm-password" className="block text-[var(--ink)] font-medium text-sm mb-2">Confirm your password</label>
               <div className="relative">
                 <input
+                  id="guardian-confirm-password"
+                  autoComplete="new-password"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -165,11 +178,33 @@ export const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }
               </div>
             </div>
 
+            {!adminEmail && <>
+              <section aria-labelledby="privacy-notice-title" className="bg-[var(--paper)] border border-[var(--hairline)] rounded-lg p-4 text-xs text-[var(--ink-soft)] space-y-2">
+                <h2 id="privacy-notice-title" className="text-sm font-medium text-[var(--ink)]">Privacy notice for guardians</h2>
+                <p><strong>What we collect:</strong> your email, your child's nickname, avatar, grade, and reading progress.</p>
+                <p><strong>Microphone:</strong> Readlr uses the microphone when your child reads aloud. The audio is sent to Groq for speech recognition and is not stored.</p>
+                <p><strong>How long we keep it:</strong> reading progress is kept for [PLACEHOLDER: retention period to be confirmed by the research team].</p>
+                <p><strong>Deleting data:</strong> open Settings, then Privacy &amp; Safety, then Delete account. This removes the account and all reading progress.</p>
+              </section>
+
+              <label className="flex items-start gap-3 min-h-12 text-sm text-[var(--ink)] cursor-pointer">
+                <input type="checkbox" checked={guardianConfirmed} onChange={(e) => setGuardianConfirmed(e.target.checked)}
+                  disabled={isLoading} className="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#4F46E5]" />
+                <span>I am this child's guardian, and I am 18 years or older.</span>
+              </label>
+
+              <label className="flex items-start gap-3 min-h-12 text-sm text-[var(--ink)] cursor-pointer">
+                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)}
+                  disabled={isLoading} className="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#4F46E5]" />
+                <span>I have read the privacy notice and agree to my child using Readlr.</span>
+              </label>
+            </>}
+
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !isStrongPassword(password) || (!adminEmail && (!guardianConfirmed || !consent))}
               className="w-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white font-semibold py-3 rounded-lg hover:shadow-[0_2px_4px_rgba(31,36,48,0.05),0_18px_40px_-18px_rgba(79,70,229,0.35)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
