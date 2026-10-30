@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const source = (name: string) => readFileSync(new URL(`../src/app/components/${name}`, import.meta.url), 'utf8');
+// Normalize CRLF so the phase-boundary markers below also match on Windows checkouts.
+const source = (name: string) => readFileSync(new URL(`../src/app/components/${name}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 test('Milo guidance exposes replay and a specified dismiss control', () => {
   const coach = source('MiloCoach.tsx');
