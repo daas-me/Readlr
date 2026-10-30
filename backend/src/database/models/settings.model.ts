@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS: Omit<LearnerSettings, 'id' | 'user_id' | 'created_at' | 
   daily_reminders: true,
   achievement_alerts: true,
   dark_mode: false,
-  language: 'Filipino',
+  language: 'English',
 };
 
 export async function getSettingsByUserId(userId: number): Promise<LearnerSettings | undefined> {
