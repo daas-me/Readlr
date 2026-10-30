@@ -17,7 +17,7 @@ export function CurriculumAchievements({onBack,state,completedBooks}:{onBack:()=
     const stops=[...chronicleSounds(index).map(card=>card.word),'blend','games'];
     const earned=completedBooks.includes(chapter.id);
     const current=earned?stops.length+1:stops.filter(stop=>state.guidedStops.includes(`${chapter.id}:${stop}`)).length;
-    return {id:chapter.id,title:index===0?'Gate Reader':CHRONICLES[index].prize,detail:`Complete ${chapter.title}, including its final checkpoint.`,earned,current,total:stops.length+1,unit:'stops'};
+    return {id:chapter.id,title:CHRONICLES[index].prize,detail:`Complete ${chapter.title}, including its final checkpoint.`,earned,current,total:stops.length+1,unit:'stops'};
   };
   const achievements=[
     {id:'camp',title:'Camp Ready',detail:'Finish all three guided Camp practices.',earned:state.campOrientationStep>=3,current:Math.min(3,state.campOrientationStep),total:3,unit:'practices'},

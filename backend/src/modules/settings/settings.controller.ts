@@ -7,7 +7,8 @@ import { Request, Response } from 'express';
 import { getOrCreateSettings, updateSettings } from './settings.service.js';
 import { UpdateSettingsRequest } from './settings.types.js';
 
-const ALLOWED_LANGUAGES = ['Filipino', 'English', 'Cebuano', 'Ilocano'];
+// Only English is available in this version; Filipino is shown in Settings as coming later.
+const ALLOWED_LANGUAGES = ['English'];
 
 /**
  * GET /api/settings/me
