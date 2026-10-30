@@ -86,7 +86,7 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
   const savingPreferenceRef = useRef(false);
   const savedVolume = useRef(getLearningSettings().sound_volume);
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState("Filipino");
+  const [language, setLanguage] = useState("English");
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("🦊");
@@ -124,7 +124,8 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
           setNotifications(data.settings.daily_reminders);
           setAchievementAlerts(data.settings.achievement_alerts);
           setDarkMode(data.settings.dark_mode);
-          setLanguage(data.settings.language);
+          // English is the only available language; older accounts saved as Filipino still show English.
+          setLanguage("English");
         } else toast.error("Settings could not load", { description: "Your saved preferences are unavailable. Please try again later." });
         if (learnerRes.ok) {
           const data = await learnerRes.json();
@@ -511,9 +512,9 @@ export function Settings({ onNavigate, onAvatarUpdate }: SettingsProps) {
               className="bg-card rounded-2xl p-6 border border-[var(--hairline)]"
             >
               <SectionHeader id="language" />
-              <Select value="English" disabled onValueChange={handleLanguageChange}>
+              <Select value={language} onValueChange={handleLanguageChange}>
                 <SelectTrigger aria-label="Interface language" className="settings-select"><Globe aria-hidden="true"/><SelectValue/></SelectTrigger>
-                <SelectContent className="settings-select-menu"><SelectItem value="English">English</SelectItem></SelectContent>
+                <SelectContent className="settings-select-menu"><SelectItem value="English">English</SelectItem><SelectItem value="Filipino" disabled>Filipino (not available in this version yet)</SelectItem></SelectContent>
               </Select>
               <p className="text-sm text-[var(--ink-muted)] mt-2">Lessons and recordings are currently available in English.</p>
             </motion.section>
